@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const app = require('../app'); // Đảm bảo bạn đang import ứng dụng Express từ đúng file
+const app = require('../src/app');
 const debug = require('debug')('lofi-api:server');
 const http = require('http');
 

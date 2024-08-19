@@ -4,7 +4,7 @@ const usersRouter = require('./routes/users');
 const visualsRouter = require('./routes/visuals');
 const app = express();
 
-const serviceAccount = require('./music-52602-firebase-adminsdk-fax9b-0d8089b84a.json');
+const serviceAccount = require('../music-52602-firebase-adminsdk-fax9b-0d8089b84a.json');
 
 if (!admin.apps.length) {
   admin.initializeApp({
