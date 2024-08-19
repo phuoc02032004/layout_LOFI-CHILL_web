@@ -1,0 +1,11 @@
+node_modules/
+# Default ignored files
+/shelf/
+/workspace.xml
+# Editor-based HTTP Client requests
+/httpRequests/
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml
+.env
+music-52602-firebase-adminsdk-fax9b-0d8089b84a.json
