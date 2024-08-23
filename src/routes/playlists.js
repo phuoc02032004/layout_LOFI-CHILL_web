@@ -4,7 +4,6 @@ const router = express.Router();
 const admin = require('firebase-admin');
 const cors = require('cors');
 
-// admin.initializeApp();
 const db = admin.firestore();
 
 // Cấu hình CORS cho phép OPTIONS
