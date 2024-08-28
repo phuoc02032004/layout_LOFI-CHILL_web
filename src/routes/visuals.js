@@ -5,7 +5,7 @@ const cors = require('cors');
 
 
 // Lấy bucket đã được cấu hình sẵn trong Firebase Admin SDK
-const bucket = admin.storage().bucket('music-52602.appspot.com');
+const bucket = admin.storage().bucket(process.env.BUCKET);
 
 router.use(cors({
   origin: process.env.CLIENT_URL,
