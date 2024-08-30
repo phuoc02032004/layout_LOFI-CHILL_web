@@ -1,49 +1,54 @@
-body{
+body {
   position: relative;
 }
 
-*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 a {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 .header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    padding: 20px 10px;
-    background: transparent;
-    display: flex;
-    align-items: center;
-    z-index: 100;
-    justify-content: space-between;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 20px 10px;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  z-index: 100;
+  justify-content: space-between;
+  transition: top 0.5s ease-in-out; 
 }
 
-.logo{
-   font-size: 32px;
-   color: #fff;
-   font-weight: 700; 
-   margin-left: 100px;
+.hidden-navbar {
+  top: -80px; 
+}
+
+.logo {
+  font-size: 32px;
+  color: #fff;
+  font-weight: 700;
+  margin-left: 80px;
 }
 
 .acc {
-    font-size: 32px;
-    color: #fff;
-    font-weight: 700;
-    margin-right: 100px;
-    background: transparent;
-    color: #fff;
-    border-radius: 10px;
-    padding: 5px 10px;
-    border: 2px solid rgba(225, 255, 255, .2);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 0 10px rgba(0 ,0 ,0 , .2);
+  font-size: 32px;
+  color: #fff;
+  font-weight: 700;
+  margin-right: 100px;
+  background: transparent;
+  color: #fff;
+  border-radius: 10px;
+  padding: 5px 10px;
+  border: 2px solid rgba(225, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
 .navbar a {
@@ -53,7 +58,6 @@ a {
   font-weight: 700;
   margin: 0 15px;
   cursor: pointer;
-
 }
 
 .navbar a::before {
@@ -64,15 +68,14 @@ a {
   width: 0;
   height: 2px;
   background: #fff;
-  transition: .3s;
+  transition: 0.3s;
   cursor: pointer;
   color: rgb(240, 186, 105);
 }
 
-.navbar a:hover::before { 
+.navbar a:hover::before {
   width: 100%;
   cursor: pointer;
-
 }
 
 .account-container {
@@ -82,7 +85,7 @@ a {
 .dropdown-menu {
   position: absolute;
   top: 100%;
-  right: 100; 
+  right: 100;
   display: none;
   background: transparent;
   box-shadow: 20px 20px 20px rgba(0, 0, 0, 0.314);
@@ -90,11 +93,10 @@ a {
   align-items: center;
   transform: translateX(-30%);
   border-radius: 10px;
-  
 }
 
-.account-container:hover .dropdown-menu { 
-  display: block; 
+.account-container:hover .dropdown-menu {
+  display: block;
   transition: all 2s ease-in;
 }
 
@@ -115,5 +117,6 @@ a {
 
 .navbar {
   display: flex;
-  justify-content: center; 
+  justify-content: center;
 }
+

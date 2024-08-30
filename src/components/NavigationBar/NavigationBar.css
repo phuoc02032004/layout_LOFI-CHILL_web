@@ -10,6 +10,7 @@
     padding: 8px 40px;
     color: white;
     height: 100px;
+    z-index: 2;
 
     background: transparent;
     color: #fff;
@@ -18,7 +19,12 @@
     border: 1px solid rgba(225, 255, 255, .2);
     backdrop-filter: blur(5px);
     box-shadow: 0 0 10px rgba(0 ,0 ,0 , .2);
-    
+    transition: transform 0.5s ease-in-out; 
+    transform: translateY(100%); 
+}
+
+.navigation-bar.show {
+    transform: translateY(0); 
 }
 
 .song-info {
@@ -63,6 +69,7 @@
     margin: 0 10px;
     cursor: pointer;
 }
+
 .navigation-items {
     display: flex;
     align-items: center;
@@ -87,11 +94,11 @@
 
 .nav-item svg { 
     font-size: 28px;
-
 }
 
-.nav-item svg :hover{
-    stroke: white;
+.nav-item svg:hover {
+    stroke:#ffbd6f;;
     stroke-width: 3; 
     transition: all 0.3s ease;
+    color: #ffbd6f;
 }

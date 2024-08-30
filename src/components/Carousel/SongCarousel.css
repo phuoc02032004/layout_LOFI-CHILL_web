@@ -1,0 +1,93 @@
+.song-carousel {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    margin: 20px auto;
+    margin-top: 10px;
+    position: relative;
+    width: 100%;
+    max-width: 1400px;
+    margin-bottom: 60px;
+    opacity: 0; 
+    transform: translateY(20px);
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out; 
+    border-radius: 10px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    padding: 30px 40px;
+  }
+  
+  .song-carousel.show {
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+  
+  .song-track-container {
+    width: 100%;
+    overflow: hidden;
+  }
+  
+  .song-track {
+    display: flex;
+    transition: transform 0.7s ease-in-out;
+    width: 100%; 
+  }
+  
+  .song-item {
+    width: 24.3%;
+    flex-shrink: 0;
+    margin-right: 10px;
+    position: relative;
+    overflow: hidden; 
+    transition: transform 0.3s ease; 
+  }
+  
+  .song-item:last-child {
+    margin-right: 0;
+  }
+  
+  .song-item img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 5px;
+    transition: transform 0.3s ease; 
+    transform-origin: center center;
+  }
+
+  .song-item img:hover{
+    transform: scale(1.1);
+  }
+  
+  .song-title {
+    margin-top: 5px;
+    color: white;
+  }
+  
+  .carousel-button {
+    background: none;
+    border: none;
+    font-size: 30px;
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.4);
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 10;
+    color: #fff;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .carousel-button.prev {
+    left: 10px;
+  }
+  
+  .carousel-button.next {
+    right: 10px;
+  }

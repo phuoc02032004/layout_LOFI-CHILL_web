@@ -4,6 +4,8 @@ import "./HomePage.css";
 import { useNavigate } from 'react-router-dom';
 import videoCover from '../assets/videos/bk.mp4';
 import Loading from './../Loading/Loading';
+import SongCarousel from '../Carousel/SongCarousel';
+import Footer from '../footer/Footer'; 
 import { GrNext } from "react-icons/gr";
 import { GrPrevious } from "react-icons/gr";
 
@@ -12,6 +14,12 @@ import lateNightVibes from '../assets/images/latenight.jpg';
 import chillStudyBeats from '../assets/images/chillstudy.jpg';
 import sunnyDay from '../assets/images/sunnyday.jpg';
 import essentials from '../assets/images/essentials.jpg';
+
+import winter from '../assets/images/winter.jpg'
+import slinky from '../assets/images/slinky.jpg'
+import night from '../assets/images/night.jpg'
+import meadow from '../assets/images/Meadow.jpg'
+import morning from '../assets/images/goodmorning.jpg'
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -24,9 +32,23 @@ export default function HomePage() {
     { src: chillStudyBeats, title: 'CHILL STUDY BEATS' },
     { src: sunnyDay, title: 'SUNNY DAY' },
     { src: essentials, title: 'CHILL HOP ESSENTIALS' },
-    { src: chillhopRadio, title: 'CHILLHOP RADIO' },
-    { src: lateNightVibes, title: 'LATE NIGHT VIBES' },
+    { src: chillhopRadio, title: 'CHILLHOP RADIO' }, 
+    { src: lateNightVibes, title: 'LATE NIGHT VIBES' }, 
   ];
+
+  const songs = [
+    { title: 'Winter Chill', image: winter },
+    { title: 'Slinky Groove', image: slinky },
+    { title: 'Night Vibes', image: night },
+    { title: 'Meadow Peace', image: meadow },
+    { title: 'Good Morning', image: morning },
+    { title: 'Winter Chill', image: winter },
+    { title: 'Slinky Groove', image: slinky },
+    { title: 'Night Vibes', image: night },
+    { title: 'Meadow Peace', image: meadow },
+  ];
+
+  const imageWidth = 25; 
 
   const handleChillClick = () => {
     navigate('/chillpage');
@@ -95,13 +117,16 @@ export default function HomePage() {
           START LISTENING{' '}
         </button>
       </div>
-
+      <div className="name">New Preset</div>
       <div className="image-carousel" ref={carouselRef}>
         <button className="carousel-button prev" onClick={handlePrev}>
           <GrPrevious />
         </button>
         <div className="image-container">
-          <div className="image-track"> 
+          <div 
+            className="image-track"
+            style={{ transform: `translateX(-${currentIndex * imageWidth}%)` }}
+          >
             {images.map((image, index) => (
               <div className="image-item" key={index}>
                 <img src={image.src} alt={image.title} />
@@ -114,7 +139,11 @@ export default function HomePage() {
           <GrNext />
         </button>
       </div>
-
+      <div className="name">New Song</div>
+      <SongCarousel songs={songs} />
+      
+      <Footer /> 
+      
       <video src={videoCover} autoPlay muted loop></video>
     </div>
   );

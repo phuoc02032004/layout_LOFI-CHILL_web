@@ -1,0 +1,43 @@
+.sounds-container {
+  padding-top: 30px;
+  padding-left: 20px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.sound-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 22px; 
+}
+
+.sound-name {
+  flex: 1;
+  font-size: 16px; 
+  text-align: left;
+}
+
+.slider-container {
+  width: 200px;
+  margin-left: 10px; 
+  margin-right: 70px;
+}
+
+.volume-slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 3px; 
+  background: #d3d3d3;
+  outline: none;
+  border-radius: 10px;
+}
+
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px; 
+  height: 14px;
+  border-radius: 50%;
+  background: #ffbd6f; 
+  cursor: pointer;
+}
