@@ -1,12 +1,15 @@
-const express = require('express');
-const admin = require('firebase-admin');
-const usersRouter = require('./routes/users');
-const visualsRouter = require('./routes/visuals');
-const playlistRouter = require('./routes/playlists');
-const songRouter = require('./routes/songs');
+import express from 'express';
+import admin from 'firebase-admin';
+import cors from 'cors';
+import initRoutes from './routes/index.js';
+import serviceAccount from '../music-52602-firebase-adminsdk-fax9b-0d8089b84a.json' assert { type: 'json' };
+
 const app = express();
 
-const serviceAccount = require('../music-52602-firebase-adminsdk-fax9b-0d8089b84a.json');
+app.use(cors({
+  origin: process.env.CLIENT_URL,
+  methods: ['GET', 'POST', 'PUT', 'DELETE']
+}));
 
 if (!admin.apps.length) {
   admin.initializeApp({
@@ -21,11 +24,14 @@ const db = admin.firestore();
 app.use(express.json());
 
 // Sử dụng route cho API
-app.use('/users', usersRouter);
-app.use('/visuals', visualsRouter);
-app.use('/playlists', playlistRouter);
-app.use('/songs', songRouter);
+app.use(express.urlencoded({ extended: true }));
 
+initRoutes(app);
 
-// Xuất ứng dụng Express
-module.exports = app;
+const PORT = process.env.PORT || 8888;
+
+const listener = app.listen(PORT, () => {
+  console.log('Server is running on the port ' + listener.address().port);
+});
+
+export default app;

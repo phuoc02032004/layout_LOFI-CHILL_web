@@ -1,9 +1,15 @@
-var express = require('express');
-var router = express.Router();
+import express from 'express';
+import auth from './auth.js';
+import { notFound } from '../middleware/handle_error.js';
+import user from './users.js';
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
+const router = express.Router();
 
-module.exports = router;
+
+const initRoutes = (app) => {
+  app.use('/api/v1/auth', auth);
+  app.use('/api/v1/user', user)
+  app.use(notFound)
+};
+
+export default initRoutes;

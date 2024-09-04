@@ -1,4 +1,5 @@
-const transporter = require('../config/email');
+// src/services/auth.js
+import { transporter } from '../config/email.js';
 
 const sendVerificationEmail = async (email, verificationCode) => {
     const mailOptions = {
@@ -20,4 +21,4 @@ const sendVerificationEmail = async (email, verificationCode) => {
     }
 };
 
-module.exports = { sendVerificationEmail };
+export { sendVerificationEmail };
