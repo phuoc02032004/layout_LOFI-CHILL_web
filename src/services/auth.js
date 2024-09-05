@@ -109,3 +109,4 @@ export const login = ({ email, password }) => new Promise(async (resolve, reject
         return { status: 500, message: 'Error logging in', error };
     }
 });
+

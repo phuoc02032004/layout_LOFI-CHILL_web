@@ -17,18 +17,64 @@ export const getSpecificUser = async (req, res) => {
     try {
         const { id } = req.params;
 
-        // Kiểm tra ID có tồn tại không
-        if (!id) {
-            return res.status(400).json({
+        const response = await services.user.getSpecificUser({ id });
+
+        // Nếu user không được tìm thấy
+        if (response.status === 404) {
+            return res.status(404).json({
                 err: 1,
-                mes: 'User ID is required',
+                mes: 'User not found',
             });
         }
 
-        const response = await services.user.getSpecificUser({ id });
         return res.status(200).json(response);
     } catch (error) {
         console.error('Error in get specific user controller:', error);
+        return internalServerError(res);
+    }
+};
+
+export const updateUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Lấy dữ liệu từ req.body để cập nhật người dùng
+        const data = req.body;
+
+        const response = await services.user.updateUser({ id, data });
+
+        // Nếu user không được tìm thấy
+        if (response.status === 404) {
+            return res.status(404).json({
+                err: 1,
+                mes: 'User not found',
+            });
+        }
+
+        return res.status(200).json(response);
+    } catch (error) {
+        console.error('Error in update user controller:', error);
+        return internalServerError(res);
+    }
+};
+
+export const deleteUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const response = await services.user.deleteUser({ id });
+
+        // Nếu user không được tìm thấy
+        if (response.status === 404) {
+            return res.status(404).json({
+                err: 1,
+                mes: 'User not found',
+            });
+        }
+
+        return res.status(200).json(response);
+    } catch (error) {
+        console.error('Error in delete user controller:', error);
         return internalServerError(res);
     }
 };
