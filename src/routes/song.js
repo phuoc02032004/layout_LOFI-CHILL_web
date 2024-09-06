@@ -1,0 +1,14 @@
+import { song } from '../controllers/index.js';
+import express from 'express';
+import { authenticateToken } from '../middleware/authToken.js';
+import multer from 'multer';
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+const router = express.Router();
+
+router.get('/getAllSong/:id', song.getAllSong);
+router.get('/getSpecificSong/:idPlaylist/:id', song.getSpecificSong);
+router.post('/createSong/:idPlaylist', upload.single('file'), song.createSong);
+
+
+export default router;

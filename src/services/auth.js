@@ -10,13 +10,8 @@ const db = admin.firestore();
 export const register = ({ email, password, username }) => new Promise(async (resolve, reject) => {
 
     try {
-        // Kiểm tra xem email đã tồn tại chưa
-        const userRef = db.collection('users').doc(email);
+        const userRef = db.collection('users');
         const doc = await userRef.get();
-        if (doc.exists) {
-            return { error: 'Email already exists' };
-        }
-
         // Mã hóa mật khẩu
         const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -24,7 +19,7 @@ export const register = ({ email, password, username }) => new Promise(async (re
         const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
 
         // Tạo user mới
-        await userRef.set({
+        await userRef.add({
             email,
             password: hashedPassword,
             username,
