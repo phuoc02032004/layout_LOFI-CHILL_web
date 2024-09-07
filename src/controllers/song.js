@@ -66,3 +66,51 @@ export const createSong = async (req, res) => {
         return internalServerError(res);
     }
 };
+
+export const deleteSong = async (req, res) => {
+    try {
+        const { idPlaylist } = req.params;
+
+        const { id } = req.params;
+
+        const response = await services.song.deleteSong({ idPlaylist, id });
+
+        // Nếu Song không được tìm thấy
+        if (response.status === 404) {
+            return res.status(404).json({
+                err: 1,
+                mes: 'Song not found',
+            });
+        }
+
+        return res.status(200).json(response);
+    } catch (error) {
+        console.error('Error in delete Song controller:', error);
+        return internalServerError(res);
+    }
+};
+
+export const updateSong = async (req, res) => {
+    try {
+        const { idPlaylist } = req.params;
+
+        const { id } = req.params;
+
+        const data = req.body;
+
+        const response = await services.song.updateSong({ idPlaylist, id, data });
+
+        // Nếu Song không được tìm thấy
+        if (response.status === 404) {
+            return res.status(404).json({
+                err: 1,
+                mes: 'Song not found',
+            });
+        }
+
+        return res.status(200).json(response);
+    } catch (error) {
+        console.error('Error in update Song controller:', error);
+        return internalServerError(res);
+    }
+};

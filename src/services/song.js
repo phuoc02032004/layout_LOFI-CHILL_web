@@ -55,7 +55,7 @@ export const getSpecificSong = ({ idPlaylist, id }) => new Promise(async (resolv
     }
 });
 
-// Post Song
+// Post a Song
 export const createSong = ({ idPlaylist, Artist, Title }, file) => new Promise(async (resolve, reject) => {
     try {
         const songRef = db.collection('Music').doc(idPlaylist).collection('Songs');
@@ -109,3 +109,71 @@ export const createSong = ({ idPlaylist, Artist, Title }, file) => new Promise(a
     }
 });
 
+// Delete a Song
+export const deleteSong = ({ idPlaylist, id, data }) => new Promise(async (resolve, reject) => {
+    try {
+        const songRef = db.collection('Music').doc(idPlaylist).collection('Songs').doc(id);
+        const songDoc = await songRef.get();
+        if (!songDoc.exists) {
+            return resolve({
+                status: 404,
+                message: 'Song not found',
+            });
+        }
+        const songData = songDoc.data();
+        const filePath = songData.filePath;
+
+        if (!filePath) {
+            return resolve({
+                status: 404,
+                message: 'Invalid file path',
+            });
+        }
+
+        // Xóa file từ Firebase Storage
+        const file = bucket.file(filePath);
+        await file.delete();
+
+        // Xóa bài hát khỏi Firestore
+        await songRef.delete();
+        resolve({
+            err: 0,
+            mes: 'Delete song successfully',
+        });
+    } catch (error) {
+        reject(error);
+        return { status: 500, message: 'Error delete song', error };
+    }
+});
+
+// Update a song
+export const updateSong = ({ idPlaylist, id, data }) => new Promise(async (resolve, reject) => {
+    try {
+        const songRef = db.collection('Music').doc(idPlaylist).collection('Songs').doc(id);
+        const songDoc = await songRef.get();
+        if (!songDoc.exists) {
+            return resolve({
+                status: 404,
+                message: 'Song not found',
+            });
+        }
+
+        // Chuyển đổi `updatedAt` sang Firestore Timestamp
+        const updatedAtTimestamp = data.updatedAt || admin.firestore.FieldValue.serverTimestamp();
+
+        // Cập nhật các trường của bài hát
+        await songRef.update({
+            ...data,
+            updatedAt: updatedAtTimestamp,
+        });
+        // Lấy lại dữ liệu mới sau khi cập nhật
+        const updatedDoc = await songRef.get();
+        resolve({
+            err: 0,
+            song: updatedDoc.data(),
+        });
+    } catch (error) {
+        reject(error);
+        return { status: 500, message: 'Error delete song', error };
+    }
+});

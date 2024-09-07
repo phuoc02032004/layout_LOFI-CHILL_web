@@ -9,6 +9,7 @@ const router = express.Router();
 router.get('/getAllSong/:id', song.getAllSong);
 router.get('/getSpecificSong/:idPlaylist/:id', song.getSpecificSong);
 router.post('/createSong/:idPlaylist', upload.single('file'), song.createSong);
-
+router.delete('/deleteSong/:idPlaylist/:id', song.deleteSong);
+router.put('/updateSong/:idPlaylist/:id', song.updateSong);
 
 export default router;
