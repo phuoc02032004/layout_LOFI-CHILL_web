@@ -51,7 +51,7 @@ export const updatePlaylist = async (req, res) => {
     try {
         const { id } = req.params;
 
-        // Lấy dữ liệu từ req.body để cập nhật người dùng
+        // Lấy dữ liệu từ req.body để cập nhật
         const data = req.body;
 
         const response = await services.playlist.updatePlaylist({ id, data });

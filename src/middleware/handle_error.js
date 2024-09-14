@@ -22,3 +22,19 @@ export const notFound = (req, res) => {
         mes: error.message
     })
 }
+
+export const unauthorized = (res) => {
+    const error = createError.Unauthorized()
+    return res.status(error.status).json({
+        err: 1,
+        mes: error.message
+    })
+}
+
+export const forbidden = (res) => {
+    const error = createError.Forbidden()
+    return res.status(error.status).json({
+        err: 1,
+        mes: error.message
+    })
+}

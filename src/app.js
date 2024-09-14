@@ -3,6 +3,7 @@ import admin from 'firebase-admin';
 import cors from 'cors';
 import initRoutes from './routes/index.js';
 import serviceAccount from '../music-52602-firebase-adminsdk-fax9b-0d8089b84a.json' assert { type: 'json' };
+import morgan from 'morgan';
 
 const app = express();
 
@@ -25,6 +26,9 @@ app.use(express.json());
 
 // Sử dụng route cho API
 app.use(express.urlencoded({ extended: true }));
+
+morgan.token('body', (req, res) => JSON.stringify(req.body));
+app.use(morgan(':method :url :status :response-time ms - :res[content-length] :body - :req[content-length]'));
 
 initRoutes(app);
 

@@ -29,10 +29,16 @@ export const getSpecificUser = ({ id }) => new Promise(async (resolve, reject) =
                 message: 'User not found',
             });
         }
+        // Lấy toàn bộ dữ liệu người dùng
+        const userData = userDoc.data();
+
+        // Dùng destructuring để loại bỏ trường password khỏi userData
+        const { password, ...userInfo } = userData;
+
         resolve({
             err: 0,
             mes: 'Get specific user successfully',
-            user: userDoc.data()
+            user: userInfo
         });
     } catch (error) {
         reject(error);
@@ -87,4 +93,5 @@ export const deleteUser = ({ id }) => new Promise(async (resolve, reject) => {
         return { status: 500, message: 'Error delete user', error };
     }
 });
+
 
