@@ -5,6 +5,7 @@ import user from './users.js';
 import playlist from './playlist.js';
 import song from './song.js'
 import visual from './visual.js'
+import soundEffect from './soundEffect.js'
 
 const router = express.Router();
 
@@ -15,6 +16,7 @@ const initRoutes = (app) => {
   app.use('/api/v1/playlist', playlist);
   app.use('/api/v1/song', song);
   app.use('/api/v1/visual', visual);
+  app.use('/api/v1/soundEffect', soundEffect);
 
   app.use(notFound);
 };

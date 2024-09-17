@@ -105,7 +105,10 @@ export const updateFolderVisual = ({ id, data }) => new Promise(async (resolve, 
             });
         }
 
-        await visualRef.update(data);
+        await visualRef.update({
+            data,
+            updatedAt: new Date(),
+        });
 
         // Lấy lại dữ liệu mới sau khi cập nhật
         const visualUpdate = await visualRef.get();

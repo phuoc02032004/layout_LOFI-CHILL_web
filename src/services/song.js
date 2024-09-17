@@ -56,7 +56,7 @@ export const getSpecificSong = ({ idPlaylist, id }) => new Promise(async (resolv
 });
 
 // Post a Song
-export const createSong = ({ idPlaylist, Artist, Title }, file) => new Promise(async (resolve, reject) => {
+export const createSong = ({ idPlaylist, Artist, Title }, fileMusic, fileImg) => new Promise(async (resolve, reject) => {
     try {
         const songRef = db.collection('Music').doc(idPlaylist).collection('Songs');
 
@@ -72,14 +72,24 @@ export const createSong = ({ idPlaylist, Artist, Title }, file) => new Promise(a
         const playlistName = playlistDoc.data().Title;
 
         // Upload file vào Firebase Storage
-        const filename = `Music/${playlistName}/${uuidv4()}_${file.originalname}`;
-        const fileUpload = bucket.file(filename);
+        const filenameMusic = `Music/${playlistName}/${uuidv4()}_${fileMusic.originalname}`;
+        const filenameImg = `Images/Song/${playlistName}/${uuidv4()}_${fileImg.originalname}`;
+
+        const fileUpload = bucket.file(filenameMusic);
+
+        const fileUploadImg = bucket.file(filenameImg);
 
         // Tải file lên Storage
-        await fileUpload.save(file.buffer);
+        await fileUpload.save(fileMusic.buffer);
+        await fileUploadImg.save(fileImg.buffer);
 
         // Lấy URL của file từ Storage
         const [url] = await fileUpload.getSignedUrl({
+            action: 'read',
+            expires: '03-01-2500' // Thời gian hết hạn của URL (có thể thay đổi)
+        });
+
+        const [urlImg] = await fileUploadImg.getSignedUrl({
             action: 'read',
             expires: '03-01-2500' // Thời gian hết hạn của URL (có thể thay đổi)
         });
@@ -89,7 +99,9 @@ export const createSong = ({ idPlaylist, Artist, Title }, file) => new Promise(a
             Artist,  // Sử dụng Artist từ tham số truyền vào
             Title,   // Sử dụng Title từ tham số truyền vào
             Url: url,
-            filePath: filename,
+            urlImg: urlImg,
+            filePath: filenameMusic,
+            filePathImg: filenameImg,
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         });
@@ -109,8 +121,8 @@ export const createSong = ({ idPlaylist, Artist, Title }, file) => new Promise(a
     }
 });
 
-// Delete a Song
-export const deleteSong = ({ idPlaylist, id, data }) => new Promise(async (resolve, reject) => {
+// Delete a song
+export const deleteSong = ({ idPlaylist, id }) => new Promise(async (resolve, reject) => {
     try {
         const songRef = db.collection('Music').doc(idPlaylist).collection('Songs').doc(id);
         const songDoc = await songRef.get();
@@ -122,6 +134,7 @@ export const deleteSong = ({ idPlaylist, id, data }) => new Promise(async (resol
         }
         const songData = songDoc.data();
         const filePath = songData.filePath;
+        const filePathImg = songData.filePathImg;
 
         if (!filePath) {
             return resolve({
@@ -132,7 +145,10 @@ export const deleteSong = ({ idPlaylist, id, data }) => new Promise(async (resol
 
         // Xóa file từ Firebase Storage
         const file = bucket.file(filePath);
+        const fileImg = bucket.file(filePathImg);
+
         await file.delete();
+        await fileImg.delete();
 
         // Xóa bài hát khỏi Firestore
         await songRef.delete();
@@ -147,7 +163,7 @@ export const deleteSong = ({ idPlaylist, id, data }) => new Promise(async (resol
 });
 
 // Update a song
-export const updateSong = ({ idPlaylist, id, data }) => new Promise(async (resolve, reject) => {
+export const updateSong = ({ idPlaylist, id, data }, fileMusic, fileImg) => new Promise(async (resolve, reject) => {
     try {
         const songRef = db.collection('Music').doc(idPlaylist).collection('Songs').doc(id);
         const songDoc = await songRef.get();
@@ -158,14 +174,77 @@ export const updateSong = ({ idPlaylist, id, data }) => new Promise(async (resol
             });
         }
 
-        // Chuyển đổi `updatedAt` sang Firestore Timestamp
-        const updatedAtTimestamp = data.updatedAt || admin.firestore.FieldValue.serverTimestamp();
+        const songData = songDoc.data();
+        const updatedData = { ...data };
+
+        const playlistRef = db.collection('Music').doc(idPlaylist);
+        const playlistDoc = await playlistRef.get();
+        if (!playlistDoc.exists) {
+            return resolve({
+                status: 404,
+                message: 'Playlist not found',
+            });
+        }
+        const playlistName = playlistDoc.data().Title;
+
+        // Check if new music file is provided
+        if (fileMusic) {
+            const oldFilePath = songData.filePath;
+            const filenameMusic = `Music/${playlistName}/${uuidv4()}_${fileMusic.originalname}`;
+            const fileUpload = bucket.file(filenameMusic);
+
+            // Upload new music file
+            await fileUpload.save(fileMusic.buffer);
+
+            // Get URL of the new music file
+            const [url] = await fileUpload.getSignedUrl({
+                action: 'read',
+                expires: '03-01-2500'
+            });
+
+            // Delete old music file
+            if (oldFilePath) {
+                const oldFile = bucket.file(oldFilePath);
+                await oldFile.delete();
+            }
+
+            // Update file path and URL in Firestore
+            updatedData.filePath = filenameMusic;
+            updatedData.Url = url;
+        }
+
+        // Check if new image file is provided
+        if (fileImg) {
+            const oldFilePathImg = songData.filePathImg;
+            const filenameImg = `Images/Song/${playlistName}/${uuidv4()}_${fileImg.originalname}`;
+            const fileUploadImg = bucket.file(filenameImg);
+
+            // Upload new image file
+            await fileUploadImg.save(fileImg.buffer);
+
+            // Get URL of the new image file
+            const [urlImg] = await fileUploadImg.getSignedUrl({
+                action: 'read',
+                expires: '03-01-2500'
+            });
+
+            // Delete old image file
+            if (oldFilePathImg) {
+                const oldFileImg = bucket.file(oldFilePathImg);
+                await oldFileImg.delete();
+            }
+
+            // Update file path and URL in Firestore
+            updatedData.filePathImg = filenameImg;
+            updatedData.urlImg = urlImg;
+        }
+
+        // Update the updatedAt field
+        updatedData.updatedAt = admin.firestore.FieldValue.serverTimestamp();
 
         // Cập nhật các trường của bài hát
-        await songRef.update({
-            ...data,
-            updatedAt: updatedAtTimestamp,
-        });
+        await songRef.update(updatedData);
+
         // Lấy lại dữ liệu mới sau khi cập nhật
         const updatedDoc = await songRef.get();
         resolve({

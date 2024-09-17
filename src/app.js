@@ -27,8 +27,18 @@ app.use(express.json());
 // Sử dụng route cho API
 app.use(express.urlencoded({ extended: true }));
 
-morgan.token('body', (req, res) => JSON.stringify(req.body));
-app.use(morgan(':method :url :status :response-time ms - :res[content-length] :body - :req[content-length]'));
+// Create a custom morgan token that sanitizes the request body
+morgan.token('sanitized-body', (req, res) => {
+  const body = { ...req.body };
+  if (body.password) {
+    body.password = '******'; // Mask the password
+  }
+  return JSON.stringify(body);
+});
+
+// Use the custom token in the morgan format string
+app.use(morgan(':method :url :status :response-time ms - :res[content-length] :sanitized-body - :req[content-length]'));
+
 
 initRoutes(app);
 

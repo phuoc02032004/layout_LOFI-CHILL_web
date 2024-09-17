@@ -52,14 +52,24 @@ export const createSong = async (req, res) => {
         const { idPlaylist } = req.params;
         const { Artist, Title } = req.body;
 
-        if (!req.file) {
+        if (!idPlaylist) {
             return res.status(400).json({
                 err: 1,
-                mes: 'File is required',
+                mes: 'Playlist ID is required',
             });
         }
 
-        const response = await services.song.createSong({ idPlaylist, Artist, Title }, req.file);
+        if ( !req.files || !req.files || !req.files.image) {
+            return res.status(400).json({
+                err: 1,
+                mes: 'Both image and music files are required',
+            });
+        }
+
+        const imageFile = req.files.image[0];
+        const musicFile = req.files.music[0];
+
+        const response = await services.song.createSong({ idPlaylist, Artist, Title }, musicFile, imageFile);
         return res.status(200).json(response);
     } catch (error) {
         console.error('Error in create song controller:', error);
