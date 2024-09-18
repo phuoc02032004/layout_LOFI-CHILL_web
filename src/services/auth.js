@@ -11,8 +11,8 @@ export const register = ({ username, email, password }) => new Promise(async (re
 
     try {
         const userRef = db.collection('users');
-        const snapshot = await visualRef.where('email', '==', email).get();
-        
+        const snapshot = await userRef.where('email', '==', email).get();
+
         // Kiểm tra xem email đã được sử dụng chưa
         if (!snapshot.empty) {
             return reject({ status: 400, message: 'Email already in use' });
@@ -84,26 +84,29 @@ export const verify = ({ email, code }) => new Promise(async (resolve, reject) =
 
 export const login = ({ email, password }) => new Promise(async (resolve, reject) => {
     try {
-        const userRef = db.collection('users').doc(email);
-        const doc = await userRef.get();
-        if (!doc.exists) {
+        const userRef = db.collection('users');
+        const querySnapshot = await userRef.where('email', '==', email).get();
+        if (querySnapshot.empty) {
             console.log('User does not exist');
-            return { error: 'Invalid credentials' };
+            return reject({ error: 'Invalid credentials' });
         }
 
-        const user = doc.data();
+        let user;
+        querySnapshot.forEach(doc => {
+            user = doc.data();
+        });
 
         // Kiểm tra mật khẩu
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             console.log('Password does not match');
-            return { error: 'Invalid credentials' };
+            return reject({ error: 'Invalid credentials' });
         }
 
         // Kiểm tra email đã được xác thực chưa
         if (!user.isVerified) {
             console.log('Email not verified');
-            return { error: 'Please verify your email address' };
+            return reject({ error: 'Please verify your email address' });
         }
 
         // Tạo JWT
@@ -115,8 +118,7 @@ export const login = ({ email, password }) => new Promise(async (resolve, reject
             token: token
         });
     } catch (error) {
-        reject(error);
-        return { status: 500, message: 'Error logging in', error };
+        reject({ status: 500, message: 'Error logging in', error });
     }
 });
 
