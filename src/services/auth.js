@@ -7,11 +7,17 @@ import jwt from 'jsonwebtoken';
 admin.initializeApp();
 const db = admin.firestore();
 
-export const register = ({ email, password, username }) => new Promise(async (resolve, reject) => {
+export const register = ({ username, email, password }) => new Promise(async (resolve, reject) => {
 
     try {
         const userRef = db.collection('users');
-        const doc = await userRef.get();
+        const snapshot = await visualRef.where('email', '==', email).get();
+        
+        // Kiểm tra xem email đã được sử dụng chưa
+        if (!snapshot.empty) {
+            return reject({ status: 400, message: 'Email already in use' });
+        }
+
         // Mã hóa mật khẩu
         const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -42,30 +48,39 @@ export const register = ({ email, password, username }) => new Promise(async (re
     }
 });
 
-export const verify = ({ email, password, username }) => new Promise(async (resolve, reject) => {
+export const verify = ({ email, code }) => new Promise(async (resolve, reject) => {
     try {
-        const userRef = db.collection('users').doc(email);
-        const doc = await userRef.get();
-        if (!doc.exists) {
-            return { error: 'User not found' };
+        const userRef = db.collection('users');
+        const querySnapshot = await userRef.where('email', '==', email).get();
+
+        // Kiểm tra nếu không có tài liệu nào khớp với email
+        if (querySnapshot.empty) {
+            return reject({ status: 404, message: 'User not found' }); // Đổi thành 404
         }
 
-        const user = doc.data();
+        // Lấy tài liệu người dùng (lấy tài liệu đầu tiên trong kết quả)
+        const userDoc = querySnapshot.docs[0];
+        const user = userDoc.data();
+
+        // Kiểm tra mã xác thực
         if (user.verificationCode === code) {
-            await userRef.update({
+            await userDoc.ref.update({
                 isVerified: true,
                 verifiedAt: admin.firestore.FieldValue.serverTimestamp(),
             });
+            return resolve({
+                status: 200,
+                message: 'Email verified successfully'
+            });
+        } else {
+            return reject({ status: 400, message: 'Invalid verification code' });
         }
-        resolve({
-            err: 0,
-            mes: 'Email verified successfully'
-        });
     } catch (error) {
-        reject(error);
-        return { status: 400, message: 'Invalid verification code', error };
+        console.error('Error in verification process:', error); // Log lỗi chi tiết
+        return reject({ status: 500, message: 'Error verifying email', error });
     }
 });
+
 
 export const login = ({ email, password }) => new Promise(async (resolve, reject) => {
     try {

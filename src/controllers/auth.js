@@ -5,7 +5,7 @@ import joi from 'joi'
 
 export const register = async (req, res) => {
     try {
-        const { error } = joi.object({ email, password, username }).validate(req.body);
+        const { error } = joi.object({ username, email, password }).validate(req.body);
         if (error) return res.status(400).json({ error: error.details[0].message });
 
         const response = await services.auth.register(req.body);
@@ -19,13 +19,14 @@ export const register = async (req, res) => {
 
 export const verify = async (req, res) => {
     try {
-        const { email, code } = req.body; // Đảm bảo lấy từ req.body nếu cần
-        const response = await services.verify(email, code);
+        const { email, code } = req.body;
+        const response = await services.auth.verify({ email, code });
         return res.status(200).json(response);
     } catch (error) {
-        return internalServerError(res);
+        console.error('Error in verify controller:', error);
+        return res.status(500).json({ error: 'Internal Server Error', details: error.message });
     }
-}
+};
 
 export const login = async (req, res) => {
     try {
