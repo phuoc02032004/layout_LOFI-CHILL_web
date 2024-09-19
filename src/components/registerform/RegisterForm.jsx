@@ -24,8 +24,15 @@ const RegisterForm = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    if (formData.password !== formData.confirmPassword) {
+      setMessage("Passwords do not match");
+      return;
+    }
+
+    const { confirmPassword, ...dataToSend } = formData;
+
     try {
-      const response = await axios.post('http://localhost:3002/users/register', formData);
+      const response = await axios.post('http://localhost:3002/api/v1/auth/register', dataToSend);
       setMessage(response.data.message);
       setIsRegistered(true);
     } catch (err) {
@@ -35,17 +42,21 @@ const RegisterForm = () => {
 
   const handleVerify = async (e) => {
     e.preventDefault();
+    console.log("Verification code entered:", verificationCode); // Debug log
     try {
-      const response = await axios.post('http://localhost:3002/users/verify', {
+      const response = await axios.post('http://localhost:3002/api/v1/auth/verify', {
         email: formData.email,
         code: verificationCode
       });
+      console.log("API response:", response.data); // Debug log
       setMessage(response.data.message);
-      if (response.data.message === 'Email verified successfully!') {
+      if (response.data.message === 'Email verified successfully') {
+        console.log("Navigating to login page"); // Debug log
         navigate('/login');
       }
     } catch (err) {
-      setMessage(err.response.data.error);
+      console.error("API error:", err.response ? err.response.data.error : err.message); // Debug log
+      setMessage(err.response ? err.response.data.error : "An error occurred");
     }
   };
 

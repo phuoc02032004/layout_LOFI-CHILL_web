@@ -58,7 +58,7 @@ export default function ChillPage() {
         showInitially={showNavigationBar} 
         onBackgroundChange={handleBackgroundChange} 
       />
-      <video ref={videoRef} src={backgroundVideo} autoPlay muted loop></video>
+      <video  className="background-video" ref={videoRef} src={backgroundVideo} autoPlay muted loop></video>
     </div>
   );
 }

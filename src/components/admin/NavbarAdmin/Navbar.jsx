@@ -40,21 +40,24 @@ export default function Navbar() {
     navigate('/homepage');
   };
 
-  const handleChillClick = () => {
-    navigate('/chillpage');
-  };
 
   const handleAdminClick = () => {
     navigate('/admin')
   }
+  
+  const handleBGPageClick = () => {
+    navigate('/BGPage')
+  }
 
+
+  
   return (
     <header className={`header ${!showNavbar ? 'hidden-navbar' : ''}`}> 
       <a href="/" className='logo'> LOGO </a>
 
       <nav className='navbar'>
-        <a onClick={handleHomeClick}>HOME</a>
-        <a onClick={handleChillClick}>CHILL</a>
+        <a onClick={handleAdminClick}>SONG</a>
+        <a onClick={handleBGPageClick}>BACKGROUND</a>
       </nav>
 
       <div 
@@ -65,9 +68,7 @@ export default function Navbar() {
         <a className='acc'><FaUser className='icon' /></a>
         {showMenu && (
           <div className="dropdown-menu">
-            <a className="dropdown-item">Đổi mật khẩu</a>
-            <a className="dropdown-item" onClick={handleAdminClick}>Admin</a>
-            <a className="dropdown-item">Đăng xuất</a>
+            <a className="dropdown-item" onClick={handleHomeClick}>Trở về</a>
           </div>
         )}
       </div>

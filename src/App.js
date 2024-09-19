@@ -4,6 +4,8 @@ import RegisterForm from './components/registerform/RegisterForm';
 import HomePage from './components/pages/HomePage';
 import { BrowserRouter, Routes, Route } from 'react-router-dom'; 
 import ChillPage from './components/pages/ChillPage';
+import AdminPage from './components/admin/admin';
+import BGPage from './components/admin/BGPage/BGPage';
 
 function App() {
   return (
@@ -15,6 +17,8 @@ function App() {
           <Route path="/homepage" element={<HomePage />} />
           <Route path="/chillpage" element={<ChillPage />} />
           <Route path="/register" element={<RegisterForm />} />
+          <Route path="/admin" element={<AdminPage />} />
+          <Route path="/BGPage" element={<BGPage />} />
         </Routes>
       </div>
     </BrowserRouter>
