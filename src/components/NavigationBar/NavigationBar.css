@@ -1,0 +1,104 @@
+.navigation-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: transparent;
+    padding: 8px 40px;
+    color: white;
+    height: 100px;
+    z-index: 2;
+
+    background: transparent;
+    color: #fff;
+    border-radius: 10px;
+    padding: 30px 40px;
+    border: 1px solid rgba(225, 255, 255, .2);
+    backdrop-filter: blur(5px);
+    box-shadow: 0 0 10px rgba(0 ,0 ,0 , .2);
+    transition: transform 0.5s ease-in-out; 
+    transform: translateY(100%); 
+}
+
+.navigation-bar.show {
+    transform: translateY(0); 
+}
+
+.song-info {
+    display: flex;
+    align-items: center;
+}
+
+.album-cover {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    margin-right: 10px;
+}
+
+.song-details {
+    display: flex;
+    flex-direction: column;
+    padding-left: 10px;
+}
+
+.song-title {
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.artist-name {
+    font-size: 14px;
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    padding-right: 200px;
+}
+
+.control-button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 25px;
+    margin: 0 10px;
+    cursor: pointer;
+}
+
+.navigation-items {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; 
+}
+
+.nav-item {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 14px; 
+    margin: 0 15px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column; 
+    align-items: center;
+    text-align: center; 
+    padding: 2px;
+    transition: all 0.3s ease; 
+}
+
+
+.nav-item svg { 
+    font-size: 28px;
+}
+
+.nav-item svg:hover {
+    stroke:#ffbd6f;;
+    stroke-width: 3; 
+    transition: all 0.3s ease;
+    color: #ffbd6f;
+}
