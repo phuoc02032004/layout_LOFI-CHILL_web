@@ -56,7 +56,7 @@ export const getSpecificSong = ({ idPlaylist, id }) => new Promise(async (resolv
 });
 
 // Post a Song
-export const createSong = ({ idPlaylist, Artist, Title }, fileMusic, fileImg) => new Promise(async (resolve, reject) => {
+export const createSong = ({ idPlaylist, Artist, Title, Description }, fileMusic, fileImg) => new Promise(async (resolve, reject) => {
     try {
         const songRef = db.collection('Music').doc(idPlaylist).collection('Songs');
 
@@ -99,6 +99,7 @@ export const createSong = ({ idPlaylist, Artist, Title }, fileMusic, fileImg) =>
             Artist,  // Sử dụng Artist từ tham số truyền vào
             Title,   // Sử dụng Title từ tham số truyền vào
             Url: url,
+            Description: Description,
             urlImg: urlImg,
             filePath: filenameMusic,
             filePathImg: filenameImg,

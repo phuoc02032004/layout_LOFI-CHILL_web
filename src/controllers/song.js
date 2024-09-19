@@ -50,7 +50,7 @@ export const getSpecificSong = async (req, res) => {
 export const createSong = async (req, res) => {
     try {
         const { idPlaylist } = req.params;
-        const { Artist, Title } = req.body;
+        const { Artist, Title, Description } = req.body;
 
         if (!idPlaylist) {
             return res.status(400).json({
@@ -59,7 +59,7 @@ export const createSong = async (req, res) => {
             });
         }
 
-        if ( !req.files || !req.files || !req.files.image) {
+        if (!req.files || !req.files || !req.files.image) {
             return res.status(400).json({
                 err: 1,
                 mes: 'Both image and music files are required',
@@ -69,7 +69,7 @@ export const createSong = async (req, res) => {
         const imageFile = req.files.image[0];
         const musicFile = req.files.music[0];
 
-        const response = await services.song.createSong({ idPlaylist, Artist, Title }, musicFile, imageFile);
+        const response = await services.song.createSong({ idPlaylist, Artist, Title, Description }, musicFile, imageFile);
         return res.status(200).json(response);
     } catch (error) {
         console.error('Error in create song controller:', error);

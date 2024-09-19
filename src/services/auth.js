@@ -88,7 +88,7 @@ export const login = ({ email, password }) => new Promise(async (resolve, reject
         const querySnapshot = await userRef.where('email', '==', email).get();
         if (querySnapshot.empty) {
             console.log('User does not exist');
-            return reject({ error: 'Invalid credentials' });
+            return reject({ status: 400, error: 'Invalid credentials' }); // Trả về mã 400 cho lỗi đăng nhập
         }
 
         let user;
@@ -100,13 +100,13 @@ export const login = ({ email, password }) => new Promise(async (resolve, reject
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             console.log('Password does not match');
-            return reject({ error: 'Invalid credentials' });
+            return reject({ status: 400, error: 'Invalid credentials' }); // Mật khẩu không khớp
         }
 
-        // Kiểm tra email đã được xác thực chưa
+        // Kiểm tra email đã xác thực chưa
         if (!user.isVerified) {
             console.log('Email not verified');
-            return reject({ error: 'Please verify your email address' });
+            return reject({ status: 401, error: 'Please verify your email address' }); // 401: yêu cầu xác thực email
         }
 
         // Tạo JWT

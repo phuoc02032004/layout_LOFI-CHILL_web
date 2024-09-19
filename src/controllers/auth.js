@@ -7,7 +7,6 @@ export const register = async (req, res) => {
     try {
         const { error } = joi.object({ username, email, password }).validate(req.body);
         if (error) return res.status(400).json({ error: error.details[0].message });
-
         const response = await services.auth.register(req.body);
         return res.status(200).json(response);
     } catch (error) {
@@ -30,12 +29,21 @@ export const verify = async (req, res) => {
 
 export const login = async (req, res) => {
     try {
-        const { error } = joi.object({ email, password }).validate(req.body);
+        const { email, password } = req.body;
+        const { error } = joi.object({ email: joi.string().email().required(), password: joi.string().required() }).validate(req.body);
+
         if (error) return res.status(400).json({ error: error.details[0].message });
-        const response = await services.auth.login(req.body);
-        return res.status(200).json(response);
+
+        try {
+            const response = await services.auth.login(req.body);
+            return res.status(200).json(response); // Thành công trả về status 200
+        } catch (loginError) {
+            // Bắt lỗi từ service login và trả về thông tin chi tiết cho frontend
+            return res.status(loginError.status || 500).json({ error: loginError.error || 'Internal Server Error' });
+        }
     } catch (error) {
         console.error('Error in log in controller:', error);
-        return internalServerError(res);
+        return res.status(500).json({ error: 'Internal Server Error' });
     }
-}
+};
+
