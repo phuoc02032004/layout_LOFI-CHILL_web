@@ -1,4 +1,57 @@
-h1 {
-    color: aliceblue;
-}
-
+.introduce3 {
+    color: white;
+    width: 650px;
+    animation: slideIn 2s forwards;
+    background: transparent;
+    border-radius: 10px;
+    padding: 30px 40px;
+    border: 2px solid rgba(225, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+  
+    left: 10px;
+    top:50px
+  }
+  
+  @keyframes slideIn {
+    0% {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    100% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  .introduce3 p {
+    font-size: 70px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  
+  .introduce3 div {
+    margin-bottom: 20px;
+    font-size: 1.2em;
+    font-weight: 500;
+  }
+  
+  .btn-start3 {
+    background-color: white;
+    color: #1d2021;
+    padding: 15px 30px;
+    border: none;
+    font-size: 1.2em;
+    cursor: pointer;
+    border-radius: 5px;
+    font-family: "Poppins", sans-serif;
+    transition: all 0.3s ease;
+    font-weight: 700;
+  }
+  
+  .btn-start3:hover {
+    color: #fff;
+    background-color: rgb(249, 191, 46);
+  }
+  

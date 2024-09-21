@@ -1,0 +1,22 @@
+.btn-add {
+    background-color: white;
+    color: #1d2021;
+    padding: 15px 30px;
+    border: none;
+    font-size: 1.2em;
+    cursor: pointer;
+    border-radius: 5px;
+    font-family: "Poppins", sans-serif;
+    transition: all 0.3s ease;
+    font-weight: 700;
+    position: fixed;
+    top: 130px;
+    left: 80px;   
+
+  }
+  
+  .btn-add:hover {
+    color: #fff;
+    background-color: rgb(249, 191, 46);
+  }
+  

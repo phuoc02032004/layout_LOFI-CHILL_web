@@ -1,0 +1,35 @@
+
+
+  
+  .image-container {
+    display: flex;
+    flex-direction: column; /* Hiển thị các dòng theo cột */
+    width: 100%; /* Chiếm toàn bộ chiều rộng wrapper */
+    gap: 20px; /* Khoảng cách giữa các dòng */
+  }
+  
+  .image-row {
+    display: flex;
+    align-items: center; /* Căn giữa các phần tử theo chiều dọc */
+    padding: 10px;
+    background-color: #ececec58; /* Nền cho mỗi dòng */
+    border-radius: 8px; /* Bo góc cho mỗi dòng */
+
+
+    font-family: "Poppins", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+  }
+  
+  .image {
+    width: 150px; /* Kích thước ảnh */
+    height: auto;
+    margin-right: 20px;
+    border-radius: 8px; /* Bo góc cho ảnh */
+  }
+  
+  .image-name {
+    font-size: 18px;
+    font-weight: bold; /* Chữ đậm */
+  }

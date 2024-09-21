@@ -20,8 +20,20 @@ const Admin = () => {
         <p>Đang tải dữ liệu...</p> 
       ) : (
         <div>
-          <h1 className='ta'>Trang ADMIN</h1>
+          <div className="introduce3">
+        <p>
+          {' '}
+          Welcome to<br /> LOFI - CHILL{' '}
+        </p>
+        <div>
+        Do you want to change the image base of the whole local?
         </div>
+        <button className="btn-start3">
+          {' '}
+          JUST CHANGE{' '}
+        </button>
+      </div>
+        </div>        
       )}
     </div>
   );

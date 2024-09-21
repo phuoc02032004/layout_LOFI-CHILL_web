@@ -35,14 +35,13 @@ a {
   color: #fff;
   font-weight: 700;
   margin-left: 80px;
+  
 }
 
 .acc {
   font-size: 32px;
-  color: #fff;
   font-weight: 700;
   margin-right: 100px;
-  background: transparent;
   color: #fff;
   border-radius: 10px;
   padding: 5px 10px;
@@ -54,7 +53,6 @@ a {
 .navbar a {
   position: relative;
   font-size: 30px;
-  color: #fff;
   font-weight: 700;
   margin: 0 15px;
   cursor: pointer;
@@ -93,6 +91,8 @@ a {
   align-items: center;
   transform: translateX(-30%);
   border-radius: 10px;
+  padding-top: 8px;
+  
 }
 
 .account-container:hover .dropdown-menu {
@@ -107,12 +107,16 @@ a {
   color: #fff;
   text-decoration: none;
   border-radius: 10px;
+  background-color: #700b2e30;
+  border: 1px solid #fff;
+  margin-bottom: 2px;
 }
 
 .dropdown-item:hover {
   color: black;
   background-color: rgb(241, 204, 112);
   transition: all 0.3s ease;
+  cursor: pointer;
 }
 
 .navbar {

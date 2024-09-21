@@ -45,10 +45,21 @@ export default function Navbar() {
     navigate('/admin')
   }
   
+  const handleSongPageClick = () => {
+    navigate('/SongPage')
+  }
+  
   const handleBGPageClick = () => {
     navigate('/BGPage')
   }
 
+  const handleSoundPageClick = () => {
+    navigate('/SoundPage')
+  }
+
+  const handlePresetPageClick = () => {
+    navigate('/PresetPage')
+  }
 
   
   return (
@@ -56,8 +67,11 @@ export default function Navbar() {
       <a href="/" className='logo'> LOGO </a>
 
       <nav className='navbar'>
-        <a onClick={handleAdminClick}>SONG</a>
-        <a onClick={handleBGPageClick}>BACKGROUND</a>
+        <a onClick={handleAdminClick}>HOME</a>
+        <a onClick={handleSongPageClick}>SONG</a>
+        <a onClick={handleSoundPageClick}>SOUND</a>
+        <a onClick={handleBGPageClick}>B . G</a>
+        <a onClick={handlePresetPageClick}>PRESET</a>
       </nav>
 
       <div 
