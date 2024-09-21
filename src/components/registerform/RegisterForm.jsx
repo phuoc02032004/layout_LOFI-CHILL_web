@@ -4,7 +4,8 @@ import { FaUser, FaLock } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { registerUser } from '../../api/auth';
+import { verify } from '../../api/auth';
 
 const RegisterForm = () => {
   const navigate = useNavigate();
@@ -32,7 +33,7 @@ const RegisterForm = () => {
     const { confirmPassword, ...dataToSend } = formData;
 
     try {
-      const response = await axios.post('http://localhost:3002/api/v1/auth/register', dataToSend);
+      const response = await registerUser(dataToSend);
       setMessage(response.data.message);
       setIsRegistered(true);
     } catch (err) {
@@ -44,10 +45,10 @@ const RegisterForm = () => {
     e.preventDefault();
     console.log("Verification code entered:", verificationCode); // Debug log
     try {
-      const response = await axios.post('http://localhost:3002/api/v1/auth/verify', {
-        email: formData.email,
-        code: verificationCode
-      });
+      const response = await verify(
+        formData.email,
+        verificationCode
+      );
       console.log("API response:", response.data); // Debug log
       setMessage(response.data.message);
       if (response.data.message === 'Email verified successfully') {
