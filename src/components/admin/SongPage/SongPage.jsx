@@ -17,16 +17,10 @@ import morning from '../../assets/images/goodmorning.jpg';
 
 function SongPage() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-
-  const images = [
-    { src: After_hours, name: 'After Hours' },
-    { src: Friends, name: 'Friends' },
-    { src: High_Beams, name: 'High Beams' },
-    { src: Stay, name: 'Stay' },
-    { src: Tomorrow, name: 'Tomorrow' },
-  ];
-
-  const songs = [
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [songToDeleteIndex, setSongToDeleteIndex] = useState(null);
+  const [songs, setSongs] = useState([
     { title: 'Winter Chill', image: winter },
     { title: 'Slinky Groove', image: slinky },
     { title: 'Night Vibes', image: night },
@@ -37,6 +31,14 @@ function SongPage() {
     { title: 'High Beams', image: High_Beams },
     { title: 'Stay', image: Stay },
     { title: 'Tomorrow', image: Tomorrow },
+  ]);
+
+  const images = [
+    { src: After_hours, name: 'After Hours' },
+    { src: Friends, name: 'Friends' },
+    { src: High_Beams, name: 'High Beams' },
+    { src: Stay, name: 'Stay' },
+    { src: Tomorrow, name: 'Tomorrow' },
   ];
 
   const handleAddClick = () => {
@@ -44,16 +46,27 @@ function SongPage() {
   };
 
   const handleEditClick = () => {
-    setIsAddModalOpen(true);
+    setIsEditModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setIsAddModalOpen(false);
+    setIsEditModalOpen(false);
+    setIsDeleteModalOpen(false); 
   };
 
-  const handleDeleteClick = () => {
-    setIsAddModalOpen(true)
-  }
+  const handleDeleteClick = (index) => {
+    setSongToDeleteIndex(index); 
+    setIsDeleteModalOpen(true); 
+  };
+
+  const handleConfirmDelete = () => {
+    const updatedSongs = [...songs];
+    updatedSongs.splice(songToDeleteIndex, 1); 
+    setSongs(updatedSongs);
+    setSongToDeleteIndex(null);
+    setIsDeleteModalOpen(false); 
+  };
 
   return (
     <div>
@@ -92,6 +105,7 @@ function SongPage() {
           <div className="name-song-header">NAME SONG</div>
           <div className="button-header">BUTTON</div>
         </div>
+
         <div className='image-container-song'>
           {images.map((image, index) => (
             <div key={index} className='image-row-song'>
@@ -99,46 +113,27 @@ function SongPage() {
               <div className='image-name-song'>{image.name}</div>
               <div className="btn">
                 <div className="btn-fix"  onClick={handleEditClick}>EDIT</div>
-                {isAddModalOpen && (
-                    <div className="add-modal"> 
-                      <div className="modal-content">
-                
-                        <span className="close-modal" onClick={handleCloseModal}>×</span>
-
-                        <h2>Thêm Bài Hát</h2>
-                        <form className='form-box'> 
-                          <label htmlFor="songName">Song name:</label>
-                          <input type="text" id="songName" name="songName" />
-
-                          <label htmlFor="artist">Artist:</label>
-                          <input type="text" id="artist" name="artist" />
-
-                          <label htmlFor="songImage">Song image:</label>
-                          <input type="file" id="songImage" name="songImage" />
-
-                          <label htmlFor="songFile">Song file:</label>
-                          <input type="file" id="songFile" name="songFile" />
-
-                          <label htmlFor="Describe">Description:</label>
-                          <input type="text" id="Describe" name="Describe" />
-
-                          <button type="submit">Save</button>
-                        </form>
-                      </div>
-                    </div>
-                  )}
-
-                <div className="btn-del" onClick={handleDeleteClick}>DELETE</div>
+                <div className="btn-del" onClick={() => handleDeleteClick(index)}>DELETE</div>
               </div>
             </div>
           ))}
         </div>
+
         <div className="name">New Song</div>
         <SongCarousel songs={songs} /> 
-        
+
+        {isDeleteModalOpen && (
+          <div className="delete-modal"> 
+            <div className="delete-content">
+              <span className="close-modal" onClick={handleCloseModal}>×</span>
+              <h2>Bạn có chắc chắn muốn xóa bài hát này?</h2>
+              <button className='btn-delete' onClick={handleConfirmDelete}>Xóa</button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
-  )
+  );
 }
 
-export default SongPage
+export default SongPage;
