@@ -31,6 +31,9 @@ export const register = ({ username, email, password }) => new Promise(async (re
             username,
             verificationCode,
             isVerified: false,
+            isVip: false,
+            vipExpiration: null,
+            vipExpiredAt: null,
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
             updatedAt: admin.firestore.FieldValue.serverTimestamp()
         });
