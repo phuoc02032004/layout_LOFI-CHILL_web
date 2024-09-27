@@ -1,9 +1,8 @@
-.song-carousel {
+.artist-carousel {
     display: flex;
     align-items: center;
     overflow: hidden;
     margin: 20px auto;
-    margin-top: 10px;
     position: relative;
     width: 100%;
     max-width: 1400px;
@@ -17,23 +16,23 @@
     padding: 30px 40px;
   }
   
-  .song-carousel.show {
+  .artist-carousel.show {
     opacity: 1; 
     transform: translateY(0); 
   }
   
-  .song-track-container {
+  .artist-track-container {
     width: 100%;
     overflow: hidden;
   }
   
-  .song-track {
+  .artist-track {
     display: flex;
     transition: transform 0.7s ease-in-out;
     width: 100%; 
   }
   
-  .song-item {
+  .artist-item {
     width: 24.3%;
     flex-shrink: 0;
     margin-right: 10px;
@@ -42,11 +41,11 @@
     transition: transform 0.3s ease; 
   }
   
-  .song-item:last-child {
+  .artist-item:last-child {
     margin-right: 0;
   }
   
-  .song-item img {
+  .artist-item img {
     width: 100%;
     height: auto;
     object-fit: cover;
@@ -55,13 +54,16 @@
     transform-origin: center center;
   }
 
-  .song-item img:hover{
+  .artist-item img:hover{
     transform: scale(1.1);
   }
   
-  .song-title {
+  .artist-title {
     margin-top: 5px;
     color: white;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
   }
   
   .carousel-button {

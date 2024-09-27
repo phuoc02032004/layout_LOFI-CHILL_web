@@ -48,12 +48,17 @@ export default function Navbar() {
     navigate('/admin')
   }
 
+  const handleSongPageClick = () => {
+    navigate('/SongPage');
+  };
+
   return (
     <header className={`header ${!showNavbar ? 'hidden-navbar' : ''}`}> 
       <a href="/" className='logo'> LOGO </a>
 
       <nav className='navbar'>
         <a onClick={handleHomeClick}>HOME</a>
+        <a onClick={handleSongPageClick}>LOFI</a>
         <a onClick={handleChillClick}>CHILL</a>
       </nav>
 

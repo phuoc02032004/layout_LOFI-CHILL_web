@@ -1,24 +1,24 @@
 .btn-add {
-  background-color: rgba(255, 255, 255, 0.597);
-  color: #1d2021;
-  padding: 30px 23px; 
+  padding: 30px 23px;
   border: none;
   font-size: 1.2em;
   cursor: pointer;
-  border-radius: 50%; 
+  border-radius: 50%;
   font-family: "Poppins", sans-serif;
   transition: all 0.3s ease;
   font-weight: 700;
-  position: fixed; 
-  bottom: 20px; 
-  right: 20px; 
-  z-index: 10; 
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 10;
   border: 2px solid rgb(255, 255, 255);
+  background-color: white;
+  color: #1d2021;
 }
 
 .btn-add:hover {
   color: #fff;
-  background-color: rgba(46, 249, 131, 0.852);
+  background-color: rgba(83, 249, 46, 0.852);
 }
 
 .btn-fix,
@@ -52,8 +52,8 @@
   margin-top: 120px;
   margin-bottom: 10px;
   width: 1300px;
-  display: flex; 
-  flex-direction: column; 
+  display: flex;
+  flex-direction: column;
   justify-content: space-between;
 }
 
@@ -61,12 +61,12 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  gap: 20px; 
+  gap: 20px;
 }
 
 .image-row-song {
   display: flex;
-  align-items: center; 
+  align-items: center;
   font-family: "Poppins", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -75,19 +75,19 @@
   border: 2px solid rgba(225, 255, 255, 0.4);
   backdrop-filter: blur(10px);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  width: 100%; 
+  width: 100%;
 }
 
 .image-song {
-  width: 150px; 
+  width: 150px;
   height: auto;
-  border-radius: 8px; 
-  margin-right: 20px; 
+  border-radius: 8px;
+  margin-right: 20px;
 }
 
 .image-name-song {
   font-size: 25px;
-  font-weight: bold; 
+  font-weight: bold;
   color: #fff;
   flex-grow: 1;
   text-align: center;
@@ -98,8 +98,8 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  gap: 20px; 
-  margin-bottom: 20px; 
+  gap: 20px;
+  margin-bottom: 20px;
 }
 
 .thumbnail-header,
@@ -130,16 +130,16 @@
 .image-row-song > div {
   display: flex;
   flex-direction: column;
-  align-items: center; 
+  align-items: center;
 }
 
-.image-row-song > div > div { 
-  margin-bottom: 10px; 
+.image-row-song > div > div {
+  margin-bottom: 10px;
 }
 
 .btn-fix,
 .btn-del {
-  margin-left: 10px; 
+  margin-left: 10px;
 }
 
 .add-modal {
@@ -152,12 +152,13 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 100; 
+  z-index: 100;
   backdrop-filter: blur(10px);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
-.modal-content {
+.modal-content,
+.edit-content {
   background-color: #fff;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
   border-radius: 10px;
@@ -167,7 +168,7 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-  width: 600px; 
+  width: 600px;
 }
 
 .modal-content input[type="text"],
@@ -176,7 +177,6 @@
   border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 16px;
-
   backdrop-filter: blur(10px);
 }
 
@@ -186,7 +186,9 @@
   gap: 15px;
 }
 
-.modal-content form label {
+
+.modal-content,
+.edit-content form label {
   margin-right: 10px;
   font-weight: bold;
   text-align: left;
@@ -204,14 +206,17 @@
 }
 
 .modal-content form button {
-  padding: 10px 20px;
   background-color: #1d2021;
-  color: white;
+  color: #fff;
+  padding: 15px 30px;
   border: none;
-  border-radius: 5px;
+  font-size: 1.2em;
   cursor: pointer;
-  font-size: 16px;
+  border-radius: 5px;
+  font-family: "Poppins", sans-serif;
   transition: all 0.3s ease;
+  font-weight: 700;
+  margin-top: 10px;
 }
 
 .modal-content form button:hover {
@@ -232,7 +237,7 @@
   color: red;
 }
 
-.delete-modal{
+.delete-modal {
   position: fixed;
   top: 0;
   left: 0;
@@ -243,13 +248,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 100; 
+  z-index: 100;
   backdrop-filter: blur(10px);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  
 }
 
-.delete-content{
+.delete-content {
   background-color: #fff;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
   border-radius: 10px;
@@ -259,11 +263,11 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-  width: 600px; 
+  width: 700px;
   height: 180px;
 }
 
-.btn-delete{
+.btn-delete {
   background-color: #1d2021;
   color: #fff;
   padding: 15px 30px;
@@ -281,4 +285,95 @@
   color: #fff;
   background-color: rgb(249, 46, 46);
   transition: all 0.3s ease;
+}
+
+.edit-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+
+
+.edit-content h2 {
+  color: #333;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.edit-content form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.edit-content label {
+  font-weight: 500;
+  text-align: right;
+}
+
+.edit-content input[type="text"],
+.edit-content input[type="file"],
+.edit-content select {
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+  background-color: #fff;
+  transition: all 0.3s ease;
+}
+
+
+.edit-content button[type="submit"] {
+  background-color: #1d2021;
+  color: #fff;
+  padding: 15px 30px;
+  border: none;
+  font-size: 1.2em;
+  cursor: pointer;
+  border-radius: 5px;
+  font-family: "Poppins", sans-serif;
+  transition: all 0.3s ease;
+  font-weight: 700;
+  margin-top: 10px;
+}
+
+.edit-content button[type="submit"]:hover {
+  background-color: #cbce2b;
+  color:#1d2021
+}
+
+.choose {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%23ccc' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+}
+
+.name_a {
+  font-size: 32px;
+  font-weight: 700;
+  text-align: left;
+  color: #fff;
+  margin-left: 70px;
+  margin-top: 80px;
+
 }

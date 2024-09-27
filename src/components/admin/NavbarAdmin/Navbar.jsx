@@ -46,7 +46,7 @@ export default function Navbar() {
   }
   
   const handleSongPageClick = () => {
-    navigate('/SongPage')
+    navigate('/SongPage_ad')
   }
   
   const handleBGPageClick = () => {

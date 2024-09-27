@@ -6,9 +6,11 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ChillPage from './components/pages/ChillPage';
 import AdminPage from './components/admin/admin';
 import BGPage from './components/admin/BGPage/BGPage';
-import SongPage from './components/admin/SongPage/SongPage';
+import SongPage_ad from './components/admin/SongPage/SongPage_ad';
 import PresetPage from './components/admin/PresetPage/PresetPage';
 import SoundPage from './components/admin/SoundPage/SoundPage';
+import ArtistPage from './components/pages/ArtistPage/ArtistPage';
+import SongPage from './components/pages/SongPage/SongPage';
 
 function App() {
   return (
@@ -22,9 +24,11 @@ function App() {
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/BGPage" element={<BGPage />} />
-          <Route path="/SongPage" element={<SongPage />} />
+          <Route path="/SongPage_ad" element={<SongPage_ad />} />
           <Route path="/PresetPage" element={<PresetPage />} />
           <Route path="/SoundPage" element={<SoundPage />} />
+          <Route path='/ArtistPage' element={<ArtistPage />} />
+          <Route path='/SongPage' element={<SongPage />} />
         </Routes>
       </div>
     </BrowserRouter>
