@@ -7,7 +7,7 @@ export const getAllUser = ({ }) => new Promise(async (resolve, reject) => {
     try {
         const usersSnapshot = await db.collection('users').get();
         const users = usersSnapshot.docs.map(doc => doc.data());
-        resolve({
+        return resolve({
             err: 0,
             mes: 'Get all user successfully',
             user: users
@@ -35,7 +35,7 @@ export const getSpecificUser = ({ id }) => new Promise(async (resolve, reject) =
         // Dùng destructuring để loại bỏ trường password khỏi userData
         const { password, ...userInfo } = userData;
 
-        resolve({
+        return resolve({
             err: 0,
             mes: 'Get specific user successfully',
             user: userInfo
@@ -61,7 +61,7 @@ export const updateUser = ({ id, data }) => new Promise(async (resolve, reject) 
 
         // Lấy lại dữ liệu mới sau khi cập nhật
         const updatedDoc = await userRef.get();
-        resolve({
+        return resolve({
             err: 0,
             mes: 'Update user successfully',
             user: updatedDoc.data() // Lấy dữ liệu mới nhất
@@ -84,7 +84,7 @@ export const deleteUser = ({ id }) => new Promise(async (resolve, reject) => {
             });
         }
         await userRef.delete();
-        resolve({
+        return resolve({
             err: 0,
             mes: 'Delete user successfully',
         });

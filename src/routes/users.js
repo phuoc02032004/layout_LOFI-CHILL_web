@@ -4,9 +4,9 @@ import { authenticateToken } from '../middleware/authToken.js';
 
 const router = express.Router();
 
-router.get('/getAllUser', authenticateToken, user.getAllUser);
+router.get('/getAllUser', user.getAllUser);
 router.get('/getSpecificUser/:id', user.getSpecificUser);
-router.put('/updateUser/:id', authenticateToken, user.updateUser);
-router.delete('/deleteUser/:id', authenticateToken, user.deleteUser);
+router.put('/updateUser/:id', user.updateUser);
+router.delete('/deleteUser/:id', user.deleteUser);
 
 export default router;
