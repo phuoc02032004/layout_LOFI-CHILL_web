@@ -5,56 +5,6 @@ import { Timestamp } from 'firebase-admin/firestore';
 const db = admin.firestore();
 const bucket = admin.storage().bucket(process.env.BUCKET);
 
-// Get all Song
-export const getAllSong = ({ id }) => new Promise(async (resolve, reject) => {
-    try {
-        const songRef = db.collection('Music').doc(id).collection('Songs');
-        const songDoc = await songRef.get();
-        if (songDoc.empty) {
-            return resolve({
-                status: 404,
-                message: 'Song not found',
-            });
-        }
-        let songs = [];
-        songDoc.forEach(doc => {
-            songs.push({ id: doc.id, ...doc.data() });
-        })
-
-        resolve({
-            err: 0,
-            mes: 'Get all song successfully',
-            song: songs
-        });
-    } catch (error) {
-        reject(error);
-        return { status: 500, message: 'Error get all song', error };
-    }
-});
-
-// GET SPECIFIC SONG
-export const getSpecificSong = ({ idPlaylist, id }) => new Promise(async (resolve, reject) => {
-    try {
-        const songRef = db.collection('Music').doc(idPlaylist).collection('Songs').doc(id);
-        const songDoc = await songRef.get();
-        if (!songDoc.exists) {
-            return resolve({
-                status: 404,
-                message: 'Song not found',
-            });
-        }
-
-        resolve({
-            err: 0,
-            mes: 'Get specific song successfully',
-            user: songDoc.data()
-        });
-    } catch (error) {
-        reject(error);
-        return { status: 500, message: 'Error get specific song', error };
-    }
-});
-
 // Post a Song
 export const createSong = ({ idPlaylist, Artist, Title, Description }, fileMusic, fileImg) => new Promise(async (resolve, reject) => {
     try {
@@ -107,7 +57,7 @@ export const createSong = ({ idPlaylist, Artist, Title, Description }, fileMusic
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         });
 
-        resolve({
+        return resolve({
             err: 0,
             mes: 'Song created successfully.',
         });
@@ -122,8 +72,35 @@ export const createSong = ({ idPlaylist, Artist, Title, Description }, fileMusic
     }
 });
 
-// Delete a song
-export const deleteSong = ({ idPlaylist, id }) => new Promise(async (resolve, reject) => {
+// Get all Song
+export const getAllSong = ({ id }) => new Promise(async (resolve, reject) => {
+    try {
+        const songRef = db.collection('Music').doc(id).collection('Songs');
+        const songDoc = await songRef.get();
+        if (songDoc.empty) {
+            return resolve({
+                status: 404,
+                message: 'Song not found',
+            });
+        }
+        let songs = [];
+        songDoc.forEach(doc => {
+            songs.push({ id: doc.id, ...doc.data() });
+        })
+
+        return resolve({
+            err: 0,
+            mes: 'Get all song successfully',
+            song: songs
+        });
+    } catch (error) {
+        reject(error);
+        return { status: 500, message: 'Error get all song', error };
+    }
+});
+
+// GET SPECIFIC SONG
+export const getSpecificSong = ({ idPlaylist, id }) => new Promise(async (resolve, reject) => {
     try {
         const songRef = db.collection('Music').doc(idPlaylist).collection('Songs').doc(id);
         const songDoc = await songRef.get();
@@ -133,33 +110,15 @@ export const deleteSong = ({ idPlaylist, id }) => new Promise(async (resolve, re
                 message: 'Song not found',
             });
         }
-        const songData = songDoc.data();
-        const filePath = songData.filePath;
-        const filePathImg = songData.filePathImg;
 
-        if (!filePath) {
-            return resolve({
-                status: 404,
-                message: 'Invalid file path',
-            });
-        }
-
-        // Xóa file từ Firebase Storage
-        const file = bucket.file(filePath);
-        const fileImg = bucket.file(filePathImg);
-
-        await file.delete();
-        await fileImg.delete();
-
-        // Xóa bài hát khỏi Firestore
-        await songRef.delete();
-        resolve({
+        return resolve({
             err: 0,
-            mes: 'Delete song successfully',
+            mes: 'Get specific song successfully',
+            user: songDoc.data()
         });
     } catch (error) {
         reject(error);
-        return { status: 500, message: 'Error delete song', error };
+        return { status: 500, message: 'Error get specific song', error };
     }
 });
 
@@ -206,7 +165,11 @@ export const updateSong = ({ idPlaylist, id, data }, fileMusic, fileImg) => new 
             // Delete old music file
             if (oldFilePath) {
                 const oldFile = bucket.file(oldFilePath);
-                await oldFile.delete();
+                try {
+                    await oldFile.delete();
+                } catch (error) {
+                    console.error(`Failed to delete old file: ${oldFilePath}`, error);
+                }
             }
 
             // Update file path and URL in Firestore
@@ -232,7 +195,11 @@ export const updateSong = ({ idPlaylist, id, data }, fileMusic, fileImg) => new 
             // Delete old image file
             if (oldFilePathImg) {
                 const oldFileImg = bucket.file(oldFilePathImg);
-                await oldFileImg.delete();
+                try {
+                    await oldFileImg.delete();
+                } catch (error) {
+                    console.error(`Failed to delete old file: ${oldFilePathImg}`, error);
+                }
             }
 
             // Update file path and URL in Firestore
@@ -248,9 +215,50 @@ export const updateSong = ({ idPlaylist, id, data }, fileMusic, fileImg) => new 
 
         // Lấy lại dữ liệu mới sau khi cập nhật
         const updatedDoc = await songRef.get();
-        resolve({
+        return resolve({
             err: 0,
             song: updatedDoc.data(),
+        });
+    } catch (error) {
+        reject(error);
+        return { status: 500, message: 'Error delete song', error };
+    }
+});
+
+// Delete a song
+export const deleteSong = ({ idPlaylist, id }) => new Promise(async (resolve, reject) => {
+    try {
+        const songRef = db.collection('Music').doc(idPlaylist).collection('Songs').doc(id);
+        const songDoc = await songRef.get();
+        if (!songDoc.exists) {
+            return resolve({
+                status: 404,
+                message: 'Song not found',
+            });
+        }
+        const songData = songDoc.data();
+        const filePath = songData.filePath;
+        const filePathImg = songData.filePathImg;
+
+        if (!filePath) {
+            return resolve({
+                status: 404,
+                message: 'Invalid file path',
+            });
+        }
+
+        // Xóa file từ Firebase Storage
+        const file = bucket.file(filePath);
+        const fileImg = bucket.file(filePathImg);
+
+        await file.delete();
+        await fileImg.delete();
+
+        // Xóa bài hát khỏi Firestore
+        await songRef.delete();
+        resolve({
+            err: 0,
+            mes: 'Delete song successfully',
         });
     } catch (error) {
         reject(error);

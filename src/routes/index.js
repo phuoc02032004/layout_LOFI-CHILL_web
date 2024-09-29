@@ -6,8 +6,8 @@ import playlist from './playlist.js';
 import song from './song.js'
 import visual from './visual.js'
 import soundEffect from './soundEffect.js'
-// import { vnpay } from './vnpay.js'
-import  zaloPay  from './zaloPay.js'
+import zaloPay from './zaloPay.js'
+import admin from './admin.js';
 
 const router = express.Router();
 
@@ -19,9 +19,8 @@ const initRoutes = (app) => {
   app.use('/api/v1/song', song);
   app.use('/api/v1/visual', visual);
   app.use('/api/v1/soundEffect', soundEffect);
-  // app.use('/api/v1/vnpay', vnpay);
   app.use('/api/v1/zaloPay', zaloPay);
-
+  app.use('/api/v1/admin', admin);
   app.use(notFound);
 };
 

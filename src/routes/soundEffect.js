@@ -6,11 +6,10 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 const router = express.Router();
 
-router.get('/getAllFolderSoundEffect', soundEffect.getAllFolderSoundEffect);
-router.get('/getSpecificFolderSoundEffect/:id', soundEffect.getSpecificFolderSoundEffect);
-router.post('/createFolderSoundEffect', soundEffect.createFolderSoundEffect);
-router.post('/createSoundEffect/:id', upload.single('file'), soundEffect.createSoundEffect);
-router.delete('/deleteFolderSoundEffect/:id', soundEffect.deleteFolderSoundEffect);
-router.put('/updateFolderSoundEffect/:id', soundEffect.updateFolderSoundEffect);
+router.post('/createSoundEffect', upload.single('soundFile'), soundEffect.createSoundEffect);
+router.get('/getAllSoundEffect', soundEffect.getAllSoundEffect);
+router.get('/getSpecificSoundEffect/:id', soundEffect.getSpecificSoundEffect);
+router.put('/updateSoundEffect/:id', upload.single('soundFile'), soundEffect.updateSoundEffect);
+router.delete('/deleteSoundEffect/:id', soundEffect.deleteSoundEffect);
 
 export default router;

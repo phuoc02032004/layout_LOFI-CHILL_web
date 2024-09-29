@@ -4,44 +4,6 @@ const storage = new Storage();
 
 const db = admin.firestore();
 
-// Get all Playlist
-export const getAllPlaylist = ({ }) => new Promise(async (resolve, reject) => {
-    try {
-        const playlistsSnapshot = await db.collection('Music').get();
-        const playlist = playlistsSnapshot.docs.map(doc => doc.data());
-        resolve({
-            err: 0,
-            mes: 'Get all playlist successfully',
-            playlist: playlist
-        })
-    } catch (error) {
-        reject(error);
-        return { status: 500, message: 'Error get all playlist', error };
-    }
-});
-
-// Get specific Playlist
-export const getSpecificPlaylist = ({ id }) => new Promise(async (resolve, reject) => {
-    try {
-        const playlistRef = db.collection('Music').doc(id);
-        const playlistDoc = await playlistRef.get();
-        if (!playlistDoc.exists) {
-            return resolve({
-                status: 404,
-                message: 'Playlist not found',
-            });
-        }
-        resolve({
-            err: 0,
-            mes: 'Get specific playlist successfully',
-            playlist: playlistDoc.data()
-        });
-    } catch (error) {
-        reject(error);
-        return { status: 500, message: 'Error get specific playlist', error };
-    }
-});
-
 // POST a new playlist
 export const createPlaylist = ({ Title, Description }) => new Promise(async (resolve, reject) => {
     try {
@@ -74,7 +36,7 @@ export const createPlaylist = ({ Title, Description }) => new Promise(async (res
         // Tạo một file trống để đảm bảo thư mục được tạo
         await file.save('');
 
-        resolve({
+        return resolve({
             err: 0,
             mes: 'Create playlist successfully',
             playlist: createdPlaylist.data() // Lấy dữ liệu của playlist vừa tạo
@@ -84,6 +46,46 @@ export const createPlaylist = ({ Title, Description }) => new Promise(async (res
         return { status: 500, message: 'Error creating playlist', error };
     }
 });
+
+// Get all Playlist
+export const getAllPlaylist = ({ }) => new Promise(async (resolve, reject) => {
+    try {
+        const playlistsSnapshot = await db.collection('Music').get();
+        const playlist = playlistsSnapshot.docs.map(doc => doc.data());
+        return resolve({
+            err: 0,
+            mes: 'Get all playlist successfully',
+            playlist: playlist
+        })
+    } catch (error) {
+        reject(error);
+        return { status: 500, message: 'Error get all playlist', error };
+    }
+});
+
+// Get specific Playlist
+export const getSpecificPlaylist = ({ id }) => new Promise(async (resolve, reject) => {
+    try {
+        const playlistRef = db.collection('Music').doc(id);
+        const playlistDoc = await playlistRef.get();
+        if (!playlistDoc.exists) {
+            return resolve({
+                status: 404,
+                message: 'Playlist not found',
+            });
+        }
+        return resolve({
+            err: 0,
+            mes: 'Get specific playlist successfully',
+            playlist: playlistDoc.data()
+        });
+    } catch (error) {
+        reject(error);
+        return { status: 500, message: 'Error get specific playlist', error };
+    }
+});
+
+
 
 //Update a playlist
 export const updatePlaylist = ({ id, data }) => new Promise(async (resolve, reject) => {
@@ -97,6 +99,8 @@ export const updatePlaylist = ({ id, data }) => new Promise(async (resolve, reje
                 message: 'Playlist not found',
             });
         }
+
+        data.updatedAt = new Date();
 
         await playlistRef.update(data);
 
@@ -126,7 +130,7 @@ export const deletePlaylist = ({ id }) => new Promise(async (resolve, reject) =>
             });
         }
         await playlistRef.delete();
-        resolve({
+        return resolve({
             err: 0,
             mes: 'Delete playlist successfully',
         });

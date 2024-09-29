@@ -4,11 +4,11 @@ import { authenticateToken } from '../middleware/authToken.js';
 
 const router = express.Router();
 
+router.post('/createPlaylist', playlist.createPlaylist);
 router.get('/getAllPlaylist', playlist.getAllPlaylist);
 router.get('/getSpecificPlaylist/:id', playlist.getSpecificPlaylist);
-router.post('/createPlaylist', authenticateToken, playlist.createPlaylist);
-router.put('/updatePlaylist/:id', authenticateToken, playlist.updatePlaylist);
-router.delete('/deletePlaylist/:id', authenticateToken, playlist.deletePlaylist);
+router.put('/updatePlaylist/:id', playlist.updatePlaylist);
+router.delete('/deletePlaylist/:id', playlist.deletePlaylist);
 
 
 export default router;

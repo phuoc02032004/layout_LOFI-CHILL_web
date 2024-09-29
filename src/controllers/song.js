@@ -1,5 +1,39 @@
 import { internalServerError } from '../middleware/handle_error.js';
 import * as services from '../services/index.js';
+import joi from 'joi'
+import { Title, Description, Artist } from '../helper/joi_schema.js';
+
+// Create Song
+export const createSong = async (req, res) => {
+    try {
+        const { idPlaylist } = req.params;
+        const { error } = joi.object({ Title, Description, Artist }).validate(req.body);
+        if (error) return res.status(400).json({ error: error.details[0].message });
+
+        if (!idPlaylist) {
+            return res.status(400).json({
+                err: 1,
+                mes: 'Playlist ID is required',
+            });
+        }
+
+        if (!req.files || !req.files.music || !req.files.image) {
+            return res.status(400).json({
+                err: 1,
+                mes: 'Both image and music files are required',
+            });
+        }
+
+        const musicFile = req.files.music[0];
+        const imageFile = req.files.image[0];
+
+        const response = await services.song.createSong({ idPlaylist, ...req.body }, musicFile, imageFile);
+        return res.status(200).json(response);
+    } catch (error) {
+        console.error('Error in create song controller:', error);
+        return internalServerError(res);
+    }
+};
 
 export const getAllSong = async (req, res) => {
     try {
@@ -47,32 +81,30 @@ export const getSpecificSong = async (req, res) => {
     }
 };
 
-export const createSong = async (req, res) => {
+export const updateSong = async (req, res) => {
     try {
         const { idPlaylist } = req.params;
-        const { Artist, Title, Description } = req.body;
 
-        if (!idPlaylist) {
-            return res.status(400).json({
+        const { id } = req.params;
+
+        const data = req.body;
+
+        const imageFile = req.files?.image?.[0];
+        const musicFile = req.files?.music?.[0];
+
+        const response = await services.song.updateSong({ idPlaylist, id, data }, musicFile, imageFile);
+
+        // Nếu Song không được tìm thấy
+        if (response.status === 404) {
+            return res.status(404).json({
                 err: 1,
-                mes: 'Playlist ID is required',
+                mes: 'Song not found',
             });
         }
 
-        if (!req.files || !req.files || !req.files.image) {
-            return res.status(400).json({
-                err: 1,
-                mes: 'Both image and music files are required',
-            });
-        }
-
-        const imageFile = req.files.image[0];
-        const musicFile = req.files.music[0];
-
-        const response = await services.song.createSong({ idPlaylist, Artist, Title, Description }, musicFile, imageFile);
         return res.status(200).json(response);
     } catch (error) {
-        console.error('Error in create song controller:', error);
+        console.error('Error in update Song controller:', error);
         return internalServerError(res);
     }
 };
@@ -96,31 +128,6 @@ export const deleteSong = async (req, res) => {
         return res.status(200).json(response);
     } catch (error) {
         console.error('Error in delete Song controller:', error);
-        return internalServerError(res);
-    }
-};
-
-export const updateSong = async (req, res) => {
-    try {
-        const { idPlaylist } = req.params;
-
-        const { id } = req.params;
-
-        const data = req.body;
-
-        const response = await services.song.updateSong({ idPlaylist, id, data });
-
-        // Nếu Song không được tìm thấy
-        if (response.status === 404) {
-            return res.status(404).json({
-                err: 1,
-                mes: 'Song not found',
-            });
-        }
-
-        return res.status(200).json(response);
-    } catch (error) {
-        console.error('Error in update Song controller:', error);
         return internalServerError(res);
     }
 };

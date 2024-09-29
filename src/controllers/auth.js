@@ -38,7 +38,6 @@ export const login = async (req, res) => {
             const response = await services.auth.login(req.body);
             return res.status(200).json(response); // Thành công trả về status 200
         } catch (loginError) {
-            // Bắt lỗi từ service login và trả về thông tin chi tiết cho frontend
             return res.status(loginError.status || 500).json({ error: loginError.error || 'Internal Server Error' });
         }
     } catch (error) {

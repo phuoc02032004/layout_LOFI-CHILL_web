@@ -5,4 +5,5 @@ export const password = joi.string().pattern(new RegExp('^[a-zA-Z0-9]{8,30}$')).
 export const username = joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required()
 export const id = joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required()
 export const Title = joi.string().required()
-export const Description = joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required()
+export const Description = joi.string().required()
+export const Artist = joi.string().required()

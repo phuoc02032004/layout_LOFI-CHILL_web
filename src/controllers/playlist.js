@@ -4,6 +4,19 @@ import joi from 'joi'
 import { Title, Description } from '../helper/joi_schema.js';
 
 
+export const createPlaylist = async (req, res) => {
+    try {
+        const { error } = joi.object({ Title, Description }).validate(req.body);
+        if (error) return res.status(400).json({ error: error.details[0].message });
+
+        const response = await services.playlist.createPlaylist(req.body);
+        return res.status(200).json(response);
+    } catch (error) {
+        console.error('Error in create playlist controller:', error);
+        return internalServerError(res);
+    }
+};
+
 export const getAllPlaylist = async (req, res) => {
     try {
         const response = await services.playlist.getAllPlaylist(req.body);
@@ -34,24 +47,12 @@ export const getSpecificPlaylist = async (req, res) => {
     }
 };
 
-export const createPlaylist = async (req, res) => {
-    try {
-        const { error } = joi.object({ Title, Description }).validate(req.body);
-        if (error) return res.status(400).json({ error: error.details[0].message });
-
-        const response = await services.playlist.createPlaylist(req.body);
-        return res.status(200).json(response);
-    } catch (error) {
-        console.error('Error in create playlist controller:', error);
-        return internalServerError(res);
-    }
-};
 
 export const updatePlaylist = async (req, res) => {
     try {
         const { id } = req.params;
 
-        // Lấy dữ liệu từ req.body để cập nhật
+        // Lấy dữ liệu từ req.body để cập npohật
         const data = req.body;
 
         const response = await services.playlist.updatePlaylist({ id, data });

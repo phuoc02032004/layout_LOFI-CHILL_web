@@ -7,44 +7,6 @@ const bucket = admin.storage().bucket(process.env.BUCKET);
 
 const db = admin.firestore();
 
-// Get all Folder Visual
-export const getAllFolderVisual = ({ }) => new Promise(async (resolve, reject) => {
-    try {
-        const folderSnapshot = await db.collection('Visuals').get();
-        const visuals = folderSnapshot.docs.map(doc => doc.data());
-        resolve({
-            err: 0,
-            mes: 'Get all Folder Visual successfully',
-            Visual: visuals
-        })
-    } catch (error) {
-        reject(error);
-        return { status: 500, message: 'Error get all Folder Visual', error };
-    }
-});
-
-// Get specific Folder Visual
-export const getSpecificFolderVisual = ({ id }) => new Promise(async (resolve, reject) => {
-    try {
-        const visualRef = db.collection('Visuals').doc(id);
-        const visualDoc = await visualRef.get();
-        if (!visualDoc.exists) {
-            return resolve({
-                status: 404,
-                message: 'Visual not found',
-            });
-        }
-        resolve({
-            err: 0,
-            mes: 'Get specific Folder Visual successfully',
-            Visual: visualDoc
-        })
-    } catch (error) {
-        reject(error);
-        return { status: 500, message: 'Error get specific Folder Visual', error };
-    }
-});
-
 // Create folder Visual
 export const createFolderVisual = ({ Title }) => new Promise(async (resolve, reject) => {
     try {
@@ -81,7 +43,7 @@ export const createFolderVisual = ({ Title }) => new Promise(async (resolve, rej
         await file.save('');
         await fileImg.save('');
 
-        resolve({
+        return resolve({
             err: 0,
             mes: 'Create Folder Visual successfully',
             playlist: createdVisual.data()
@@ -91,6 +53,45 @@ export const createFolderVisual = ({ Title }) => new Promise(async (resolve, rej
         return { status: 500, message: 'Error creating Folder Visual', error };
     }
 });
+
+// Get all Folder Visual
+export const getAllFolderVisual = ({ }) => new Promise(async (resolve, reject) => {
+    try {
+        const folderSnapshot = await db.collection('Visuals').get();
+        const visuals = folderSnapshot.docs.map(doc => doc.data());
+        resolve({
+            err: 0,
+            mes: 'Get all Folder Visual successfully',
+            Visual: visuals
+        })
+    } catch (error) {
+        reject(error);
+        return { status: 500, message: 'Error get all Folder Visual', error };
+    }
+});
+
+// Get specific Folder Visual
+export const getSpecificFolderVisual = ({ id }) => new Promise(async (resolve, reject) => {
+    try {
+        const visualRef = db.collection('Visuals').doc(id);
+        const visualDoc = await visualRef.get();
+        if (!visualDoc.exists) {
+            return resolve({
+                status: 404,
+                message: 'Visual not found',
+            });
+        }
+        return resolve({
+            err: 0,
+            mes: 'Get specific Folder Visual successfully',
+            Visual: visualDoc
+        })
+    } catch (error) {
+        reject(error);
+        return { status: 500, message: 'Error get specific Folder Visual', error };
+    }
+});
+
 
 //Update a Folder Visual
 export const updateFolderVisual = ({ id, data }) => new Promise(async (resolve, reject) => {
@@ -105,15 +106,13 @@ export const updateFolderVisual = ({ id, data }) => new Promise(async (resolve, 
             });
         }
 
-        await visualRef.update({
-            data,
-            updatedAt: new Date(),
-        });
+        data.updatedAt = new Date();
+        await visualRef.update(data);
 
         // Lấy lại dữ liệu mới sau khi cập nhật
         const visualUpdate = await visualRef.get();
 
-        resolve({
+        return resolve({
             err: 0,
             mes: 'Update Folder Visual successfully',
             playlist: visualUpdate.data() // Lấy dữ liệu của Visual vừa sua
@@ -260,6 +259,97 @@ export const getSpecificVisual = ({ idFolderVisual, id }) => new Promise(async (
     }
 });
 
+// Update Visual
+export const updateVisual = ({ idFolderVisual, id, data }, fileImg, fileVideo) => new Promise(async (resolve, reject) => {
+    try {
+        const visualRef = db.collection('Visuals').doc(idFolderVisual).collection('Visual').doc(id);
+        const visualDoc = await visualRef.get();
+        if (!visualDoc.exists) {
+            return resolve({
+                status: 404,
+                message: 'Visual not found',
+            });
+        }
+
+        const folderVisualRef = db.collection('Visuals').doc(idFolderVisual);
+        const folderVisualDoc = await folderVisualRef.get();
+        if (!folderVisualDoc.exists) {
+            return resolve({
+                status: 404,
+                message: 'Folder Visual not found',
+            });
+        }
+        const visualName = folderVisualDoc.data().Title;
+
+        if (fileImg) {
+            const visualData = visualDoc.data();
+            const filePathImg = visualData.filePathImg;
+            const fileImgRef = bucket.file(filePathImg);
+
+            try {
+                await fileImgRef.delete();
+                console.log(`Deleted old image file: ${filePathImg}`);
+            } catch (error) {
+                console.error(`Failed to delete old image file: ${filePathImg}`, error);
+            }
+
+            const filenameImg = `Images/Visual/${visualName}/${uuidv4()}_${fileImg.originalname}`;
+            const fileUploadImg = bucket.file(filenameImg);
+            await fileUploadImg.save(fileImg.buffer);
+            const [urlImg] = await fileUploadImg.getSignedUrl({
+                action: 'read',
+                expires: '03-01-2500'
+            });
+            data.imgUrl = urlImg;
+            data.filePathImg = filenameImg;
+        }
+
+        if (fileVideo) {
+            const visualData = visualDoc.data();
+            const filePathVideo = visualData.filePathVideo;
+            const fileVideoRef = bucket.file(filePathVideo);
+
+            try {
+                await fileVideoRef.delete();
+                console.log(`Deleted old video file: ${filePathVideo}`);
+            } catch (error) {
+                console.error(`Failed to delete old video file: ${filePathVideo}`, error);
+            }
+
+            const filenameVideo = `Visuals/${visualName}/${uuidv4()}_${fileVideo.originalname}`;
+            const fileUploadVideo = bucket.file(filenameVideo);
+            await fileUploadVideo.save(fileVideo.buffer);
+            const [urlVideo] = await fileUploadVideo.getSignedUrl({
+                action: 'read',
+                expires: '03-01-2500'
+            });
+            data.videoUrl = urlVideo;
+            data.filePathVideo = filenameVideo;
+        }
+
+        // Chuyển đổi `updatedAt` sang Firestore Timestamp
+        const updatedAtTimestamp = data.updatedAt || admin.firestore.FieldValue.serverTimestamp();
+
+        // Sua bài hát trong Firestore
+        await visualRef.update(
+            {
+                ...data,
+                updatedAt: updatedAtTimestamp,
+            }
+        );
+        // Lấy lại dữ liệu mới sau khi cập nhật
+        const updatedDoc = await visualRef.get();
+        return resolve({
+            err: 0,
+            mes: 'Update Visual successfully',
+            visual: updatedDoc.data(),
+        });
+    } catch (error) {
+        reject(error);
+        return { status: 500, message: 'Error Update Visual', error };
+    }
+});
+
 // Delete a Visual
 export const deleteVisual = ({ idFolderVisual, id }) => new Promise(async (resolve, reject) => {
     try {
@@ -298,41 +388,5 @@ export const deleteVisual = ({ idFolderVisual, id }) => new Promise(async (resol
     } catch (error) {
         reject(error);
         return { status: 500, message: 'Error delete Visual', error };
-    }
-});
-
-// Update Visual
-export const updateVisual = ({ idFolderVisual, id, data }) => new Promise(async (resolve, reject) => {
-    try {
-        const visualRef = db.collection('Visuals').doc(idFolderVisual).collection('Visual').doc(id);
-        const visualDoc = await visualRef.get();
-        if (!visualDoc.exists) {
-            return resolve({
-                status: 404,
-                message: 'Visual not found',
-            });
-        }
-
-        // Chuyển đổi `updatedAt` sang Firestore Timestamp
-        const updatedAtTimestamp = data.updatedAt || admin.firestore.FieldValue.serverTimestamp();
-
-
-        // Sua bài hát trong Firestore
-        await visualRef.update(
-            {
-                ...data,
-                updatedAt: updatedAtTimestamp,
-            }
-        );
-        // Lấy lại dữ liệu mới sau khi cập nhật
-        const updatedDoc = await visualRef.get();
-        resolve({
-            err: 0,
-            mes: 'Update Visual successfully',
-            visual: updatedDoc.data(),
-        });
-    } catch (error) {
-        reject(error);
-        return { status: 500, message: 'Error Update Visual', error };
     }
 });

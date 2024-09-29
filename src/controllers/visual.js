@@ -3,6 +3,18 @@ import * as services from '../services/index.js';
 import joi from 'joi'
 import { Title } from '../helper/joi_schema.js';
 
+export const createFolderVisual = async (req, res) => {
+    try {
+        const { error } = joi.object({ Title }).validate(req.body);
+        if (error) return res.status(400).json({ error: error.details[0].message });
+
+        const response = await services.visual.createFolderVisual(req.body);
+        return res.status(200).json(response);
+    } catch (error) {
+        console.error('Error in create Folder Visual controller:', error);
+        return internalServerError(res);
+    }
+};
 
 export const getAllFolderVisual = async (req, res) => {
     try {
@@ -34,22 +46,16 @@ export const getSpecificFolderVisual = async (req, res) => {
     }
 };
 
-export const createFolderVisual = async (req, res) => {
-    try {
-        const { error } = joi.object({ Title }).validate(req.body);
-        if (error) return res.status(400).json({ error: error.details[0].message });
-
-        const response = await services.visual.createFolderVisual(req.body);
-        return res.status(200).json(response);
-    } catch (error) {
-        console.error('Error in create Folder Visual controller:', error);
-        return internalServerError(res);
-    }
-};
-
 export const updateFolderVisual = async (req, res) => {
     try {
         const { id } = req.params;
+
+        if (!id) {
+            return res.status(400).json({
+                err: 1,
+                mes: 'Folder Visual ID is required',
+            });
+        }
 
         // Lấy dữ liệu từ req.body để cập nhật
         const data = req.body;
@@ -181,6 +187,34 @@ export const getSpecificVisual = async (req, res) => {
     }
 };
 
+export const updateVisual = async (req, res) => {
+    try {
+        const { idFolderVisual } = req.params;
+
+        const { id } = req.params;
+
+        const data = req.body;
+
+        const imageFile = req.files?.image?.[0];
+        const videoFile = req.files?.video?.[0];
+
+        const response = await services.visual.updateVisual({ idFolderVisual, id, data }, imageFile, videoFile);
+
+        // Nếu Visual không được tìm thấy
+        if (response.status === 404) {
+            return res.status(404).json({
+                err: 1,
+                mes: 'Visual not found',
+            });
+        }
+
+        return res.status(200).json(response);
+    } catch (error) {
+        console.error('Error in update Visual controller:', error);
+        return internalServerError(res);
+    }
+};
+
 export const deleteVisual = async (req, res) => {
     try {
         const { idFolderVisual, id } = req.params;
@@ -198,31 +232,6 @@ export const deleteVisual = async (req, res) => {
         return res.status(200).json(response);
     } catch (error) {
         console.error('Error in delete Visual controller:', error);
-        return internalServerError(res);
-    }
-};
-
-export const updateVisual = async (req, res) => {
-    try {
-        const { idFolderVisual } = req.params;
-
-        const { id } = req.params;
-
-        const data = req.body;
-
-        const response = await services.visual.updateVisual({ idFolderVisual, id, data });
-
-        // Nếu Visual không được tìm thấy
-        if (response.status === 404) {
-            return res.status(404).json({
-                err: 1,
-                mes: 'Visual not found',
-            });
-        }
-
-        return res.status(200).json(response);
-    } catch (error) {
-        console.error('Error in update Visual controller:', error);
         return internalServerError(res);
     }
 };

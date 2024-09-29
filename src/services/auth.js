@@ -1,4 +1,3 @@
-import express from 'express';
 import admin from 'firebase-admin';
 import bcrypt from 'bcrypt';
 import { sendVerificationEmail } from '../utils/email.js';
@@ -94,7 +93,7 @@ export const login = ({ email, password }) => new Promise(async (resolve, reject
             return reject({ status: 400, error: 'Invalid credentials' }); // Trả về mã 400 cho lỗi đăng nhập
         }
 
-        let user;
+        let user = querySnapshot.docs[0].data();
         querySnapshot.forEach(doc => {
             user = doc.data();
         });

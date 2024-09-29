@@ -6,10 +6,8 @@ import bodyParser from 'body-parser';
 import qs from 'qs';
 import admin from 'firebase-admin';
 
-
 const router = express();
 const db = admin.firestore();
-
 
 const config = {
     app_id: '2553',
