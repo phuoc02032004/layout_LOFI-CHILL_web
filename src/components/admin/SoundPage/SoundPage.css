@@ -1,0 +1,33 @@
+.sounds-container {
+    margin-top: 80px;
+    padding-top: 30px;
+    padding-left: 20px;
+    width: 1000px;
+    max-height: 900px;
+    overflow-y: auto;
+  }
+  
+  .sound-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 22px; 
+    border-radius: 10px;
+    padding: 20px 40px;
+    border: 2px solid rgba(225, 255, 255, 0.4);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    color: #fff;
+  }
+  
+  .sound-name {
+    flex: 1;
+    font-size: 16px; 
+    text-align: left;
+  }
+  
+  .button-group {
+    display: flex;
+    gap: 10px;
+  }
+  
+
