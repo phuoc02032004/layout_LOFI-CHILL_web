@@ -11,6 +11,7 @@ import PresetPage from './components/admin/PresetPage/PresetPage';
 import SoundPage from './components/admin/SoundPage/SoundPage';
 import ArtistPage from './components/pages/ArtistPage/ArtistPage';
 import SongPage from './components/pages/SongPage/SongPage';
+import ArtistPage_ad from './components/admin/ArtistPage_ad/ArtistPage_ad';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           <Route path="/SoundPage" element={<SoundPage />} />
           <Route path='/ArtistPage' element={<ArtistPage />} />
           <Route path='/SongPage' element={<SongPage />} />
+          <Route path='/ArtistPage_ad' element={<ArtistPage_ad />} />
         </Routes>
       </div>
     </BrowserRouter>

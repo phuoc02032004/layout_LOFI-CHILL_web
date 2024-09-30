@@ -183,7 +183,7 @@
 .modal-content form {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 5px;
 }
 
 
@@ -315,7 +315,7 @@
 .edit-content form {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 5px;
 }
 
 .edit-content label {
@@ -376,4 +376,38 @@
   margin-left: 70px;
   margin-top: 80px;
 
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.pagination button {
+  background-color: #fff;
+  color: #1d2021;
+  border: none;
+  padding: 10px 15px;
+  font-size: 1em;
+  border-radius: 5px;
+  margin: 0 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.pagination button:hover {
+  background-color: #cbce2b;
+  color: #1d2021;
+}
+
+.pagination button.active { 
+  background-color: #cbce2b;
+  color: #fff;
+}
+
+.pagination button:disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: default;
 }

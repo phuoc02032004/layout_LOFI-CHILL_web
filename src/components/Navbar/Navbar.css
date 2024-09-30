@@ -23,11 +23,11 @@ a {
   align-items: center;
   z-index: 100;
   justify-content: space-between;
-  transition: top 0.5s ease-in-out; 
+  transition: top 0.5s ease-in-out;
 }
 
 .hidden-navbar {
-  top: -80px; 
+  top: -80px;
 }
 
 .logo {
@@ -35,10 +35,10 @@ a {
   color: #fff;
   font-weight: 700;
   margin-left: 80px;
-  
 }
 
 .acc {
+  position: relative;
   font-size: 32px;
   color: #fff;
   font-weight: 700;
@@ -47,8 +47,12 @@ a {
   color: #fff;
   border-radius: 10px;
   padding: 5px 10px;
-
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.acc:hover .dropdown-menu {
+  display: block;
+  transition: all 2s ease-in;
 }
 
 .navbar a {
@@ -93,7 +97,6 @@ a {
   transform: translateX(-30%);
   border-radius: 10px;
   padding-top: 8px;
-  
 }
 
 .account-container:hover .dropdown-menu {
@@ -125,3 +128,38 @@ a {
   justify-content: center;
 }
 
+.lofi-dropdown-menu {
+  position: fixed;
+  z-index: 101;
+  align-items: center;
+  transform: translateX(-30%);
+  border-radius: 10px;
+  padding-top: 8px;
+  margin-left: 27px;
+}
+
+.lofi-link:hover + .lofi-dropdown-menu {
+  display: block;
+  transition: all 2s ease-in;
+}
+
+.dropdown-item-lofi {
+  display: block;
+  padding: 5px;
+  text-align: left;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 10px;
+  border: 1px solid #fff;
+  margin-bottom: 5px;
+  font-size: 20px;
+  backdrop-filter: blur(30px);
+}
+
+
+.dropdown-item-lofi:hover {
+  color: black;
+  background-color: rgb(241, 204, 112);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}

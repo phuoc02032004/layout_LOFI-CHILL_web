@@ -9,7 +9,6 @@ const soundsData = [
   { id: 5, name: 'Keyboard' },
   { id: 6, name: 'Page Turning' },
   { id: 7, name: 'Rain' },
-  // ... thêm dữ liệu atmosphere
 ];
 
 const Sounds = () => {
@@ -18,7 +17,7 @@ const Sounds = () => {
   const handleVolumeChange = (id, event) => {
     setSoundVolumes(prevVolumes => ({
       ...prevVolumes, 
-      [id]: parseFloat(event.target.value) // Lưu trữ âm lượng dưới dạng số thập phân 
+      [id]: parseFloat(event.target.value)
     }));
   };
 
@@ -32,8 +31,8 @@ const Sounds = () => {
               type="range"
               min="0"
               max="1" 
-              step="0.01" // Điều chỉnh bước thay đổi âm lượng
-              value={soundVolumes[sound.id] || 0} // Giá trị âm lượng hiện tại (0 đến 1)
+              step="0.01" 
+              value={soundVolumes[sound.id] || 0} 
               onChange={(e) => handleVolumeChange(sound.id, e)} 
               className="volume-slider"
             />

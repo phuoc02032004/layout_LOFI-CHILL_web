@@ -3,30 +3,29 @@ import './SongPage_ad.css';
 import NavbarAD from '../NavbarAdmin/Navbar';
 import SongCarousel from '../../Carousel/SongCarousel';
 import ArtistCarousel from '../../Carousel/ArtistCarousel';
+
 import After_hours from '../../assets/images/After-hours.jpg';
 import Friends from '../../assets/images/Friends.jpg';
 import High_Beams from '../../assets/images/High-Beams.jpg';
 import Stay from '../../assets/images/Stay.jpg';
 import Tomorrow from '../../assets/images/Tomorrow.jpg';
-
 import winter from '../../assets/images/winter.jpg';
 import slinky from '../../assets/images/slinky.jpg';
 import night from '../../assets/images/night.jpg';
 import meadow from '../../assets/images/Meadow.jpg';
 import morning from '../../assets/images/goodmorning.jpg';
-
-import Aso from '../../assets/images/Aso.jpg'
-import CYGN from '../../assets/images/CYGN.jpg'
-import ivention_ from '../../assets/images/ivention_.jpg'
-import Kupla from '../../assets/images/Kupla.jpg'
-import Leavv from '../../assets/images/Leavv.jpg'
-import Makzo from '../../assets/images/Makzo.png'
-import MamaAiuto from '../../assets/images/Mama Aiuto.jpg'
-import Misha from '../../assets/images/Misha.jpg'
-import mommy from '../../assets/images/mommy.jpg'
-import PsalmTrees from '../../assets/images/Psalm Trees.jpg'
-import Sadtoi from '../../assets/images/Sadtoi.jpg'
-import SleepyFish from '../../assets/images/Sleepy  Fish.jpg'
+import Aso from '../../assets/images/Aso.jpg';
+import CYGN from '../../assets/images/CYGN.jpg';
+import ivention_ from '../../assets/images/ivention_.jpg';
+import Kupla from '../../assets/images/Kupla.jpg';
+import Leavv from '../../assets/images/Leavv.jpg';
+import Makzo from '../../assets/images/Makzo.png';
+import MamaAiuto from '../../assets/images/Mama Aiuto.jpg';
+import Misha from '../../assets/images/Misha.jpg';
+import mommy from '../../assets/images/mommy.jpg';
+import PsalmTrees from '../../assets/images/Psalm Trees.jpg';
+import Sadtoi from '../../assets/images/Sadtoi.jpg';
+import SleepyFish from '../../assets/images/Sleepy  Fish.jpg';
 
 function SongPage() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -50,19 +49,57 @@ function SongPage() {
   ]);
 
   const [artists, setArtists] = useState([
-    { title: 'Aso',image: Aso, description: 'Description 1' },
-    { title: 'CYGN',image: CYGN, description: 'Description 2' },
-    { title: 'ivention_',image: ivention_, description: 'Description 3' },
-    { title: 'Kupla',image: Kupla, description: 'Description 4' },
-    { title: 'Leavv',image: Leavv, description: 'Description 5' },
-    { title: 'Makzo',image: Makzo, description: 'Description 6' },
-    { title: 'Mama Aiuto',image: MamaAiuto, description: 'Description 7' },
-    { title: 'Misha',image: Misha, description: 'Description 8' },
-    { title: 'mommy',image: mommy, description: 'Description 9' },
+    { title: 'Aso', image: Aso, description: 'Description 1' },
+    { title: 'CYGN', image: CYGN, description: 'Description 2' },
+    { title: 'ivention_', image: ivention_, description: 'Description 3' },
+    { title: 'Kupla', image: Kupla, description: 'Description 4' },
+    { title: 'Leavv', image: Leavv, description: 'Description 5' },
+    { title: 'Makzo', image: Makzo, description: 'Description 6' },
+    { title: 'Mama Aiuto', image: MamaAiuto, description: 'Description 7' },
+    { title: 'Misha', image: Misha, description: 'Description 8' },
+    { title: 'mommy', image: mommy, description: 'Description 9' },
     { title: 'Psalm Trees', image: PsalmTrees, description: 'Description 10' },
     { title: 'Sadtoi', image: Sadtoi, description: 'Description 11' },
     { title: 'Sleepy Fish', image: SleepyFish, description: 'Description 12' },
   ]);
+
+  const stationsData = [
+    {
+      id: 1,
+      name: 'Endless Sunday',
+      description: 'A selection of smooth jazzy beats'
+    },
+    {
+      id: 2,
+      name: 'Headbop Beats',
+      description: 'Beats to bop your head to'
+    },
+    {
+      id: 3,
+      name: 'Late Night Vibes',
+      description: 'Calmer tracks to help you relax or sleep'
+    },
+    {
+      id: 4,
+      name: 'lofi hip hop beats',
+      description: 'Relaxing beats to help you focus' 
+    },
+    {
+      id: 5,
+      name: 'Chillhop Radio',
+      description: 'A wide variety of the best tracks from our label' 
+    },
+    {
+      id: 6,
+      name: 'Melancholic Mood',
+      description: 'Moody and sad beats' 
+    },
+    {
+      id: 7,
+      name: 'Sunshine Beat',
+      description: 'Uplifting beats to keep you active' 
+    },
+  ];
 
   const handleAddClick = () => {
     setIsAddModalOpen(true);
@@ -119,6 +156,20 @@ function SongPage() {
     setEditingSong(null);
   };
 
+  const songsPerPage = 5; 
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const indexOfLastSong = currentPage * songsPerPage;
+  const indexOfFirstSong = indexOfLastSong - songsPerPage;
+  const currentSongs = songs.slice(indexOfFirstSong, indexOfLastSong);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  const pageNumbers = [];
+  for (let i = 1; i <= Math.ceil(songs.length / songsPerPage); i++) {
+    pageNumbers.push(i);
+  }
+
   return (
     <div>
       <NavbarAD />
@@ -135,13 +186,21 @@ function SongPage() {
               <input type="text" id="songName" name="songName" />
 
               <label htmlFor="artist">Artist:</label>
+              <select className="choose" id="artist">
+                {artists.map((artist) => (
+                  <option key={artist.title} value={artist.title}>
+                    {artist.title}
+                  </option>
+                ))}
+              </select>
 
-              <select className="choose" id="artist" >
-                <option value="india">india</option>
-                <option value="pakistan">pakistan</option>
-                <option value="africa">africa</option>
-                <option value="china">china</option>
-                <option value="other">other</option>
+              <label htmlFor="genre">Genre:</label>
+              <select className="choose" id="station">
+                {stationsData.map((station) => (
+                  <option key={station.id} value={station.id}>
+                    {station.name}
+                  </option>
+                ))}
               </select>
 
               <label htmlFor="songImage">Song image:</label>
@@ -151,7 +210,7 @@ function SongPage() {
               <input type="file" id="songFile" name="songFile" />
 
               <label htmlFor="Describe">Description:</label>
-              <input type="text" id="Describe" name="Describe" />
+              <textarea id="Describe" name="Describe" rows="5" cols="40"></textarea>
 
               <button type="submit">Save</button>
             </form>
@@ -167,7 +226,8 @@ function SongPage() {
             <h2>EDIT SONG</h2>
             <form className='form-box' onSubmit={handleSaveEdit}>
               <label htmlFor="editSongName">Song name:</label>
-              <input type="text" 
+              <input 
+                type="text" 
                 id="editSongName" 
                 name="editSongName" 
                 value={editingSong.title}
@@ -175,12 +235,21 @@ function SongPage() {
               />
 
               <label htmlFor="editArtist">Artist:</label>
-              <select className="choose" id="editArtist">
-                <option value="india">india</option>
-                <option value="pakistan">pakistan</option>
-                <option value="africa">africa</option>
-                <option value="china">china</option>
-                <option value="other">other</option>
+              <select className="choose" id="artist">
+                {artists.map((artist) => (
+                  <option key={artist.title} value={artist.title}>
+                    {artist.title}
+                  </option>
+                ))}
+              </select>
+
+              <label htmlFor="genre">Genre:</label>
+              <select className="choose" id="station">
+                {stationsData.map((station) => (
+                  <option key={station.id} value={station.id}>
+                    {station.name}
+                  </option>
+                ))}
               </select>
 
               <label htmlFor="editSongImage">Song image:</label>
@@ -190,7 +259,14 @@ function SongPage() {
               <input type="file" id="editSongFile" name="editSongFile" />
 
               <label htmlFor="editDescribe">Description:</label>
-              <input type="text" id="editDescribe" name="editDescribe" value={editingSong.description} onChange={(e) => setEditingSong({ ...editingSong, description: e.target.value })} />
+              <textarea 
+                id="editDescribe" 
+                name="editDescribe" 
+                rows="5" 
+                cols="40" 
+                value={editingSong.description} 
+                onChange={(e) => setEditingSong({ ...editingSong, description: e.target.value })} 
+              />
 
               <button type="submit">Save</button>
             </form>
@@ -206,7 +282,7 @@ function SongPage() {
         </div>
 
         <div className='image-container-song'>
-          {songs.map((song, index) => (
+          {currentSongs.map((song, index) => (
             <div key={index} className='image-row-song'>
               <img src={song.image} alt={song.title} className="image-song" />
               <div className='image-name-song'>{song.title}</div>
@@ -215,6 +291,18 @@ function SongPage() {
                 <div className="btn-del" onClick={() => handleDeleteClick(index)}>DELETE</div>
               </div>
             </div>
+          ))}
+        </div>
+
+        <div className="pagination">
+          {pageNumbers.map((number) => (
+            <button 
+              key={number} 
+              onClick={() => paginate(number)} 
+              className={number === currentPage ? 'active' : ''} 
+            >
+              {number}
+            </button>
           ))}
         </div>
 

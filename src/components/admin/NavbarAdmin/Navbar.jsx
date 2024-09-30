@@ -61,6 +61,9 @@ export default function Navbar() {
     navigate('/PresetPage')
   }
 
+  const handleArtistPageClick = () => {
+    navigate('/ArtistPage_ad')
+  }
   
   return (
     <header className={`header ${!showNavbar ? 'hidden-navbar' : ''}`}> 
@@ -69,6 +72,7 @@ export default function Navbar() {
       <nav className='navbar'>
         <a onClick={handleAdminClick}>HOME</a>
         <a onClick={handleSongPageClick}>SONG</a>
+        <a onClick={handleArtistPageClick}>ARTIST</a>
         <a onClick={handleSoundPageClick}>SOUND</a>
         <a onClick={handleBGPageClick}>B . G</a>
         <a onClick={handlePresetPageClick}>PRESET</a>

@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 export default function Navbar() {
   const [showMenu, setShowMenu] = useState(false);
   const [showNavbar, setShowNavbar] = useState(true); 
+  const [showLofiMenu, setShowLofiMenu] = useState(false); 
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,6 +37,14 @@ export default function Navbar() {
     setShowMenu(false);
   };
 
+  const handleLofiMouseEnter = () => {
+    setShowLofiMenu(true);
+  };
+
+  const handleLofiMouseLeave = () => {
+    setShowLofiMenu(false);
+  };
+
   const handleHomeClick = () => {
     navigate('/homepage');
   };
@@ -52,13 +61,31 @@ export default function Navbar() {
     navigate('/SongPage');
   };
 
+  const handleArtistPageClick = () => {
+    navigate('/ArtistPage')
+  }
+
+
+
   return (
     <header className={`header ${!showNavbar ? 'hidden-navbar' : ''}`}> 
       <a href="/" className='logo'> LOGO </a>
 
       <nav className='navbar'>
         <a onClick={handleHomeClick}>HOME</a>
-        <a onClick={handleSongPageClick}>LOFI</a>
+        <div 
+          className="account-container"
+          onMouseEnter={handleLofiMouseEnter}
+          onMouseLeave={handleLofiMouseLeave}
+        >
+          <a className='lofi-link'>LOFI</a>
+          {showLofiMenu && (
+            <div className="lofi-dropdown-menu">
+              <div className="dropdown-item-lofi" onClick={handleSongPageClick}>SONGS</div>
+              <div className="dropdown-item-lofi" onClick={handleArtistPageClick}>ARTIST</div>
+            </div>
+          )}
+        </div>
         <a onClick={handleChillClick}>CHILL</a>
       </nav>
 
