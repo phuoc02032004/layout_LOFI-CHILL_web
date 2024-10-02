@@ -4,8 +4,8 @@ import { FaUser, FaLock } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { useNavigate } from 'react-router-dom';
-import { registerUser } from '../../api/auth';
-import { verify } from '../../api/auth';
+import { registerUser } from '../../services/auth';
+import { verify } from '../../services/auth';
 
 const RegisterForm = () => {
   const navigate = useNavigate();

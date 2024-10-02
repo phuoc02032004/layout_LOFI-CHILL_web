@@ -6,7 +6,7 @@ import videoCover from '../assets/videos/bk.mp4';
 import Loading from './../Loading/Loading';
 import SongCarousel from '../Carousel/SongCarousel';
 import ArtistCarousel from '../Carousel/ArtistCarousel';
-import Footer from '../footer/Footer'; 
+import Footer from '../footer/Footer';
 import { GrNext } from "react-icons/gr";
 import { GrPrevious } from "react-icons/gr";
 import { getNewMusic } from '../../services/music.js';
@@ -39,6 +39,7 @@ import SleepyFish from '../assets/images/Sleepy  Fish.jpg'
 export default function HomePage() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
+  const [songs, setSongs] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const images = [
@@ -47,8 +48,8 @@ export default function HomePage() {
     { src: chillStudyBeats, title: 'CHILL STUDY BEATS' },
     { src: sunnyDay, title: 'SUNNY DAY' },
     { src: essentials, title: 'CHILL HOP ESSENTIALS' },
-    { src: chillhopRadio, title: 'CHILLHOP RADIO' }, 
-    { src: lateNightVibes, title: 'LATE NIGHT VIBES' }, 
+    { src: chillhopRadio, title: 'CHILLHOP RADIO' },
+    { src: lateNightVibes, title: 'LATE NIGHT VIBES' },
   ];
 
   // const songs = [
@@ -64,21 +65,21 @@ export default function HomePage() {
   // ];
 
   const [artists, setArtists] = useState([
-    { title: 'Aso',image: Aso, description: 'Description 1' },
-    { title: 'CYGN',image: CYGN, description: 'Description 2' },
-    { title: 'ivention_',image: ivention_, description: 'Description 3' },
-    { title: 'Kupla',image: Kupla, description: 'Description 4' },
-    { title: 'Leavv',image: Leavv, description: 'Description 5' },
-    { title: 'Makzo',image: Makzo, description: 'Description 6' },
-    { title: 'Mama Aiuto',image: MamaAiuto, description: 'Description 7' },
-    { title: 'Misha',image: Misha, description: 'Description 8' },
-    { title: 'mommy',image: mommy, description: 'Description 9' },
+    { title: 'Aso', image: Aso, description: 'Description 1' },
+    { title: 'CYGN', image: CYGN, description: 'Description 2' },
+    { title: 'ivention_', image: ivention_, description: 'Description 3' },
+    { title: 'Kupla', image: Kupla, description: 'Description 4' },
+    { title: 'Leavv', image: Leavv, description: 'Description 5' },
+    { title: 'Makzo', image: Makzo, description: 'Description 6' },
+    { title: 'Mama Aiuto', image: MamaAiuto, description: 'Description 7' },
+    { title: 'Misha', image: Misha, description: 'Description 8' },
+    { title: 'mommy', image: mommy, description: 'Description 9' },
     { title: 'Psalm Trees', image: PsalmTrees, description: 'Description 10' },
     { title: 'Sadtoi', image: Sadtoi, description: 'Description 11' },
     { title: 'Sleepy Fish', image: SleepyFish, description: 'Description 12' },
   ]);
 
-  const imageWidth = 25; 
+  const imageWidth = 25;
 
   const handleChillClick = () => {
     navigate('/chillpage');
@@ -105,7 +106,7 @@ export default function HomePage() {
     };
 
     return () => {
-      video.removeEventListener('canplaythrough', () => {});
+      video.removeEventListener('canplaythrough', () => { });
     };
   }, []);
 
@@ -126,6 +127,19 @@ export default function HomePage() {
         observer.unobserve(carouselRef.current);
       }
     };
+  }, []);
+
+  useEffect(() => {
+    const fetchMusic = async () => {
+      try {
+        const musicData = await getNewMusic();
+        setSongs(musicData); // Cập nhật danh sách bài hát
+      } catch (error) {
+        console.error('Error fetching music:', error);
+      }
+    };
+
+    fetchMusic();
   }, []);
 
   return (
@@ -153,7 +167,7 @@ export default function HomePage() {
           <GrPrevious />
         </button>
         <div className="image-container">
-          <div 
+          <div
             className="image-track"
             style={{ transform: `translateX(-${currentIndex * imageWidth}%)` }}
           >
@@ -171,12 +185,12 @@ export default function HomePage() {
       </div>
       <div className="name_a">New Song</div>
       <SongCarousel songs={songs} />
-      
-      <div className="name_a">Artist</div>
-      <ArtistCarousel artists={artists} /> 
 
-      <Footer /> 
-      
+      <div className="name_a">Artist</div>
+      <ArtistCarousel artists={artists} />
+
+      <Footer />
+
       <video src={videoCover} autoPlay muted loop></video>
     </div>
   );
