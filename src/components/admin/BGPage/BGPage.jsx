@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './BGPage.css'; 
+import './BGPage.css';
 import NavbarAD from '../NavbarAdmin/Navbar';
 import BeachPreview from '../../assets/images/imgBeach.jpg';
 import BedroomPreview from '../../assets/images/imgBedroom.jpg';
@@ -56,7 +56,7 @@ function BGPage() {
     setImageToDelete(null);
     setIsEditModalOpen(false);
     setImageToEdit(null);
-    setIsAddModalOpen(false); 
+    setIsAddModalOpen(false);
   };
 
   const handleConfirmDelete = () => {
@@ -68,25 +68,43 @@ function BGPage() {
   const handleSaveEdit = (event) => {
     event.preventDefault();
     const updatedName = document.getElementById('editImageName').value;
+    const updatedImageFile = document.getElementById('editImageFile').files[0];
 
     const imageIndex = images.findIndex((i) => i.src === imageToEdit.src);
 
     const updatedImages = [...images];
-    updatedImages[imageIndex] = { ...imageToEdit, name: updatedName };
-    setImages(updatedImages);
 
-    setIsEditModalOpen(false);
-    setImageToEdit(null);
+    if (updatedImageFile) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        updatedImages[imageIndex] = {
+          src: reader.result,
+          name: updatedName,
+        };
+        setImages(updatedImages);
+        setIsEditModalOpen(false);
+        setImageToEdit(null);
+      };
+      reader.readAsDataURL(updatedImageFile);
+    } else {
+      updatedImages[imageIndex] = {
+        ...imageToEdit,
+        name: updatedName,
+      };
+      setImages(updatedImages);
+      setIsEditModalOpen(false);
+      setImageToEdit(null);
+    }
   };
 
   const handleAddClick = () => {
-    setIsAddModalOpen(true); 
+    setIsAddModalOpen(true);
   };
 
   const handleSaveAdd = (event) => {
     event.preventDefault();
     const newImageName = document.getElementById('newImageName').value;
-    const newImageFile = document.getElementById('newImageFile').files[0]; 
+    const newImageFile = document.getElementById('newImageFile').files[0];
 
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -188,7 +206,7 @@ function BGPage() {
 
         {isEditModalOpen && (
           <div className="edit-modal">
-            <div className="edit-content">
+            <div className="modal-content">
               <span className="close-modal" onClick={handleCloseModal}>×</span>
               <h2>Edit Image</h2>
               <form onSubmit={handleSaveEdit}>
@@ -200,7 +218,13 @@ function BGPage() {
                   defaultValue={imageToEdit?.name}
                   required
                 />
-
+                <label htmlFor="editImageFile">Select Image:</label>
+                <input
+                  type="file"
+                  id="editImageFile"
+                  name="editImageFile"
+                  accept="image/*"
+                />
                 <button type="submit">Save Changes</button>
               </form>
             </div>
@@ -219,6 +243,6 @@ function BGPage() {
       </div>
     </div>
   );
-};
+}
 
 export default BGPage;
