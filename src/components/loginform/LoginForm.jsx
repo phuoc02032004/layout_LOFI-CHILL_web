@@ -3,7 +3,7 @@ import "./LoginForm.css";
 import { FaUser } from "react-icons/fa";
 import { FaLock } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
-import { loginUser } from '../../api/auth';
+import { loginUser } from '../../services/auth';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');

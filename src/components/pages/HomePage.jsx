@@ -9,6 +9,7 @@ import ArtistCarousel from '../Carousel/ArtistCarousel';
 import Footer from '../footer/Footer'; 
 import { GrNext } from "react-icons/gr";
 import { GrPrevious } from "react-icons/gr";
+import { getNewMusic } from '../../services/music.js';
 
 import chillhopRadio from '../assets/images/chillhopradio.jpg';
 import lateNightVibes from '../assets/images/latenight.jpg';
@@ -16,11 +17,11 @@ import chillStudyBeats from '../assets/images/chillstudy.jpg';
 import sunnyDay from '../assets/images/sunnyday.jpg';
 import essentials from '../assets/images/essentials.jpg';
 
-import winter from '../assets/images/winter.jpg'
-import slinky from '../assets/images/slinky.jpg'
-import night from '../assets/images/night.jpg'
-import meadow from '../assets/images/Meadow.jpg'
-import morning from '../assets/images/goodmorning.jpg'
+// import winter from '../assets/images/winter.jpg'
+// import slinky from '../assets/images/slinky.jpg'
+// import night from '../assets/images/night.jpg'
+// import meadow from '../assets/images/Meadow.jpg'
+// import morning from '../assets/images/goodmorning.jpg'
 
 import Aso from '../assets/images/Aso.jpg'
 import CYGN from '../assets/images/CYGN.jpg'
@@ -50,17 +51,17 @@ export default function HomePage() {
     { src: lateNightVibes, title: 'LATE NIGHT VIBES' }, 
   ];
 
-  const songs = [
-    { title: 'Winter Chill', image: winter },
-    { title: 'Slinky Groove', image: slinky },
-    { title: 'Night Vibes', image: night },
-    { title: 'Meadow Peace', image: meadow },
-    { title: 'Good Morning', image: morning },
-    { title: 'Winter Chill', image: winter },
-    { title: 'Slinky Groove', image: slinky },
-    { title: 'Night Vibes', image: night },
-    { title: 'Meadow Peace', image: meadow },
-  ];
+  // const songs = [
+  //   { title: 'Winter Chill', image: winter },
+  //   { title: 'Slinky Groove', image: slinky },
+  //   { title: 'Night Vibes', image: night },
+  //   { title: 'Meadow Peace', image: meadow },
+  //   { title: 'Good Morning', image: morning },
+  //   { title: 'Winter Chill', image: winter },
+  //   { title: 'Slinky Groove', image: slinky },
+  //   { title: 'Night Vibes', image: night },
+  //   { title: 'Meadow Peace', image: meadow },
+  // ];
 
   const [artists, setArtists] = useState([
     { title: 'Aso',image: Aso, description: 'Description 1' },
