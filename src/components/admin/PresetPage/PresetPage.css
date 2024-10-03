@@ -1,0 +1,47 @@
+.preset-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 100px; /* Adjust the top margin as needed */
+  }
+  
+  .preset-card {
+    width: 250px;
+    color: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+    border-radius: 10px;
+    padding: 20px 40px;
+    border: 2px solid rgba(225, 255, 255, 0.4);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  .preset-card img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+  }
+  
+  .preset-info {
+    margin-top: 10px;
+  }
+  
+  .preset-info h3 {
+    margin-bottom: 5px;
+  }
+  
+  .preset-info p {
+    margin-bottom: 5px;
+  }
+  
+
+  
+
+  @media screen and (max-width: 768px) {
+    .preset-card {
+      width: 100%;
+    }
+  }

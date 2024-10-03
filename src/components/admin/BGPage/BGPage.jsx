@@ -163,7 +163,7 @@ function BGPage() {
         </div>
       )}
 
-      <div className="image-container"> 
+      <div className="image-container-n"> 
         <div className="image-row">
           {currentImages.slice(0, 5).map((image, index) => (
             <div key={index} className="image-card">
