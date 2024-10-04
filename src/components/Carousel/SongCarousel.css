@@ -1,128 +1,129 @@
+
 .song-carousel {
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-    margin: 20px auto;
-    margin-top: 10px;
-    position: relative;
-    width: 100%;
-    max-width: 1400px;
-    margin-bottom: 60px;
-    opacity: 0; 
-    transform: translateY(20px);
-    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out; 
-    border-radius: 10px;
-    backdrop-filter: blur(20px);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    padding: 30px 40px;
-  }
-  
-  .song-carousel.show {
-    opacity: 1; 
-    transform: translateY(0); 
-  }
-  
-  .song-track-container {
-    width: 100%;
-    overflow: hidden;
-  }
-  
-  .song-track {
-    display: flex;
-    transition: transform 0.7s ease-in-out;
-    width: 100%; 
-  }
-  
-  .song-item {
-    width: 24.3%;
-    flex-shrink: 0;
-    margin-right: 10px;
-    position: relative;
-    overflow: hidden; 
-    transition: transform 0.3s ease; 
-  }
-  
-  .song-item:last-child {
-    margin-right: 0;
-  }
-  
-  .song-item img {
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-    border-radius: 5px;
-    transition: transform 0.3s ease; 
-    transform-origin: center center;
-  }
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  margin: 20px auto;
+  margin-top: 10px;
+  position: relative;
+  width: 100%;
+  max-width: 1400px;
+  margin-bottom: 60px;
+  opacity: 0; 
+  transform: translateY(20px);
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out; 
+  border-radius: 10px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  padding: 30px 40px;
+}
 
-  .song-item img:hover{
-    transform: scale(1.1);
-  }
-  
-  .song-title {
-    margin-top: 5px;
-    color: white;
-  }
-  
-  .carousel-button {
-    background: none;
-    border: none;
-    font-size: 30px;
-    cursor: pointer;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background-color: rgba(0, 0, 0, 0.4);
-    padding: 10px;
-    border-radius: 5px;
-    z-index: 10;
-    color: #fff;
-    width: 50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .carousel-button.prev {
-    left: 10px;
-  }
-  
-  .carousel-button.next {
-    right: 10px;
-  }
+.song-carousel.show {
+  opacity: 1; 
+  transform: translateY(0); 
+}
 
-  .see-all-button {
-    position: absolute;
-    right: 20px; 
-    top: 20px; 
-    background-color: rgba(0, 0, 0, 0.4);
-    border: none;
-    font-size: 30px;
-    cursor: pointer;
-    z-index: 10;
-    width: 100px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transform: none;
-    
-    border-radius: 10px;
-    backdrop-filter: blur(20px);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  }
-  
-  .see-all-button button{
-    background-color: transparent;
-    border: none;
-    font-weight: bold;
-    font-size:15px;
-    color: #fff;
-    cursor: pointer;
-    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out; 
-  }
+.song-track-container {
+  width: 100%;
+  overflow: hidden;
+}
 
-  .see-all-button :hover{
-    transform: scale(1.1);
-  }
+.song-track {
+  display: flex;
+  transition: transform 0.7s ease-in-out;
+  width: 100%; 
+}
+
+.song-item {
+  width: 24.3%;
+  flex-shrink: 0;
+  margin-right: 10px;
+  position: relative;
+  overflow: hidden; 
+  transition: transform 0.3s ease; 
+}
+
+.song-item:last-child {
+  margin-right: 0;
+}
+
+.song-item img {
+  width: 320px;
+  height: 320px;
+  object-fit: cover;
+  border-radius: 5px;
+  transition: transform 0.3s ease; 
+  transform-origin: center center;
+}
+
+.song-item img:hover{
+  transform: scale(1.1);
+}
+
+.song-title {
+  margin-top: 5px;
+  color: white;
+}
+
+.carousel-button {
+  background: none;
+  border: none;
+  font-size: 30px;
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.4);
+  padding: 10px;
+  border-radius: 5px;
+  z-index: 10;
+  color: #fff;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carousel-button.prev {
+  left: 10px;
+}
+
+.carousel-button.next {
+  right: 10px;
+}
+
+.see-all-button {
+  position: absolute;
+  right: 20px; 
+  top: 20px; 
+  background-color: rgba(0, 0, 0, 0.4);
+  border: none;
+  font-size: 30px;
+  cursor: pointer;
+  z-index: 10;
+  width: 100px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: none;
+  
+  border-radius: 10px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.see-all-button button{
+  background-color: transparent;
+  border: none;
+  font-weight: bold;
+  font-size:15px;
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out; 
+}
+
+.see-all-button :hover{
+  transform: scale(1.1);
+}

@@ -149,7 +149,15 @@ function BGPage() {
                 required
               />
 
-              <label htmlFor="newImageFile">Select Image:</label>
+              <label htmlFor="newImageFile">Select Thumnail:</label>
+              <input
+                type="file"
+                id="newImageFile"
+                name="newImageFile"
+                accept="image/*"
+              />
+
+              <label htmlFor="newImageFile">Select File:</label>
               <input
                 type="file"
                 id="newImageFile"
@@ -218,7 +226,16 @@ function BGPage() {
                   defaultValue={imageToEdit?.name}
                   required
                 />
-                <label htmlFor="editImageFile">Select Image:</label>
+
+              <label htmlFor="newImageFile">Select Thumnail:</label>
+              <input
+                type="file"
+                id="newImageFile"
+                name="newImageFile"
+                accept="image/*"
+              />
+
+                <label htmlFor="editImageFile">Select File:</label>
                 <input
                   type="file"
                   id="editImageFile"
