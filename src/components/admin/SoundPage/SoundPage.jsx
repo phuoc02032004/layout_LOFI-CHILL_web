@@ -181,10 +181,10 @@ const SoundPage = () => {
         </div>
       )}
 
-      <div className="sounds-container">
+      <div className="sounds-container-ad">
         {currentSounds.map((sound) => (
-          <div key={sound.id} className="sound-item">
-            <span className="sound-name">{sound.name}</span>
+          <div key={sound.id} className="sound-item-ad">
+            <span className="sound-name-ad">{sound.name}</span>
             <div className="button-group">
               <button className='btn-edit' onClick={() => handleEditClick(sound)}>EDIT</button>
               <button className='btn-dele' onClick={() => handleDeleteClick(sound)}>DELETE</button>
