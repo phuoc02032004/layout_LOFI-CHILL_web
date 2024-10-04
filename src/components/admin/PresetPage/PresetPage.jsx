@@ -367,7 +367,7 @@ function PresetPage() {
               />
 
               <label htmlFor="newPresetPlaylist">Playlist:</label>
-              <select id="newPresetPlaylist" name="newPresetPlaylist" required>
+              <select className='choose-song' id="newPresetPlaylist" name="newPresetPlaylist" required>
                 {stationsData.map((station) => (
                   <option key={station.id} value={station.name}>
                     {station.name}
@@ -376,7 +376,7 @@ function PresetPage() {
               </select>
 
               <label htmlFor="newPresetVisuals">Visuals:</label>
-              <select id="newPresetVisuals" name="newPresetVisuals" required>
+              <select className='choose-song' id="newPresetVisuals" name="newPresetVisuals" required>
                 {images.map((image) => (
                   <option key={image.src} value={image.name}>
                     {image.name}
@@ -433,7 +433,7 @@ function PresetPage() {
               />
 
               <label htmlFor="editPresetPlaylist">Playlist:</label>
-              <select id="editPresetPlaylist" name="editPresetPlaylist" required>
+              <select className='choose-song' id="editPresetPlaylist" name="editPresetPlaylist" required>
                 {stationsData.map((station) => (
                   <option key={station.id} value={station.name}>
                     {station.name}
@@ -442,7 +442,7 @@ function PresetPage() {
               </select>
 
               <label htmlFor="editPresetVisuals">Visuals:</label>
-              <select id="editPresetVisuals" name="editPresetVisuals" required>
+              <select className='choose-song' id="editPresetVisuals" name="editPresetVisuals" required>
                 {images.map((image) => (
                   <option key={image.src} value={image.name}>
                     {image.name}
