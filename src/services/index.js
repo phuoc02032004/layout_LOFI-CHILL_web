@@ -5,5 +5,6 @@ export * as song from './song.js'
 export * as visual from './visual.js'
 export * as soundEffect from './soundEffect.js'
 export * as admin from './admin.js'
-
+export * as artist from './artist.js'
+export * as presets from './presets.js'
 // export { auth };

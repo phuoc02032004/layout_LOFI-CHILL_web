@@ -4,9 +4,9 @@ const storage = new Storage();
 const db = admin.firestore();
 
 // Create a new preset
-export const createPreset = ({ Title, Description, Music, Visuals, Sounds }) => new Promise(async (resolve, reject) => {
+export const createPreset = ({ Title, Description, musicUrl, imageUrl, visualUrl, soundUrl }) => new Promise(async (resolve, reject) => {
     try {
-        const presetsRef = db.collection('Presets');
+        const presetsRef = db.collection('Preset');
         const snapshot = await presetsRef.where('Title', '==', Title).get();
 
         if (!snapshot.empty) {
@@ -18,11 +18,9 @@ export const createPreset = ({ Title, Description, Music, Visuals, Sounds }) => 
 
         const newPresetRef = presetsRef.doc();
         await newPresetRef.set({
-            Title,
-            Description,
-            Music,
-            Visuals,
-            Sounds
+            Title, Description, musicUrl, imageUrl, visualUrl, soundUrl,
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+            updatedAt: admin.firestore.FieldValue.serverTimestamp()
         });
 
         const createdPreset = await newPresetRef.get();
@@ -41,8 +39,10 @@ export const createPreset = ({ Title, Description, Music, Visuals, Sounds }) => 
 // Get all presets
 export const getAllPresets = () => new Promise(async (resolve, reject) => {
     try {
-        const presetsSnapshot = await db.collection('Presets').get();
-        const presets = presetsSnapshot.docs.map(doc => doc.data());
+        const presetsSnapshot = await db.collection('Preset').get();
+        const presets = presetsSnapshot.docs.map(doc => (
+            { id: doc.id, ...doc.data() }
+        ));
 
         return resolve({
             err: 0,
@@ -58,7 +58,7 @@ export const getAllPresets = () => new Promise(async (resolve, reject) => {
 // Get specific preset by ID
 export const getSpecificPreset = ({ id }) => new Promise(async (resolve, reject) => {
     try {
-        const presetRef = db.collection('Presets').doc(id);
+        const presetRef = db.collection('Preset').doc(id);
         const presetDoc = await presetRef.get();
 
         if (!presetDoc.exists) {
@@ -82,7 +82,7 @@ export const getSpecificPreset = ({ id }) => new Promise(async (resolve, reject)
 // Update a preset
 export const updatePreset = ({ id, data }) => new Promise(async (resolve, reject) => {
     try {
-        const presetRef = db.collection('Presets').doc(id);
+        const presetRef = db.collection('Preset').doc(id);
         const presetDoc = await presetRef.get();
 
         if (!presetDoc.exists) {
@@ -111,7 +111,7 @@ export const updatePreset = ({ id, data }) => new Promise(async (resolve, reject
 // Delete a preset
 export const deletePreset = ({ id }) => new Promise(async (resolve, reject) => {
     try {
-        const presetRef = db.collection('Presets').doc(id);
+        const presetRef = db.collection('Preset').doc(id);
         const presetDoc = await presetRef.get();
 
         if (!presetDoc.exists) {

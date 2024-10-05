@@ -1,14 +1,19 @@
 import * as services from '../services/index.js';
 import { internalServerError } from '../middleware/handle_error.js';
 import joi from 'joi';
-import { Artist, Description } from '../helper/joi_schema.js';
+import { name, Description } from '../helper/joi_schema.js';
 
-export const createArtis = async (req, res) => {
+export const createArtist = async (req, res) => {
     try {
-        const { error } = joi.object({ Artist, Description }).validate(req.body);
+        const { name, Description } = req.body;
+        const { error } = joi.object({ name, Description }).validate(req.body);
         if (error) return res.status(400).json({ error: error.details[0].message });
 
-        const response = await services.artis.createArtis(req.body);
+        if (!req.file) {
+            return res.status(400).json({ error: 'Image file is required' });
+        }
+
+        const response = await services.artist.createArtist({ ...req.body }, req.file);
         return res.status(200).json(response);
     } catch (error) {
         console.error('Error in create artis controller:', error);
@@ -16,9 +21,9 @@ export const createArtis = async (req, res) => {
     }
 };
 
-export const getAllArtis = async (req, res) => {
+export const getAllArtist = async (req, res) => {
     try {
-        const response = await services.artis.getAllArtis();
+        const response = await services.artist.getAllArtist();
         return res.status(200).json(response);
     } catch (error) {
         console.error('Error in get all artis controller:', error);
@@ -26,10 +31,10 @@ export const getAllArtis = async (req, res) => {
     }
 };
 
-export const getSpecificArtis = async (req, res) => {
+export const getSpecificArtist = async (req, res) => {
     try {
         const { id } = req.params;
-        const response = await services.artis.getSpecificArtis({ id });
+        const response = await services.artist.getSpecificArtist({ id });
 
         if (response.status === 404) {
             return res.status(404).json({
@@ -45,12 +50,12 @@ export const getSpecificArtis = async (req, res) => {
     }
 };
 
-export const updateArtis = async (req, res) => {
+export const updateArtist = async (req, res) => {
     try {
         const { id } = req.params;
         const data = req.body;
 
-        const response = await services.artis.updateArtis({ id, data });
+        const response = await services.artist.updateArtist({ id, data }, req.file);
 
         if (response.status === 404) {
             return res.status(404).json({
@@ -66,10 +71,10 @@ export const updateArtis = async (req, res) => {
     }
 };
 
-export const deleteArtis = async (req, res) => {
+export const deleteArtist = async (req, res) => {
     try {
         const { id } = req.params;
-        const response = await services.artis.deleteArtis({ id });
+        const response = await services.artist.deleteArtist({ id });
 
         if (response.status === 404) {
             return res.status(404).json({

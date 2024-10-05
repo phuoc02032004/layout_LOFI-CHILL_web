@@ -1,28 +1,28 @@
 import * as services from '../services/index.js';
 import { internalServerError } from '../middleware/handle_error.js';
 import joi from 'joi';
-import { Title, Description, Artist } from '../helper/joi_schema.js';
+import { Title, Description, musicUrl, imageUrl, visualUrl, soundUrl } from '../helper/joi_schema.js';
 
 // Create a new preset
 export const createPreset = async (req, res) => {
     try {
         const { error } = joi.object({
-            Title: joi.string().required(),
-            Description: joi.string().required(),
-            Music: joi.array().items(joi.string().required()),
-            Visuals: joi.array().items(joi.string().required()),
-            Sounds: joi.array().items(joi.string().required())
+            Title, Description, musicUrl, imageUrl, visualUrl, soundUrl
         }).validate(req.body);
 
-        if (error) return res.status(400).json({ error: error.details[0].message });
+        if (error) {
+            return res.status(400).json({ error: error.details[0].message });
+        }
 
-        const response = await services.presets.createPreset(req.body);
+        const response = await services.presets.createPreset({ ...req.body });
+
         return res.status(200).json(response);
     } catch (error) {
         console.error('Error in createPreset controller:', error);
         return internalServerError(res);
     }
 };
+
 
 // Get all presets
 export const getAllPresets = async (req, res) => {
