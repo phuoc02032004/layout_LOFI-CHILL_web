@@ -55,7 +55,10 @@ export const createSoundEffect = ({ Title, Description }, file) => new Promise(a
 export const getAllSoundEffect = ({ }) => new Promise(async (resolve, reject) => {
     try {
         const soundEffectsSnapshot = await db.collection('Sounds').get();
-        const soundEffect = soundEffectsSnapshot.docs.map(doc => doc.data());
+        const soundEffect = soundEffectsSnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
         return resolve({
             err: 0,
             mes: 'Get all soundEffect successfully',
