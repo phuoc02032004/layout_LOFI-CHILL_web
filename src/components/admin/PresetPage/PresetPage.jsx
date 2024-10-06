@@ -366,7 +366,7 @@ function PresetPage() {
                 required
               />
 
-              <label htmlFor="newPresetPlaylist">Playlist:</label>
+              <label htmlFor="newPresetPlaylist">Genere:</label>
               <select className='choose-song' id="newPresetPlaylist" name="newPresetPlaylist" required>
                 {stationsData.map((station) => (
                   <option key={station.id} value={station.name}>
@@ -432,7 +432,7 @@ function PresetPage() {
                 required
               />
 
-              <label htmlFor="editPresetPlaylist">Playlist:</label>
+              <label htmlFor="editPresetPlaylist">Genre:</label>
               <select className='choose-song' id="editPresetPlaylist" name="editPresetPlaylist" required>
                 {stationsData.map((station) => (
                   <option key={station.id} value={station.name}>

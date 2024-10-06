@@ -4,11 +4,13 @@ import NavigationBar from '../NavigationBar/NavigationBar';
 import './ChillPage.css';
 import videoCover from '../assets/videos/bk.mp4';
 import Loading from './../Loading/Loading';
+import TutorialUser from '../tutorial/TutorialUser'; 
 
-export default function ChillPage() {
+const ChillPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showNavigationBar, setShowNavigationBar] = useState(false);
   const [backgroundVideo, setBackgroundVideo] = useState(videoCover);
+  const [showTutorial, setShowTutorial] = useState(false);
   const videoRef = useRef(null);
 
   useEffect(() => {
@@ -18,14 +20,11 @@ export default function ChillPage() {
 
     video.oncanplaythrough = () => {
       setIsLoading(false);
-      setTimeout(() => {
-        setShowNavigationBar(true);
-      }, 100);
+      setTimeout(() => setShowNavigationBar(true), 100);
+      setTimeout(() => setShowTutorial(true), 500);
     };
 
-    return () => {
-      video.removeEventListener('canplaythrough', () => {});
-    };
+    return () => video.removeEventListener('canplaythrough', () => {});
   }, []);
 
   useEffect(() => {
@@ -33,13 +32,10 @@ export default function ChillPage() {
     const handleMouseMove = () => {
       clearTimeout(timeoutId);
       setShowNavigationBar(true);
-      timeoutId = setTimeout(() => {
-        setShowNavigationBar(false);
-      }, 6000);
+      timeoutId = setTimeout(() => setShowNavigationBar(false), 6000);
     };
 
     document.addEventListener('mousemove', handleMouseMove);
-
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
       clearTimeout(timeoutId);
@@ -50,15 +46,19 @@ export default function ChillPage() {
     setBackgroundVideo(videoSrc);
   };
 
+  const handleCloseTutorial = () => {
+    setShowTutorial(false);
+  };
+
   return (
     <div>
       {isLoading && <Loading />}
       <Navbar />
-      <NavigationBar 
-        showInitially={showNavigationBar} 
-        onBackgroundChange={handleBackgroundChange} 
-      />
-      <video  className="background-video" ref={videoRef} src={backgroundVideo} autoPlay muted loop></video>
+      <NavigationBar showInitially={showNavigationBar} onBackgroundChange={handleBackgroundChange} />
+      <video className="background-video" ref={videoRef} src={backgroundVideo} autoPlay muted loop />
+      {!isLoading && showTutorial && <TutorialUser onClose={handleCloseTutorial} />}
     </div>
   );
-}
+};
+
+export default ChillPage;

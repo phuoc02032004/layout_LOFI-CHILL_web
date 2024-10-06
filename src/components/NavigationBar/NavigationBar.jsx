@@ -20,6 +20,8 @@ import { IoChatboxEllipses } from "react-icons/io5";
 
 const NavigationBar = ({ showInitially, onBackgroundChange }) => {
   const [activeButton, setActiveButton] = useState(null);
+  const [showVolumeSlider, setShowVolumeSlider] = useState(false);
+  const [volume, setVolume] = useState(50);
 
   const handleClick = (buttonName) => {
     setActiveButton(buttonName);
@@ -27,6 +29,19 @@ const NavigationBar = ({ showInitially, onBackgroundChange }) => {
 
   const handleClose = () => {
     setActiveButton(null);
+  };
+
+  const handleVolumeClick = () => {
+    setShowVolumeSlider(!showVolumeSlider);
+  };
+
+  const handleVolumeChange = (event) => {
+    setVolume(event.target.value);
+  };
+
+  const handleVolumeMute = () => {
+    setVolume(0);
+    setShowVolumeSlider(false);
   };
 
   return (
@@ -42,7 +57,26 @@ const NavigationBar = ({ showInitially, onBackgroundChange }) => {
         <button className="control-button"><FaRegCirclePause /></button>
         <button className="control-button"><FaRegHeart /></button>
         <button className="control-button"><AiOutlineSpotify /></button>
-        <button className="control-button"><LuVolume2 /></button>
+        <button className="control-button" onClick={handleVolumeClick}>
+          {showVolumeSlider ? (
+            <span className="volume-icon-muted" onClick={handleVolumeMute}>
+              <LuVolume2 />
+            </span>
+          ) : (
+            <LuVolume2 /> 
+          )}
+        </button>
+        {showVolumeSlider && (
+          <div className="volume-slider-ic">
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={volume}
+              onChange={handleVolumeChange}
+            />
+          </div>
+        )}
       </div>
       <div className="navigation-items">
         <button className="nav-item" onClick={() => handleClick('Presets')}>
