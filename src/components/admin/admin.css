@@ -10,7 +10,7 @@
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   z-index: 1;
   left: 10px;
-  top: 50px;
+  top: 90px;
 }
 
 @keyframes slideIn {

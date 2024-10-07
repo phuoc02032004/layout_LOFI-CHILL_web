@@ -97,7 +97,7 @@
 }
 
 .nav-item svg:hover {
-    stroke:#ffbd6f;;
+    stroke:#ffbd6f;
     stroke-width: 3; 
     transition: all 0.3s ease;
     color: #ffbd6f;
@@ -111,6 +111,14 @@
     margin: 0 10px;
     cursor: pointer;
     position: relative; 
+    transition: all 0.3s ease; 
+}
+
+.control-button :hover{
+    stroke:#ffbd6f;
+    stroke-width: 3; 
+    transition: all 0.3s ease;
+    color: #ffbd6f;
 }
 
 .volume-slider-ic {

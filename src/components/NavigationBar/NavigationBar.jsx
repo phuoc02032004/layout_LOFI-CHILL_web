@@ -7,7 +7,7 @@ import Visuals from '../InfoBox/Visuals/Visuals';
 import Sounds from '../InfoBox/Sounds/Sounds';
 
 import albumCover from '../assets/images/test.jpg';
-import { FaRegCirclePause } from "react-icons/fa6";
+import { FaRegCirclePause, FaRegCirclePlay } from "react-icons/fa6";
 import { FaRegHeart } from "react-icons/fa";
 import { AiOutlineSpotify } from "react-icons/ai";
 import { LuVolume2 } from "react-icons/lu";
@@ -17,11 +17,15 @@ import { AiFillPicture } from "react-icons/ai";
 import { GiSoundWaves } from "react-icons/gi";
 import { RiPlayListFill } from "react-icons/ri";
 import { IoChatboxEllipses } from "react-icons/io5";
+import { FaHeart } from "react-icons/fa";
 
 const NavigationBar = ({ showInitially, onBackgroundChange }) => {
   const [activeButton, setActiveButton] = useState(null);
   const [showVolumeSlider, setShowVolumeSlider] = useState(false);
   const [volume, setVolume] = useState(50);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isHeart, setIsHeart] = useState(false);
+
 
   const handleClick = (buttonName) => {
     setActiveButton(buttonName);
@@ -44,6 +48,14 @@ const NavigationBar = ({ showInitially, onBackgroundChange }) => {
     setShowVolumeSlider(false);
   };
 
+  const handlePlayPause = () => {
+    setIsPlaying(!isPlaying);
+  };
+
+  const handleHeartClick = () => {
+    setIsHeart(!isHeart)
+  }
+
   return (
     <div className={`navigation-bar ${showInitially ? 'show' : ''}`}>
       <div className="song-info">
@@ -54,8 +66,20 @@ const NavigationBar = ({ showInitially, onBackgroundChange }) => {
         </div>
       </div>
       <div className="controls">
-        <button className="control-button"><FaRegCirclePause /></button>
-        <button className="control-button"><FaRegHeart /></button>
+        <button className="control-button" onClick={handlePlayPause}>
+          {isPlaying ? (
+            <FaRegCirclePause /> 
+          ) : (
+            <FaRegCirclePlay /> 
+          )}
+        </button>
+        <button className="control-button" onClick={handleHeartClick}>
+          {isHeart ?(
+            <FaRegHeart />
+          ):(
+            <FaHeart />
+          )}
+        </button>
         <button className="control-button"><AiOutlineSpotify /></button>
         <button className="control-button" onClick={handleVolumeClick}>
           {showVolumeSlider ? (

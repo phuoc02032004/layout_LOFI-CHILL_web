@@ -3,6 +3,7 @@ import './SongPage_ad.css';
 import NavbarAD from '../NavbarAdmin/Navbar';
 import SongCarousel from '../../Carousel/SongCarousel';
 import ArtistCarousel from '../../Carousel/ArtistCarousel';
+import GenreManagement from '../GenreManager/GenreM'; 
 
 import After_hours from '../../assets/images/After-hours.jpg';
 import Friends from '../../assets/images/Friends.jpg';
@@ -63,7 +64,7 @@ function SongPage() {
     { title: 'Sleepy Fish', image: SleepyFish, description: 'Description 12' },
   ]);
 
-  const stationsData = [
+  const [stations, setStations] = useState([
     {
       id: 1,
       name: 'Endless Sunday',
@@ -99,7 +100,7 @@ function SongPage() {
       name: 'Sunshine Beat',
       description: 'Uplifting beats to keep you active' 
     },
-  ];
+  ]);
 
   const handleAddClick = () => {
     setIsAddModalOpen(true);
@@ -175,7 +176,6 @@ function SongPage() {
       <NavbarAD />
       <button className='btn-add' onClick={handleAddClick}>ADD</button>
 
-      {/* Add Song Modal */}
       {isAddModalOpen && (
         <div className="add-modal"> 
           <div className="modal-content">
@@ -196,7 +196,7 @@ function SongPage() {
 
               <label htmlFor="genre">Genre:</label>
               <select className="choose" id="station">
-                {stationsData.map((station) => (
+                {stations.map((station) => (
                   <option key={station.id} value={station.id}>
                     {station.name}
                   </option>
@@ -218,7 +218,6 @@ function SongPage() {
         </div>
       )}
 
-      {/* Edit Song Modal */}
       {isEditModalOpen && (
         <div className="edit-modal"> 
           <div className="edit-content"> 
@@ -245,7 +244,7 @@ function SongPage() {
 
               <label htmlFor="genre">Genre:</label>
               <select className="choose" id="station">
-                {stationsData.map((station) => (
+                {stations.map((station) => (
                   <option key={station.id} value={station.id}>
                     {station.name}
                   </option>
@@ -305,6 +304,9 @@ function SongPage() {
             </button>
           ))}
         </div>
+
+        <div className="name_a">Genre</div>
+        <GenreManagement stations={stations} setStations={setStations} /> 
 
         <div className="name_a">New Song</div>
         <SongCarousel songs={songs} /> 

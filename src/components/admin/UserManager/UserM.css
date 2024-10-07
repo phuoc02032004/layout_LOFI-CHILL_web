@@ -1,0 +1,39 @@
+.user-management {
+    margin-top: 20px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f8f8f8; /* Light background */
+  }
+  
+  .user-management h2 {
+    margin-bottom: 15px;
+    color: #333; /* Darker text color */
+  }
+  
+  .user-list-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 15px;
+  }
+  
+  .user-item {
+    background-color: #fff; /* White card background */
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    min-width: 200px; /* Minimum width for each user item */
+    flex: 1;
+  }
+  
+  .user-item h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #333; /* Darker text color */
+  }
+  
+  .user-item p {
+    margin-bottom: 5px;
+    color: #555; /* Slightly lighter text color */
+  }
