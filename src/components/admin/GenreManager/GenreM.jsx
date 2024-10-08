@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import './GenreM.css'; // Create a CSS file for styling
-import { FaCoffee } from "react-icons/fa"; // Or other icons as needed
+import './GenreM.css'; 
+import { FaCoffee } from "react-icons/fa"; 
 
 const GenreM = ({ stations, setStations }) => {
-  // State variables for modals
   const [isDeleteGenreModalOpen, setIsDeleteGenreModalOpen] = useState(false);
   const [genreToDelete, setGenreToDelete] = useState(null);
   const [isEditGenreModalOpen, setIsEditGenreModalOpen] = useState(false);

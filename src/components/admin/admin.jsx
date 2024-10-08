@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import "./admin.css";
 import Loading from '../Loading/Loading';
 import NavbarAD from './NavbarAdmin/Navbar';
-import UserM from './UserManager/UserM';
 
 const Admin = () => {
   const [isLoading, setIsLoading] = useState(true);

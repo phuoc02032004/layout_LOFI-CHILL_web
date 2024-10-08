@@ -24,7 +24,7 @@ const Sounds = () => {
   return (
     <div className="sounds-container">
       {soundsData.map(sound => (
-        <div key={sound.id} className="sound-item">
+        <div key={sound.id} className="sound-item-s">
           <span className="sound-name">{sound.name}</span>
           <div className="slider-container">
             <input

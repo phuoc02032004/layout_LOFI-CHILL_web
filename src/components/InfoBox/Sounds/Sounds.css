@@ -5,10 +5,11 @@
   overflow-y: auto;
 }
 
-.sound-item {
+.sound-item-s {
   display: flex;
   align-items: center;
-  margin-bottom: 22px; 
+  gap: 10px;
+  margin-bottom: 30px;
 }
 
 .sound-name {
@@ -20,7 +21,7 @@
 .slider-container {
   width: 200px;
   margin-left: 10px; 
-  margin-right: 70px;
+  margin-right: 40px;
 }
 
 .volume-slider {
