@@ -7,162 +7,23 @@ const bucket = admin.storage().bucket(process.env.BUCKET);
 
 const db = admin.firestore();
 
-// Create folder Visual
-export const createFolderVisual = ({ Title }) => new Promise(async (resolve, reject) => {
+// Create Visual
+export const createVisual = ({ Title }, fileImg, fileVideo) => new Promise(async (resolve, reject) => {
     try {
-        // Kiểm tra xem Folder Visual đã tồn tại chưa
         const visualRef = db.collection('Visuals');
+
         const snapshot = await visualRef.where('Title', '==', Title).get();
 
         if (!snapshot.empty) {
             return resolve({
                 status: 404,
-                mes: 'Folder Visual with this title already exists'
-            });
+                mes: 'Visual withe this title already exist'
+            })
         }
-
-        // Tạo Folder Visual mới trong Firestore
-        const newVisualRef = visualRef.doc();
-        await newVisualRef.set({
-            Title,
-            createdAt: admin.firestore.FieldValue.serverTimestamp(),
-            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-        });
-
-        // Truy xuất lại dữ liệu Folder Visual vừa tạo
-        const createdVisual = await newVisualRef.get();
-
-        // Tạo thư mục mới trong Firebase Storage dựa trên title
-        const bucket = storage.bucket(process.env.BUCKET);
-        const folderName = `Visuals/${Title}/`;
-        const folderImgName = `Images/Visual/${Title}/`;
-        const file = bucket.file(folderName + '.keep');
-        const fileImg = bucket.file(folderImgName + '.keep');
-
-        // Tạo một file trống để đảm bảo thư mục được tạo
-        await file.save('');
-        await fileImg.save('');
-
-        return resolve({
-            err: 0,
-            mes: 'Create Folder Visual successfully',
-            playlist: createdVisual.data()
-        });
-    } catch (error) {
-        reject(error);
-        return { status: 500, message: 'Error creating Folder Visual', error };
-    }
-});
-
-// Get all Folder Visual
-export const getAllFolderVisual = ({ }) => new Promise(async (resolve, reject) => {
-    try {
-        const folderSnapshot = await db.collection('Visuals').get();
-        const visuals = folderSnapshot.docs.map(doc => doc.data());
-        resolve({
-            err: 0,
-            mes: 'Get all Folder Visual successfully',
-            Visual: visuals
-        })
-    } catch (error) {
-        reject(error);
-        return { status: 500, message: 'Error get all Folder Visual', error };
-    }
-});
-
-// Get specific Folder Visual
-export const getSpecificFolderVisual = ({ id }) => new Promise(async (resolve, reject) => {
-    try {
-        const visualRef = db.collection('Visuals').doc(id);
-        const visualDoc = await visualRef.get();
-        if (!visualDoc.exists) {
-            return resolve({
-                status: 404,
-                message: 'Visual not found',
-            });
-        }
-        return resolve({
-            err: 0,
-            mes: 'Get specific Folder Visual successfully',
-            Visual: visualDoc
-        })
-    } catch (error) {
-        reject(error);
-        return { status: 500, message: 'Error get specific Folder Visual', error };
-    }
-});
-
-
-//Update a Folder Visual
-export const updateFolderVisual = ({ id, data }) => new Promise(async (resolve, reject) => {
-    try {
-        const visualRef = db.collection('Visuals').doc(id);
-
-        const visualDoc = await visualRef.get();
-        if (!visualDoc.exists) {
-            return resolve({
-                status: 404,
-                message: 'Folder Visual not found',
-            });
-        }
-
-        data.updatedAt = new Date();
-        await visualRef.update(data);
-
-        // Lấy lại dữ liệu mới sau khi cập nhật
-        const visualUpdate = await visualRef.get();
-
-        return resolve({
-            err: 0,
-            mes: 'Update Folder Visual successfully',
-            playlist: visualUpdate.data() // Lấy dữ liệu của Visual vừa sua
-        });
-    } catch (error) {
-        reject(error);
-        return { status: 500, message: 'Error update Visual Folder', error };
-    }
-});
-
-// Delete Folder Visual
-export const deleteFolderVisual = ({ id }) => new Promise(async (resolve, reject) => {
-    try {
-        const visualRef = db.collection('Visuals').doc(id);
-        const visualDoc = await visualRef.get();
-        if (!visualDoc.exists) {
-            return resolve({
-                status: 404,
-                message: 'Folder Visual not found',
-            });
-        }
-        await visualRef.delete();
-        resolve({
-            err: 0,
-            mes: 'Delete Folder Visual successfully',
-        });
-    } catch (error) {
-        reject(error);
-        return { status: 500, message: 'Error delete Folder Visual', error };
-    }
-});
-
-// Create Visual
-export const createVisual = ({ idFolderVisual, Title }, fileImg, fileVideo) => new Promise(async (resolve, reject) => {
-    try {
-        const visualRef = db.collection('Visuals').doc(idFolderVisual).collection('Visual');
-
-        const folderVisualRef = db.collection('Visuals').doc(idFolderVisual);
-        const folderVisualDoc = await folderVisualRef.get();
-        if (!folderVisualDoc.exists) {
-            return resolve({
-                status: 404,
-                message: 'Folder Visual not found',
-            });
-        }
-        const folderName = folderVisualDoc.data().Title;
 
         // Định nghĩa đường dẫn upload cho video và ảnh
-        const filenameVideo = `Visuals/${folderName}/${uuidv4()}_${fileVideo.originalname}`;
-        const filenameImg = `Images/Visual/${folderName}/${uuidv4()}_${fileImg.originalname}`;
+        const filenameVideo = `Visuals/${uuidv4()}_${fileVideo.originalname}`;
+        const filenameImg = `Images/Visual/${uuidv4()}_${fileImg.originalname}`;
 
         // Tạo reference cho các file trên Firebase Storage
         const fileUploadVideo = bucket.file(filenameVideo);
@@ -197,10 +58,10 @@ export const createVisual = ({ idFolderVisual, Title }, fileImg, fileVideo) => n
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         });
 
-        resolve({
+        return resolve({
             err: 0,
             mes: 'Visual created successfully.',
-            visual: newVisualRef.id, // Trả về id của visual mới tạo
+            visual: newVisualRef.id,
         });
 
     } catch (error) {
@@ -214,9 +75,9 @@ export const createVisual = ({ idFolderVisual, Title }, fileImg, fileVideo) => n
 });
 
 // Get all Visual
-export const getAllVisual = ({ idFolderVisual }) => new Promise(async (resolve, reject) => {
+export const getAllVisual = ({ }) => new Promise(async (resolve, reject) => {
     try {
-        const visualRef = db.collection('Visuals').doc(idFolderVisual).collection('Visual');
+        const visualRef = db.collection('Visuals');
         const visualDoc = await visualRef.get();
         if (visualDoc.empty) {
             return resolve({
@@ -225,7 +86,7 @@ export const getAllVisual = ({ idFolderVisual }) => new Promise(async (resolve, 
             });
         }
         const visuals = visualDoc.docs.map(doc => doc.data());
-        resolve({
+        return resolve({
             err: 0,
             mes: 'Get all Visual successfully',
             visual: visuals
@@ -237,9 +98,9 @@ export const getAllVisual = ({ idFolderVisual }) => new Promise(async (resolve, 
 });
 
 // GET a specific Visual
-export const getSpecificVisual = ({ idFolderVisual, id }) => new Promise(async (resolve, reject) => {
+export const getSpecificVisual = ({ id }) => new Promise(async (resolve, reject) => {
     try {
-        const visualRef = db.collection('Visuals').doc(idFolderVisual).collection('Visual').doc(id);
+        const visualRef = db.collection('Visuals').doc(id);
         const visualDoc = await visualRef.get();
         if (!visualDoc.exists) {
             return resolve({
@@ -248,7 +109,7 @@ export const getSpecificVisual = ({ idFolderVisual, id }) => new Promise(async (
             });
         }
 
-        resolve({
+        return resolve({
             err: 0,
             mes: 'Get specific Visual successfully',
             visual: visualDoc.data()
@@ -260,9 +121,9 @@ export const getSpecificVisual = ({ idFolderVisual, id }) => new Promise(async (
 });
 
 // Update Visual
-export const updateVisual = ({ idFolderVisual, id, data }, fileImg, fileVideo) => new Promise(async (resolve, reject) => {
+export const updateVisual = ({ id, data }, fileImg, fileVideo) => new Promise(async (resolve, reject) => {
     try {
-        const visualRef = db.collection('Visuals').doc(idFolderVisual).collection('Visual').doc(id);
+        const visualRef = db.collection('Visuals').doc(id);
         const visualDoc = await visualRef.get();
         if (!visualDoc.exists) {
             return resolve({
@@ -270,16 +131,6 @@ export const updateVisual = ({ idFolderVisual, id, data }, fileImg, fileVideo) =
                 message: 'Visual not found',
             });
         }
-
-        const folderVisualRef = db.collection('Visuals').doc(idFolderVisual);
-        const folderVisualDoc = await folderVisualRef.get();
-        if (!folderVisualDoc.exists) {
-            return resolve({
-                status: 404,
-                message: 'Folder Visual not found',
-            });
-        }
-        const visualName = folderVisualDoc.data().Title;
 
         if (fileImg) {
             const visualData = visualDoc.data();
@@ -293,7 +144,7 @@ export const updateVisual = ({ idFolderVisual, id, data }, fileImg, fileVideo) =
                 console.error(`Failed to delete old image file: ${filePathImg}`, error);
             }
 
-            const filenameImg = `Images/Visual/${visualName}/${uuidv4()}_${fileImg.originalname}`;
+            const filenameImg = `Images/Visual/${uuidv4()}_${fileImg.originalname}`;
             const fileUploadImg = bucket.file(filenameImg);
             await fileUploadImg.save(fileImg.buffer);
             const [urlImg] = await fileUploadImg.getSignedUrl({
@@ -316,7 +167,7 @@ export const updateVisual = ({ idFolderVisual, id, data }, fileImg, fileVideo) =
                 console.error(`Failed to delete old video file: ${filePathVideo}`, error);
             }
 
-            const filenameVideo = `Visuals/${visualName}/${uuidv4()}_${fileVideo.originalname}`;
+            const filenameVideo = `Visuals/${uuidv4()}_${fileVideo.originalname}`;
             const fileUploadVideo = bucket.file(filenameVideo);
             await fileUploadVideo.save(fileVideo.buffer);
             const [urlVideo] = await fileUploadVideo.getSignedUrl({
@@ -351,9 +202,9 @@ export const updateVisual = ({ idFolderVisual, id, data }, fileImg, fileVideo) =
 });
 
 // Delete a Visual
-export const deleteVisual = ({ idFolderVisual, id }) => new Promise(async (resolve, reject) => {
+export const deleteVisual = ({ id }) => new Promise(async (resolve, reject) => {
     try {
-        const visualRef = db.collection('Visuals').doc(idFolderVisual).collection('Visual').doc(id);
+        const visualRef = db.collection('Visuals').doc(id);
         const visualDoc = await visualRef.get();
         if (!visualDoc.exists) {
             return resolve({
@@ -381,7 +232,7 @@ export const deleteVisual = ({ idFolderVisual, id }) => new Promise(async (resol
 
         // Xóa bài hát khỏi Firestore
         await visualRef.delete();
-        resolve({
+        return resolve({
             err: 0,
             mes: 'Delete Visual successfully',
         });

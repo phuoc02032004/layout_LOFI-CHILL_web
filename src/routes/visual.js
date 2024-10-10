@@ -7,23 +7,17 @@ const upload = multer({ storage });
 
 const router = express.Router();
 
-router.post('/createFolderVisual', visual.createFolderVisual);
-router.get('/getAllFolderVisual', visual.getAllFolderVisual);
-router.get('/getSpecificFolderVisual/:id', visual.getSpecificFolderVisual);
-router.put('/updateFolderVisual/:id', visual.updateFolderVisual);
-router.delete('/deleteFolderVisual/:id', visual.deleteFolderVisual);
-
-router.post('/createVisual/:idFolderVisual', upload.fields([
+router.post('/createVisual', upload.fields([
     { name: 'image', maxCount: 1 },
     { name: 'video', maxCount: 1 }
 ]), visual.createVisual);
-router.get('/getAllVisual/:idFolderVisual', visual.getAllVisual);
-router.get('/getSpecificVisual/:idFolderVisual/:id', visual.getSpecificVisual);
-router.put('/updateVisual/:idFolderVisual/:id', upload.fields([
+router.get('/getAllVisual', visual.getAllVisual);
+router.get('/getSpecificVisual/:id', visual.getSpecificVisual);
+router.put('/updateVisual/:id', upload.fields([
     { name: 'image', maxCount: 1 },
     { name: 'video', maxCount: 1 }
 ]), visual.updateVisual);
-router.delete('/deleteVisual/:idFolderVisual/:id', visual.deleteVisual);
+router.delete('/deleteVisual/:id', visual.deleteVisual);
 
 
 
