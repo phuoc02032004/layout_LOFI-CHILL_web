@@ -1,0 +1,72 @@
+.genre-management {
+  margin-top: 20px;
+  padding: 30px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #12121294;
+}
+
+.genre-management h2 {
+  margin-bottom: 15px;
+}
+
+.genre-list-container {
+  display: flex;
+  flex-wrap: wrap; 
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.genre-item {
+  background-color: #fff; 
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  min-width: 200px; 
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 150px; 
+}
+
+.genre-item h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.genre-item p {
+  margin-bottom: 10px;
+  color: #555;
+  flex-grow: 1;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-add-G {
+  padding: 30px 23px;
+  border: none;
+  font-size: 1.2em;
+  cursor: pointer;
+  border-radius: 10px;
+  font-family: "Poppins", sans-serif;
+  transition: all 0.3s ease;
+  font-weight: 700;
+  position: fixed;
+  bottom:120px;
+  right: 20px;
+  z-index: 10;
+  border: 2px solid rgba(67, 53, 145, 0.385);
+  background-color: transparent;
+  color: #fff;
+  backdrop-filter: blur(50px);
+}
+
+.btn-add-G:hover {
+  color: #333;
+  background-color: #fff;
+}
