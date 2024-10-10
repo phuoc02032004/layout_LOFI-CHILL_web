@@ -1,4 +1,3 @@
-// src/services/auth.js
 import { transporter } from '../config/email.js';
 
 const sendVerificationEmail = async (email, verificationCode) => {
