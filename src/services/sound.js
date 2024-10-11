@@ -22,18 +22,16 @@ const createSound = async (title, description, soundFile) => {
 const getAllSound = async () => {
     try {
         const response = await axios.get('http://localhost:3002/api/v1/soundEffect/getAllSoundEffect');
-        console.log(response.data);
-        const data = response.data.soundEffect.map(sound => ({
+        return response.data.soundEffect.map(sound => ({
             id: sound.id,
             title: sound.Title,
             url: sound.url,
         }));
-        return data;
     } catch (error) {
         console.error('Error fetching sound:', error);
         throw error;
     }
-}
+};
 
 const deleteSound = async (soundId) => {
     try {
@@ -42,6 +40,6 @@ const deleteSound = async (soundId) => {
     } catch (error) {
         console.error('Error deleting sound effect:', error.response ? error.response.data : error.message);
     }
-}
+};
 
 export { createSound, getAllSound, deleteSound };
