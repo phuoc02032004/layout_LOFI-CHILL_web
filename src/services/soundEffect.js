@@ -57,18 +57,19 @@ export const getAllSoundEffect = ({ }) => new Promise(async (resolve, reject) =>
         const soundEffectsSnapshot = await db.collection('Sounds').get();
         const soundEffect = soundEffectsSnapshot.docs.map(doc => ({
             id: doc.id,
-            ...doc.data()
+            ...doc.data(),
         }));
         return resolve({
             err: 0,
             mes: 'Get all soundEffect successfully',
             soundEffect: soundEffect
-        })
+        });
     } catch (error) {
         reject(error);
         return { status: 500, message: 'Error get all soundEffect', error };
     }
 });
+
 
 // Get specific SoundEffect
 export const getSpecificSoundEffect = ({ id }) => new Promise(async (resolve, reject) => {
