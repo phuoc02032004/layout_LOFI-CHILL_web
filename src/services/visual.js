@@ -85,7 +85,10 @@ export const getAllVisual = ({ }) => new Promise(async (resolve, reject) => {
                 message: 'No visuals found',
             });
         }
-        const visuals = visualDoc.docs.map(doc => doc.data());
+        const visuals = visualDoc.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+        }));
         return resolve({
             err: 0,
             mes: 'Get all Visual successfully',
