@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import LoginScreen from '@/components/Screens/LoginScreen';
 import RegisterScreen from '@/components/Screens/RegisterScreen';
-import HomeScreen from '@/components/Screens/HomeScreen';
+import BottomTab from '@/components/navigation/BottomTab';
 
 const Stack = createNativeStackNavigator();
 
@@ -25,7 +25,7 @@ const App = () => {
     <NavigationContainer independent={true}>
       <Stack.Navigator initialRouteName={isLoggedIn ? "HomeScreen" : "LoginScreen"}> 
         <Stack.Screen name="LoginScreen" component={LoginScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="HomeScreen" component={BottomTab} options={{ headerShown: false }} />
         <Stack.Screen name="RegisterScreen" component={RegisterScreen} options={{ headerShown: false }}  /> 
       </Stack.Navigator>
     </NavigationContainer>

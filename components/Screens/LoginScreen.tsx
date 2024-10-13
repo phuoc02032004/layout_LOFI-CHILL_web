@@ -20,6 +20,7 @@ interface RootStackParamList {
   LoginScreen: undefined;
   HomeScreen: undefined;
   RegisterScreen: undefined;
+  HeaderNav: undefined;
   [key: string]: undefined | object;
 }
 
@@ -56,7 +57,7 @@ const LoginScreen = () => {
     }
 
     try {
-      const response = await axios.post('http://192.168.19.211:3002/api/v1/auth/login', {
+      const response = await axios.post('http://192.168.2.177:3002/api/v1/auth/login', {
         email,
         password,
       });
@@ -89,7 +90,7 @@ const LoginScreen = () => {
       source={require('../../assets/images/te.jpg')}
       style={[styles.backgroundImage, StyleSheet.absoluteFill]}
     >
-      <BlurView intensity={5} style={styles.blurContainer}>
+      <BlurView intensity={50} tint='dark'  style={styles.blurContainer}>
         <View style={styles.formContainer}>
           <Text style={styles.title}>Login</Text>
           {error && <Text style={styles.errorMessage}>{error}</Text>}

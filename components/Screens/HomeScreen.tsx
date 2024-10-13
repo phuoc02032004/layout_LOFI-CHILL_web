@@ -1,33 +1,61 @@
-import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Video } from 'expo-av';
-
-// Định nghĩa kiểu cho các route trong ứng dụng
-type RootStackParamList = {
-  LoginScreen: undefined; 
-  HomeScreen: undefined;  
-  RegisterScreen: undefined; 
-};
+import React, { useRef, useState, useEffect } from 'react';
+import { View, Dimensions, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
+import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av';
+import Loading from '../Loading/Loading';
+import Header from '../Header/Header';
 
 const HomeScreen = () => {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'HomeScreen'>>();
+  const navigation = useNavigation();
+  const isFocused = useIsFocused();
+  const { height, width } = Dimensions.get('window');
+  
+  // Add explicit type for videoRef
+  const videoRef = useRef<Video>(null);
+  
+  const [status, setStatus] = useState<AVPlaybackStatus | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadVideo = async () => {
+      if (videoRef.current) {
+        try {
+          await videoRef.current.playAsync(); // This will now work
+          setIsLoading(false);
+        } catch (error) {
+          console.error('Error playing video:', error);
+          setIsLoading(false); // Important: Set loading to false even on error
+        }
+      }
+    };
+
+    if (isFocused) {
+      setIsLoading(true);
+      loadVideo();
+    } else {
+      setIsLoading(false); // Important: reset loading on unfocus
+    }
+  }, [isFocused]); // Only re-run if isFocused changes
 
   return (
     <View style={styles.container}>
+      <Header />
+      {isLoading && <Loading />}
       <Video
-        source={require('../../assets/videos/Summer.mp4')} // Đường dẫn tới video
-        style={styles.video}
-        resizeMode="cover" // Thêm thuộc tính này
-        shouldPlay
+        ref={videoRef}
+        source={require('../../assets/videos/bk.mp4')}
+        style={[styles.video, { height, width }]}
+        resizeMode={ResizeMode.COVER}
+        shouldPlay={isFocused}
         isLooping
         isMuted
-        onError={(error) => console.log('Video Error: ', error)} // Thêm onError để kiểm tra lỗi
+        usePoster={require('../../assets/images/imgCampfire.jpg')}
+        onPlaybackStatusUpdate={(status) => setStatus(status as AVPlaybackStatus)}
+        onError={(error) => console.error('Video Error:', error)}
       />
       <View style={styles.overlay}>
         <Text style={styles.text}>Home</Text>
-        <TouchableOpacity style={[styles.button, { zIndex: 1 }]} onPress={() => navigation.navigate('LoginScreen')}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('LoginScreen')}>
           <Text style={styles.buttonText}>Quay lại Login</Text>
         </TouchableOpacity>
       </View>
@@ -40,17 +68,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   video: {
+    flex: 1,
+  },
+  overlay: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-  },
-  overlay: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Màu nền mờ để tăng độ tương phản cho văn bản
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   text: {
     color: 'white',
