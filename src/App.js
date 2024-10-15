@@ -2,7 +2,7 @@ import React from 'react';
 import LoginForm from './components/loginform/LoginForm';
 import RegisterForm from './components/registerform/RegisterForm';
 import HomePage from './components/pages/HomePage';
-import { BrowserRouter, Routes, Route } from 'react-router-dom'; 
+import { BrowserRouter, Routes, Route, useParams } from 'react-router-dom'; 
 import ChillPage from './components/pages/ChillPage';
 import AdminPage from './components/admin/admin';
 import BGPage from './components/admin/BGPage/BGPage';
@@ -12,8 +12,15 @@ import SoundPage from './components/admin/SoundPage/SoundPage';
 import ArtistPage from './components/pages/ArtistPage/ArtistPage';
 import SongPage from './components/pages/SongPage/SongPage';
 import ArtistPage_ad from './components/admin/ArtistPage_ad/ArtistPage_ad';
+import ArtistDetail from './components/pages/ArtistPage/ArtistDetail/ArtistDetail';
+
 
 function App() {
+
+  function ArtistDetailWrapper() {
+    const { id } = useParams(); 
+    return <ArtistDetail key={id} />;
+  }
   return (
     <BrowserRouter>
       <div>
@@ -29,6 +36,7 @@ function App() {
           <Route path="/PresetPage" element={<PresetPage />} />
           <Route path="/SoundPage" element={<SoundPage />} />
           <Route path='/ArtistPage' element={<ArtistPage />} />
+          <Route path='/ArtistPage/:id' element={<ArtistDetail  />} element={<ArtistDetailWrapper />} />
           <Route path='/SongPage' element={<SongPage />} />
           <Route path='/ArtistPage_ad' element={<ArtistPage_ad />} />
         </Routes>

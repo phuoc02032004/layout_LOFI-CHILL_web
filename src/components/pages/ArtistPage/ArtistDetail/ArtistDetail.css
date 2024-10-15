@@ -1,0 +1,70 @@
+body, html.artist-detail-bg {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.artist-detail-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: -1; 
+    
+}
+
+.artist-detail-container {
+    position: relative;
+    z-index: 1;
+    color: white;
+    padding: 20px;
+    height: 100vh; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.artist-detail-container p {
+    font-family: "Poppins", sans-serif;
+    
+}
+
+.name-artist{
+    font-size: 50px;
+}
+
+.descrep{
+    margin-bottom: 20px;
+}
+
+.tracks{
+    background-color: #F1E5D4;
+    
+}
+.name-track{
+    align-content: flex-start;
+    color: #000;
+    font-weight: 700;
+    font-size: 30px;
+    padding-top: 20px;
+}
+
+.more{
+    background-color: #F1E5D4;
+    height: 500px;
+}
+
+.more-art{
+    align-content: flex-start;
+    color: #000;
+    font-weight: 700;
+    font-size: 30px;
+    padding-top: 20px;
+
+}

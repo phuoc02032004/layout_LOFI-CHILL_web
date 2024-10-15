@@ -1,11 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { GrNext } from "react-icons/gr";
-import { GrPrevious } from "react-icons/gr";
+import { GrNext, GrPrevious } from "react-icons/gr";
 import "./ArtistCarousel.css";
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 
 function ArtistCarousel({ artists }) {
-  const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
   const trackRef = useRef(null);
   const carouselRef = useRef(null);
@@ -25,28 +23,22 @@ function ArtistCarousel({ artists }) {
   }, [currentIndex]);
 
   useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
         carouselRef.current.classList.add('show');
       }
     }, { rootMargin: '10px' }); 
 
-    const observedElement = carouselRef.current;
-
-    if (observedElement) {
-      observer.observe(observedElement);
+    if (carouselRef.current) {
+      observer.observe(carouselRef.current);
     }
 
     return () => {
-      if (observedElement) {
-        observer.unobserve(observedElement);
+      if (carouselRef.current) {
+        observer.unobserve(carouselRef.current);
       }
     };
   }, []);
-
-  const handleArtPageClick = () => {
-    navigate('/ArtistPage');
-  };
 
   return (
     <div className="artist-carousel" ref={carouselRef}>
@@ -55,11 +47,17 @@ function ArtistCarousel({ artists }) {
       </button>
       <div className="artist-track-container">
         <div className="artist-track" ref={trackRef}>
-          {artists.map((artist, index) => (
-            <div className="artist-item" key={index}>
+          {artists.map((artist) => (
+           <Link 
+           to={`/ArtistPage/${artist.id}`} 
+           key={artist.id} 
+           className="artist-item" 
+           style={{ cursor: 'pointer' }}
+           state={{ artist: artist }} // Truyền dữ liệu artist vào state
+         >
               <img src={artist.image} alt={artist.title} />
               <div className="artist-title">{artist.title}</div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
@@ -67,7 +65,9 @@ function ArtistCarousel({ artists }) {
         <GrNext />
       </button>
       <div className="see-all-button">
-        <button onClick={handleArtPageClick}>SEE ALL</button>
+        <Link to="/artists"> 
+          <button>SEE ALL</button> 
+        </Link>
       </div>
     </div>
   );
