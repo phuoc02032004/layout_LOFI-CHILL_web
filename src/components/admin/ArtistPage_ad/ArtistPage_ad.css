@@ -54,7 +54,6 @@
     width: 85px;
     border: 2px solid rgba(225, 255, 255, 0.4);
     backdrop-filter: blur(10px);
-    height: 40px;
  }
 
  .btn-edit:hover{

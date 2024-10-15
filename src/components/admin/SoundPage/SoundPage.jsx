@@ -168,7 +168,7 @@ const SoundPage = () => {
             <span className="sound-name-ad">{sound.title}</span>
             <div className="button-group">
               <button className='btn-edit' onClick={() => handleEditClick(sound)}>EDIT</button>
-              <button className='btn-dele' onClick={() => handleDeleteClick(sound)}>DELETE</button>
+              <button className='btn-delete' onClick={() => handleDeleteClick(sound)}>DELETE</button>
             </div>
           </div>
         ))}
