@@ -128,9 +128,10 @@ function ArtistDetail() {
       
 
     useEffect(() => {
+        // Cuộn về đầu trang sau khi component render
         window.scrollTo(0, 0); 
       }, [location.pathname]);
-
+      
     useEffect(() => {
         const delay = Math.random() * 2000;
         setTimeout(() => setIsLoading(false), delay);

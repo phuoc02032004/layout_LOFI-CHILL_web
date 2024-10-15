@@ -14,11 +14,12 @@ import SongPage from './components/pages/SongPage/SongPage';
 import ArtistPage_ad from './components/admin/ArtistPage_ad/ArtistPage_ad';
 import ArtistDetail from './components/pages/ArtistPage/ArtistDetail/ArtistDetail';
 
+
 function App() {
 
   function ArtistDetailWrapper() {
-    const { id } = useParams(); // Lấy id từ URL
-    return <ArtistDetail key={id} />; // Truyền id làm key
+    const { id } = useParams(); 
+    return <ArtistDetail key={id} />;
   }
   return (
     <BrowserRouter>
