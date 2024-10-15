@@ -47,20 +47,20 @@ export default function HomePage() {
     { src: lateNightVibes, title: 'LATE NIGHT VIBES' },
   ];
 
-  const [artists, setArtists] = useState([
-    { title: 'Aso', image: Aso, description: 'Description 1' },
-    { title: 'CYGN', image: CYGN, description: 'Description 2' },
-    { title: 'ivention_', image: ivention_, description: 'Description 3' },
-    { title: 'Kupla', image: Kupla, description: 'Description 4' },
-    { title: 'Leavv', image: Leavv, description: 'Description 5' },
-    { title: 'Makzo', image: Makzo, description: 'Description 6' },
-    { title: 'Mama Aiuto', image: MamaAiuto, description: 'Description 7' },
-    { title: 'Misha', image: Misha, description: 'Description 8' },
-    { title: 'mommy', image: mommy, description: 'Description 9' },
-    { title: 'Psalm Trees', image: PsalmTrees, description: 'Description 10' },
-    { title: 'Sadtoi', image: Sadtoi, description: 'Description 11' },
-    { title: 'Sleepy Fish', image: SleepyFish, description: 'Description 12' },
-  ]);
+  const [artists] = useState([
+    { id: 1, title: 'Aso', image: Aso, description: 'Nghệ sĩ tài năng với phong cách âm nhạc độc đáo...' },
+    { id: 2, title: 'CYGN', image: CYGN, description: 'Nổi tiếng với giai điệu electronic sôi động...' },
+    { id: 3, title: 'ivention_', image: ivention_, description: 'Mang đến âm hưởng experimental đầy mới lạ...' },
+    { id: 4, title: 'Kupla', image: Kupla, description: 'Âm nhạc là sự kết hợp tinh tế giữa...' },
+    { id: 5, title: 'Leavv', image: Leavv, description: 'Leavv mang đến âm nhạc đầy cảm xúc...' },
+    { id: 6, title: 'Makzo', image: Makzo, description: 'Makzo với phong cách âm nhạc độc đáo...' },
+    { id: 7, title: 'Mama Aiuto', image: MamaAiuto, description: 'Mama Aiuto nổi tiếng với...' },
+    { id: 8, title: 'Misha', image: Misha, description: 'Misha mang đến âm nhạc đầy nội lực...' },
+    { id: 9, title: 'mommy', image: mommy, description: 'mommy với phong cách âm nhạc đặc biệt...' },
+    { id: 10, title: 'Psalm Trees', image: PsalmTrees, description: 'Psalm Trees là một nghệ sĩ...' },
+    { id: 11, title: 'Sadtoi', image: Sadtoi, description: 'Sadtoi với âm nhạc đầy cảm xúc...' },
+    { id: 12, title: 'Sleepy Fish', image: SleepyFish, description: 'Sleepy Fish mang đến không gian âm nhạc thư giãn...' },
+]);
 
   const imageWidth = 25;
 

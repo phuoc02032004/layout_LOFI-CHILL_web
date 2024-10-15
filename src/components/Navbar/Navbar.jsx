@@ -68,7 +68,7 @@ export default function Navbar() {
 
 
   return (
-    <header className={`header ${!showNavbar ? 'hidden-navbar' : ''}`}> 
+    <header className={`header ${!showNavbar ? 'hidden-navbar' : ''}`} style={{background: 'linear-gradient(to top, rgba(28, 39, 48, 0), rgba(28, 39, 48, 0.8))'}}> 
       <a href="/" className='logo'> LOGO </a>
 
       <nav className='navbar'>
