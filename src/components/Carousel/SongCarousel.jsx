@@ -2,10 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { GrNext } from "react-icons/gr";
 import { GrPrevious } from "react-icons/gr";
 import "./SongCarousel.css";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 function SongCarousel({ songs }) {
-  const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
   const trackRef = useRef(null);
   const carouselRef = useRef(null);
@@ -44,9 +43,6 @@ function SongCarousel({ songs }) {
     };
   }, []);
 
-  const handleSongPageClick = () => {
-    navigate('/SongPage');
-  };
 
   return (
     <div className="song-carousel" ref={carouselRef}>
@@ -55,11 +51,17 @@ function SongCarousel({ songs }) {
       </button>
       <div className="song-track-container">
         <div className="song-track" ref={trackRef}>
-          {songs.map((song, index) => (
-            <div className="song-item" key={index}>
+          {songs.map((song) => (
+               <Link
+               to = {`/SongPage/${song.id}`}
+               key = {song.id}
+               className='song-item' 
+               style={{ cursor: 'pointer'}}
+               state={{ song: song}}
+               >
               <img src={song.image} alt={song.title} />
               <div className="song-title">{song.title}</div>
-            </div>
+          </Link>
           ))}
         </div>
       </div>
@@ -67,7 +69,9 @@ function SongCarousel({ songs }) {
         <GrNext />
       </button>
       <div className="see-all-button">
-        <button onClick={handleSongPageClick}>SEE ALL</button>
+        <Link to= "/SongPage">
+        <button>SEE ALL</button>
+        </Link>
       </div>
     </div>
   );

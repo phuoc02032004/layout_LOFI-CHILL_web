@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import './ArtistDetail.css';
+import { useLocation, Link } from 'react-router-dom';
+import './SongDetail.css';
 import Navbar from '../../../Navbar/Navbar';
 import Loading from '../../../Loading/Loading';
 import Footer from '../../../footer/Footer';
 import TrackList from '../../../Tracklist/Tracklist';
 import ViewAllTracksButton from '../../../Tracklist/ViewAllTrack/ViewAllTrack';
-import ArtistCarousel from '../../../Carousel/ArtistCarousel'
+import SongCarousel from '../../../Carousel/SongCarousel'
 
 import { FaFacebook } from "react-icons/fa";
 import { FaInstagram } from "react-icons/fa";
@@ -33,10 +33,12 @@ import PsalmTrees from '../../../assets/images/Psalm Trees.jpg';
 import Sadtoi from '../../../assets/images/Sadtoi.jpg';
 import SleepyFish from '../../../assets/images/Sleepy  Fish.jpg';
 
-function ArtistDetail() {
+function SongDetail() {
     const location = useLocation();
     const [isLoading, setIsLoading] = useState(true);
-    const { artist } = location.state;
+    const { song } = location.state;
+    const artistName = song.artistData ? song.artistData.title : song.artist;  
+    const artistImage = song.artistData ? song.artistData.image : song.artist;
 
     const tracks = [
         {
@@ -49,21 +51,21 @@ function ArtistDetail() {
         {
           id: 2,
           title: 'Babyyy',
-          artist: 'Psalm Trees',
+          artist: 'Makzo',
           duration: '02:06',
           albumCover: slinky,
         },
         {
           id: 3,
           title: 'Wherever You Are',
-          artist: 'Psalm Trees',
+          artist: 'Leavv',
           duration: '02:06',
           albumCover: night,
         },
         {
           id: 4,
           title: 'Prayer',
-          artist: 'Psalm Trees',
+          artist: 'mommy',
           duration: '02:31',
           albumCover: meadow,
         },
@@ -91,26 +93,92 @@ function ArtistDetail() {
         {
           id: 8,
           title: 'Rain',
-          artist: 'Psalm Trees',
+          artist: 'Misha',
           duration: '02:31',
           albumCover: night,
         },
         {
           id: 9,
           title: 'Make You Hers',
-          artist: 'Psalm Trees',
+          artist: 'Kupla',
           duration: '02:02',
           albumCover: meadow,
         },
         {
           id: 10,
           title: 'Céleste',
-          artist: 'Psalm Trees',
+          artist: 'Aso',
           duration: '02:24',
           albumCover: morning,
         },
       ];
     
+      const songs = [
+        {
+          id: 1,
+          title: 'Winter Chill',
+          image: winter,
+          artist: 'Psalm Trees',
+          description: "A calming and atmospheric track that evokes the tranquility of a snowy landscape. Featuring delicate piano melodies, soft strings, and ambient textures, perfect for relaxation or setting a peaceful mood."
+        },
+        {
+          id: 2,
+          title: 'Slinky Groove',
+          image: slinky,
+          artist: 'Makzo',
+          description: "A funky and upbeat groove with a catchy melody and a driving beat. Featuring groovy bass lines, funky guitar riffs, and a touch of brass, perfect for dancing or adding some energy to your day."
+        },
+        {
+          id: 3,
+          title: 'Night Vibes',
+          image: night,
+          artist: 'Leavv',
+          description: "A smooth and sultry track with a laid-back vibe. Featuring mellow keys, smooth saxophone melodies, and a steady beat, perfect for late-night drives, romantic evenings, or simply unwinding after a long day."
+        },
+        {
+          id: 4,
+          title: 'Meadow Peace',
+          image: meadow,
+          artist: 'mommy',
+          description: "A serene and uplifting track inspired by the beauty of nature. Featuring acoustic guitar melodies, gentle flute melodies, and nature sounds, perfect for meditation, yoga, or finding inner peace."
+        },
+        {
+          id: 5,
+          title: 'Good Morning',
+          image: morning,
+          artist: 'FloFilz',
+          description: "A bright and cheerful track to start your day off right. Featuring cheerful ukulele melodies, playful bells, and sunny vibes, perfect for waking up, getting ready, or simply lifting your spirits."
+        },
+        {
+          id: 6,
+          title: 'Winter Chill',
+          image: winter,
+          artist: 'Psalm Trees',
+          description: "A calming and atmospheric track that evokes the tranquility of a snowy landscape. Featuring delicate piano melodies, soft strings, and ambient textures, perfect for relaxation or setting a peaceful mood."
+        },
+        {
+          id: 7,
+          title: 'Slinky Groove',
+          image: slinky,
+          artist: 'Makzo',
+          description: "A funky and upbeat groove with a catchy melody and a driving beat. Featuring groovy bass lines, funky guitar riffs, and a touch of brass, perfect for dancing or adding some energy to your day."
+        },
+        {
+          id: 8,
+          title: 'Night Vibes',
+          image: night,
+          artist: 'Misha',
+          description: "A smooth and sultry track with a laid-back vibe. Featuring mellow keys, smooth saxophone melodies, and a steady beat, perfect for late-night drives, romantic evenings, or simply unwinding after a long day."
+        },
+        {
+          id: 9,
+          title: 'Meadow Peace',
+          image: meadow,
+          artist: 'Kupla',
+          description: "A serene and uplifting track inspired by the beauty of nature. Featuring acoustic guitar melodies, gentle flute melodies, and nature sounds, perfect for meditation, yoga, or finding inner peace."
+        },
+      ];
+      
       const [artists] = useState([
         { id: 1, title: 'Aso', image: Aso, description: 'Nghệ sĩ tài năng với phong cách âm nhạc độc đáo...' },
         { id: 2, title: 'CYGN', image: CYGN, description: 'Nổi tiếng với giai điệu electronic sôi động...' },
@@ -128,7 +196,6 @@ function ArtistDetail() {
       
 
     useEffect(() => {
-        // Cuộn về đầu trang sau khi component render
         window.scrollTo(0, 0); 
       }, [location.pathname]);
       
@@ -137,29 +204,44 @@ function ArtistDetail() {
         setTimeout(() => setIsLoading(false), delay);
     }, []);
 
+    songs.forEach(song => {
+        const artist = artists.find(artist => artist.title === song.artist);
+        if (artist) {
+            song.artistData = artist;
+        }
+    });
+
     return (
         <div>
             <div 
-                className="artist-detail-bg"
+                className="song-detail-bg" 
                 style={{
                     backgroundImage: 
                     `linear-gradient(to bottom, rgba(28, 39, 48, 0), rgba(28, 39, 48, 0.8)),
-                    url(${artist.image})`
+                    url(${song.image})`
                 }}
             ></div>
-            <div className="artist-detail-container">
+            <div className="song-detail-container">
                 <Navbar />
                 {isLoading && <Loading />}
-                <p style={{fontSize:'20px'}}>Artist</p>
-                <h1 className='name-artist'>{artist.title}</h1>
-                <p className='descrep'>{artist.description}</p>
-                <div class="socialIcons">
-                    <a href=""><FaFacebook /></a>
-                    <a href=""><FaInstagram /></a>
-                    <a href=""><IoLogoTwitter /></a>
-                    <a href=""><FaGooglePlus /></a>
-                    <a href=""><FaYoutube /></a>
+                <div className='info-song-here'>
+                  <img className='image-song-here' src={song.image} alt={song.title} />
+                  <div className='detail'>
+                    <h1 className='name-song'>{song.title}</h1>
+                    <p className='name-artist-h'>{artistName}</p>
+                    <p className='descrep'>{song.description}</p>
+                    <button className='btn-start'> START </button>
+                  </div>
                 </div>
+            </div>
+            <div className='art-here'>
+              <div className='art-here-1'>ARTIST</div>
+                <Link
+                className='art-here-2'
+                >
+                   <img src={artistImage} className="art-image-here" />
+                   <div className="art-name-here">{artistName}</div>
+                </Link>
             </div>
             <div className='tracks'>
                 <div className='name-track'>TRACKS</div>
@@ -168,12 +250,12 @@ function ArtistDetail() {
             </div>
 
             <div class='more'>
-            <div className="more-art">MORE ARTISTS</div>
-            <ArtistCarousel artists={artists} />
+            <div className="more-art">MORE SONGS</div>
+            <SongCarousel songs={songs} />
             </div>
             <Footer />
         </div>
     );
 }
 
-export default ArtistDetail;
+export default SongDetail;

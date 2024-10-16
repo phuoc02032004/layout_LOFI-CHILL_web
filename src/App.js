@@ -11,6 +11,7 @@ import PresetPage from './components/admin/PresetPage/PresetPage';
 import SoundPage from './components/admin/SoundPage/SoundPage';
 import ArtistPage from './components/pages/ArtistPage/ArtistPage';
 import SongPage from './components/pages/SongPage/SongPage';
+import SongDetail from './components/pages/SongPage/SongDetail/SongDetail';
 import ArtistPage_ad from './components/admin/ArtistPage_ad/ArtistPage_ad';
 import ArtistDetail from './components/pages/ArtistPage/ArtistDetail/ArtistDetail';
 
@@ -20,7 +21,13 @@ function App() {
   function ArtistDetailWrapper() {
     const { id } = useParams(); 
     return <ArtistDetail key={id} />;
-  }
+  };
+
+  function SongDetailWrapper(){
+    const { id } = useParams();
+    return <SongDetail key = {id} />;
+  };
+
   return (
     <BrowserRouter>
       <div>
@@ -38,6 +45,7 @@ function App() {
           <Route path='/ArtistPage' element={<ArtistPage />} />
           <Route path='/ArtistPage/:id' element={<ArtistDetail  />} element={<ArtistDetailWrapper />} />
           <Route path='/SongPage' element={<SongPage />} />
+          <Route path='/SongPage/:id' element={<SongPage />} element={<SongDetailWrapper />} />
           <Route path='/ArtistPage_ad' element={<ArtistPage_ad />} />
         </Routes>
       </div>

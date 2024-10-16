@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { GrNext, GrPrevious } from "react-icons/gr";
 import "./ArtistCarousel.css";
-import { Link } from 'react-router-dom'; // Import Link from react-router-dom
+import { Link } from 'react-router-dom'; 
 
 function ArtistCarousel({ artists }) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -65,7 +65,7 @@ function ArtistCarousel({ artists }) {
         <GrNext />
       </button>
       <div className="see-all-button">
-        <Link to="/artists"> 
+        <Link to="/ArtistPage"> 
           <button>SEE ALL</button> 
         </Link>
       </div>

@@ -33,6 +33,26 @@ const getAllSound = async () => {
     }
 };
 
+const updateSound = async (id, title, description, fileSound) => {
+    try {
+        const formData = new FormData();
+        if (title) {
+            formData.append('Title')
+        }
+
+        if (description) {
+            formData.append('Description')
+        }
+
+        if (fileSound) {
+            formData.append('Description')
+        }
+
+    } catch (error) {
+        
+    }
+};
+
 const deleteSound = async (soundId) => {
     try {
         const response = await axios.delete(`http://localhost:3002/api/v1/soundEffect/deleteSoundEffect/${soundId}`);

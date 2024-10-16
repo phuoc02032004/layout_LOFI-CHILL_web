@@ -20,7 +20,10 @@ import Sadtoi from '../../assets/images/Sadtoi.jpg';
 import SleepyFish from '../../assets/images/Sleepy  Fish.jpg';
 
 function ArtistPage() {
+    const [currentPage, setCurrentPage] = useState(1);
     const [isLoading, setIsLoading] = useState(true);
+    const artistsPerPage = 6;
+
     const [artists] = useState([
         { id: 1, title: 'Aso', image: Aso, description: 'Nghệ sĩ tài năng với phong cách âm nhạc độc đáo...' },
         { id: 2, title: 'CYGN', image: CYGN, description: 'Nổi tiếng với giai điệu electronic sôi động...' },
@@ -35,8 +38,6 @@ function ArtistPage() {
         { id: 11, title: 'Sadtoi', image: Sadtoi, description: 'Sadtoi với âm nhạc đầy cảm xúc...' },
         { id: 12, title: 'Sleepy Fish', image: SleepyFish, description: 'Sleepy Fish mang đến không gian âm nhạc thư giãn...' },
     ]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const artistsPerPage = 6;
 
     useEffect(() => {
         const delay = Math.random() * 2000;
@@ -45,6 +46,11 @@ function ArtistPage() {
         document.body.classList.add('artist-page-bg');
         return () => document.body.classList.remove('artist-page-bg');
     }, []);
+
+    useEffect(() => {
+        window.scrollTo(0, 0); 
+      }, []); 
+    
 
     const indexOfLastArtist = currentPage * artistsPerPage;
     const indexOfFirstArtist = indexOfLastArtist - artistsPerPage;

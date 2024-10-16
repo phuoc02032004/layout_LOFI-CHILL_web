@@ -17,12 +17,6 @@ import chillStudyBeats from '../assets/images/chillstudy.jpg';
 import sunnyDay from '../assets/images/sunnyday.jpg';
 import essentials from '../assets/images/essentials.jpg';
 
-import winter from '../assets/images/winter.jpg'
-import slinky from '../assets/images/slinky.jpg'
-import night from '../assets/images/night.jpg'
-import meadow from '../assets/images/Meadow.jpg'
-import morning from '../assets/images/goodmorning.jpg'
-
 import Aso from '../assets/images/Aso.jpg'
 import CYGN from '../assets/images/CYGN.jpg'
 import ivention_ from '../assets/images/ivention_.jpg'
