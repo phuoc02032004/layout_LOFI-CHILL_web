@@ -71,8 +71,6 @@ function BGPage() {
     } catch (error) {
       console.error('Error updating visual:', error);
     }
-
-    
   };
 
   const handleAddClick = () => {
