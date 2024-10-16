@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import './GenreM.css'; 
-import { FaCoffee } from "react-icons/fa"; 
+import './GenreM.css';
+import { createPlaylist, deletePlaylist } from '../../../services/playlist';
+import { FaCoffee } from "react-icons/fa";
 
 const GenreM = ({ stations, setStations }) => {
   const [isDeleteGenreModalOpen, setIsDeleteGenreModalOpen] = useState(false);
@@ -31,10 +32,16 @@ const GenreM = ({ stations, setStations }) => {
     setIsAddGenreModalOpen(false);
   };
 
-  const handleConfirmDeleteGenre = () => {
-    setStations(stations.filter((g) => g.id !== genreToDelete.id));
-    setIsDeleteGenreModalOpen(false);
-    setGenreToDelete(null);
+  const handleConfirmDeleteGenre = async () => {
+    try {
+      await deletePlaylist(genreToDelete.id);
+    } catch (error) {
+      console.error('Error during Playlist deletion:', error);
+    } finally {
+      setIsDeleteGenreModalOpen(false);
+      setGenreToDelete(null);
+    }
+
   };
 
   const handleSaveEditGenre = (event) => {
@@ -54,21 +61,19 @@ const GenreM = ({ stations, setStations }) => {
     setGenreToEdit(null);
   };
 
-  const handleSaveAddGenre = (event) => {
+  const handleSaveAddGenre = async (event) => {
     event.preventDefault();
     const newGenreName = document.getElementById('newGenreName').value;
     const newGenreDescription = document.getElementById('newGenreDescription').value;
 
-    const newGenre = {
-      id: stations.length + 1,
-      name: newGenreName,
-      description: newGenreDescription,
-      icon: <FaCoffee /> // Replace with your desired icon
-    };
-
-    setStations([...stations, newGenre]);
-    setIsAddGenreModalOpen(false);
+    try {
+      await createPlaylist(newGenreName, newGenreDescription);
+      setIsAddGenreModalOpen(false); // Close the modal after successful submission
+    } catch (error) {
+      console.error('Error adding Playlist:', error);
+    }
   };
+
 
   return (
     <div className="genre-management">

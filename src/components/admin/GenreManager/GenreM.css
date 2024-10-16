@@ -1,9 +1,7 @@
 .genre-management {
-  margin-top: 20px;
   padding: 30px;
-  border: 1px solid #ccc;
   border-radius: 10px;
-  background-color: #12121294;
+  background-color: transparent;
 }
 
 .genre-management h2 {
@@ -18,7 +16,6 @@
 }
 
 .genre-item {
-  background-color: #fff; 
   padding: 15px;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -28,17 +25,19 @@
   flex-direction: column;
   justify-content: space-between;
   min-height: 150px; 
+  backdrop-filter: blur(30px);
+  border: 2px solid rgba(225, 255, 255, 0.4);
 }
 
 .genre-item h3 {
   margin-top: 0;
   margin-bottom: 10px;
-  color: #333;
+  color: #fff;
 }
 
 .genre-item p {
   margin-bottom: 10px;
-  color: #555;
+  color: #fff;
   flex-grow: 1;
 }
 
@@ -67,6 +66,6 @@
 }
 
 .btn-add-G:hover {
-  color: #333;
+  color: #fff;
   background-color: #fff;
 }

@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './SongPage_ad.css';
+import { getAllPlaylists } from '../../../services/playlist'
 import NavbarAD from '../NavbarAdmin/Navbar';
 import SongCarousel from '../../Carousel/SongCarousel';
 import ArtistCarousel from '../../Carousel/ArtistCarousel';
-import GenreManagement from '../GenreManager/GenreM'; 
+import GenreManagement from '../GenreManager/GenreM';
 
 import After_hours from '../../assets/images/After-hours.jpg';
 import Friends from '../../assets/images/Friends.jpg';
@@ -65,42 +66,20 @@ function SongPage() {
   ]);
 
   const [stations, setStations] = useState([
-    {
-      id: 1,
-      name: 'Endless Sunday',
-      description: 'A selection of smooth jazzy beats'
-    },
-    {
-      id: 2,
-      name: 'Headbop Beats',
-      description: 'Beats to bop your head to'
-    },
-    {
-      id: 3,
-      name: 'Late Night Vibes',
-      description: 'Calmer tracks to help you relax or sleep'
-    },
-    {
-      id: 4,
-      name: 'lofi hip hop beats',
-      description: 'Relaxing beats to help you focus' 
-    },
-    {
-      id: 5,
-      name: 'Chillhop Radio',
-      description: 'A wide variety of the best tracks from our label' 
-    },
-    {
-      id: 6,
-      name: 'Melancholic Mood',
-      description: 'Moody and sad beats' 
-    },
-    {
-      id: 7,
-      name: 'Sunshine Beat',
-      description: 'Uplifting beats to keep you active' 
-    },
   ]);
+
+  useEffect(() => {
+    fetchPlaylists();
+  }, []);
+
+  const fetchPlaylists = async () => {
+    try {
+      const data = await getAllPlaylists();
+      setStations(data);
+    } catch (error) {
+      console.error('Error fetching Playlist:', error);
+    }
+  };
 
   const handleAddClick = () => {
     setIsAddModalOpen(true);
@@ -108,7 +87,7 @@ function SongPage() {
 
   const handleEditClick = (index) => {
     setSongToEditIndex(index);
-    setEditingSong({ ...songs[index] }); 
+    setEditingSong({ ...songs[index] });
     setIsEditModalOpen(true);
   };
 
@@ -116,7 +95,7 @@ function SongPage() {
     setIsAddModalOpen(false);
     setIsEditModalOpen(false);
     setIsDeleteModalOpen(false);
-    setEditingSong(null); 
+    setEditingSong(null);
   };
 
   const handleDeleteClick = (index) => {
@@ -138,8 +117,8 @@ function SongPage() {
     const updatedArtist = document.getElementById('editArtist').value;
     const updatedDescription = document.getElementById('editDescribe').value;
 
-    const updatedImage = editingSong.image; 
-    const updatedSongFile = editingSong.songFile; 
+    const updatedImage = editingSong.image;
+    const updatedSongFile = editingSong.songFile;
 
     setEditingSong({
       title: updatedTitle,
@@ -157,7 +136,7 @@ function SongPage() {
     setEditingSong(null);
   };
 
-  const songsPerPage = 5; 
+  const songsPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
 
   const indexOfLastSong = currentPage * songsPerPage;
@@ -177,11 +156,11 @@ function SongPage() {
       <button className='btn-add' onClick={handleAddClick}>ADD</button>
 
       {isAddModalOpen && (
-        <div className="add-modal"> 
+        <div className="add-modal">
           <div className="modal-content">
             <span className="close-modal" onClick={handleCloseModal}>×</span>
             <h2>ADD SONG</h2>
-            <form className='form-box'> 
+            <form className='form-box'>
               <label htmlFor="songName">Song name:</label>
               <input type="text" id="songName" name="songName" />
 
@@ -219,18 +198,18 @@ function SongPage() {
       )}
 
       {isEditModalOpen && (
-        <div className="edit-modal"> 
-          <div className="edit-content"> 
+        <div className="edit-modal">
+          <div className="edit-content">
             <span className="close-modal" onClick={handleCloseModal}>×</span>
             <h2>EDIT SONG</h2>
             <form className='form-box' onSubmit={handleSaveEdit}>
               <label htmlFor="editSongName">Song name:</label>
-              <input 
-                type="text" 
-                id="editSongName" 
-                name="editSongName" 
+              <input
+                type="text"
+                id="editSongName"
+                name="editSongName"
                 value={editingSong.title}
-                onChange={(e) => setEditingSong({ ...editingSong, title: e.target.value })} 
+                onChange={(e) => setEditingSong({ ...editingSong, title: e.target.value })}
               />
 
               <label htmlFor="editArtist">Artist:</label>
@@ -258,13 +237,13 @@ function SongPage() {
               <input type="file" id="editSongFile" name="editSongFile" />
 
               <label htmlFor="editDescribe">Description:</label>
-              <textarea 
-                id="editDescribe" 
-                name="editDescribe" 
-                rows="5" 
-                cols="40" 
-                value={editingSong.description} 
-                onChange={(e) => setEditingSong({ ...editingSong, description: e.target.value })} 
+              <textarea
+                id="editDescribe"
+                name="editDescribe"
+                rows="5"
+                cols="40"
+                value={editingSong.description}
+                onChange={(e) => setEditingSong({ ...editingSong, description: e.target.value })}
               />
 
               <button type="submit">Save</button>
@@ -295,10 +274,10 @@ function SongPage() {
 
         <div className="pagination">
           {pageNumbers.map((number) => (
-            <button 
-              key={number} 
-              onClick={() => paginate(number)} 
-              className={number === currentPage ? 'active' : ''} 
+            <button
+              key={number}
+              onClick={() => paginate(number)}
+              className={number === currentPage ? 'active' : ''}
             >
               {number}
             </button>
@@ -306,16 +285,16 @@ function SongPage() {
         </div>
 
         <div className="name_a">Genre</div>
-        <GenreManagement stations={stations} setStations={setStations} /> 
+        <GenreManagement stations={stations} setStations={setStations} />
 
         <div className="name_a">New Song</div>
-        <SongCarousel songs={songs} /> 
+        <SongCarousel songs={songs} />
 
         <div className="name_a">Artist</div>
-        <ArtistCarousel artists={artists} /> 
+        <ArtistCarousel artists={artists} />
 
         {isDeleteModalOpen && (
-          <div className="delete-modal"> 
+          <div className="delete-modal">
             <div className="delete-content">
               <span className="close-modal" onClick={handleCloseModal}>×</span>
               <h2>Are you sure you want to delete this song?</h2>
