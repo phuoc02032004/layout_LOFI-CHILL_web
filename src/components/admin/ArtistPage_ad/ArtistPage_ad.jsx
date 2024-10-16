@@ -1,18 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './ArtistPage_ad.css';
-import Navbar from '../NavbarAdmin/Navbar';
-import Aso from '../../assets/images/Aso.jpg';
-import CYGN from '../../assets/images/CYGN.jpg';
-import ivention_ from '../../assets/images/ivention_.jpg';
-import Kupla from '../../assets/images/Kupla.jpg';
-import Leavv from '../../assets/images/Leavv.jpg';
-import Makzo from '../../assets/images/Makzo.png';
-import MamaAiuto from '../../assets/images/Mama Aiuto.jpg';
-import Misha from '../../assets/images/Misha.jpg';
-import mommy from '../../assets/images/mommy.jpg';
-import PsalmTrees from '../../assets/images/Psalm Trees.jpg';
-import Sadtoi from '../../assets/images/Sadtoi.jpg';
-import SleepyFish from '../../assets/images/Sleepy  Fish.jpg';
+import NavbarAD from '../NavbarAdmin/Navbar';
+import { getAllArtist, createArtist, updateArtist, deleteArtist } from '../../../services/artist'; // Đường dẫn tới file `artist.js`
 
 const ArtistPage_ad = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -21,23 +10,25 @@ const ArtistPage_ad = () => {
   const [artistToEdit, setArtistToEdit] = useState(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  const [artists, setArtists] = useState([
-    { title: 'Aso', image: Aso, description: 'Description 1' },
-    { title: 'CYGN', image: CYGN, description: 'Description 2' },
-    { title: 'ivention_', image: ivention_, description: 'Description 3' },
-    { title: 'Kupla', image: Kupla, description: 'Description 4' },
-    { title: 'Leavv', image: Leavv, description: 'Description 5' },
-    { title: 'Makzo', image: Makzo, description: 'Description 6' },
-    { title: 'Mama Aiuto', image: MamaAiuto, description: 'Description 7' },
-    { title: 'Misha', image: Misha, description: 'Description 8' },
-    { title: 'mommy', image: mommy, description: 'Description 9' },
-    { title: 'Psalm Trees', image: PsalmTrees, description: 'Description 10' },
-    { title: 'Sadtoi', image: Sadtoi, description: 'Description 11' },
-    { title: 'Sleepy Fish', image: SleepyFish, description: 'Description 12' },
-  ]);
-
+  const [artists, setArtists] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [artistsPerPage] = useState(10);
+  
+  useEffect(() => {
+    fetchArtists();
+  }, []);
+
+  const fetchArtists = async () => {
+    try {
+      const data = await getAllArtist();
+      console.log('Artists to render:', data);
+      setArtists(data);
+    } catch (error) {
+      console.error('Error fetching artists:', error);
+    }
+  };
+
+ 
 
   const handleEdit = (artist) => {
     setArtistToEdit(artist);
@@ -57,44 +48,31 @@ const ArtistPage_ad = () => {
     setIsAddModalOpen(false);
   };
 
-  const handleConfirmDelete = () => {
-    setArtists(artists.filter((a) => a.title !== artistToDelete.title));
-    setIsDeleteModalOpen(false);
-    setArtistToDelete(null);
+  const handleConfirmDelete = async () => {
+    try {
+      await deleteArtist(artistToDelete.id); // Gọi API xóa nghệ sĩ
+      setArtists(artists.filter((a) => a.id !== artistToDelete.id)); // Cập nhật danh sách
+    } catch (error) {
+      console.error('Error during Visual deletion:', error);
+    } finally {
+      setIsDeleteModalOpen(false);
+      setArtistToDelete(null);
+    }
   };
 
-  const handleSaveEdit = (event) => {
+  const handleSaveEdit = async (event) => {
     event.preventDefault();
-    const updatedTitle = document.getElementById('editArtistName').value;
+    const updatedName = document.getElementById('editArtistName').value;
     const updatedDescription = document.getElementById('editArtistDescription').value;
     const updatedImageFile = document.getElementById('editArtistImage').files[0];
 
-    const artistIndex = artists.findIndex((a) => a.title === artistToEdit.title);
-
-    const updatedArtists = [...artists];
-
-    if (updatedImageFile) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        updatedArtists[artistIndex] = {
-          title: updatedTitle,
-          image: reader.result,
-          description: updatedDescription,
-        };
-        setArtists(updatedArtists);
-        setIsEditModalOpen(false);
-        setArtistToEdit(null);
-      };
-      reader.readAsDataURL(updatedImageFile);
-    } else {
-      updatedArtists[artistIndex] = {
-        ...artistToEdit,
-        title: updatedTitle,
-        description: updatedDescription,
-      };
-      setArtists(updatedArtists);
+    try {
+      await updateArtist(artistToEdit.id, updatedName, updatedDescription, updatedImageFile); // Gọi API cập nhật
+      await fetchArtists();
       setIsEditModalOpen(false);
       setArtistToEdit(null);
+    } catch (error) {
+      console.error('Error updating artist:', error);
     }
   };
 
@@ -102,30 +80,25 @@ const ArtistPage_ad = () => {
     setIsAddModalOpen(true);
   };
 
-  const handleSaveAdd = (event) => {
+  const handleSaveAdd = async (event) => {
     event.preventDefault();
     const newArtistName = document.getElementById('newArtistName').value;
     const newArtistDescription = document.getElementById('newArtistDescription').value;
     const newArtistImageFile = document.getElementById('newArtistImage').files[0];
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setArtists([...artists, {
-        title: newArtistName,
-        image: reader.result,
-        description: newArtistDescription,
-      }]);
+    try {
+      await createArtist(newArtistName, newArtistDescription, newArtistImageFile); // Gọi API thêm nghệ sĩ
+      await fetchArtists(); 
       setIsAddModalOpen(false);
-    };
-    if (newArtistImageFile) {
-      reader.readAsDataURL(newArtistImageFile);
+    } catch (error) {
+      console.error('Error creating artist:', error);
     }
   };
 
   const indexOfLastArtist = currentPage * artistsPerPage;
   const indexOfFirstArtist = indexOfLastArtist - artistsPerPage;
   const currentArtists = artists.slice(indexOfFirstArtist, indexOfLastArtist);
-
+  
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const pageNumbers = [];
@@ -135,9 +108,9 @@ const ArtistPage_ad = () => {
 
   return (
     <div>
-      <Navbar />
-      <button className='btn-add' onClick={handleAddClick}>ADD</button> 
-
+      <NavbarAD />
+      <button className='btn-add' onClick={handleAddClick}>ADD</button>
+  
       {isAddModalOpen && (
         <div className="add-modal">
           <div className="modal-content">
@@ -145,26 +118,13 @@ const ArtistPage_ad = () => {
             <h2>Add New Artist</h2>
             <form onSubmit={handleSaveAdd}>
               <label htmlFor="newArtistName">Artist Name:</label>
-              <input
-                type="text"
-                id="newArtistName"
-                name="newArtistName"
-                required
-              />
+              <input type="text" id="newArtistName" name="newArtistName" required />
 
               <label htmlFor="newArtistDescription">Description:</label>
-              <textarea
-                id="newArtistDescription"
-                name="newArtistDescription"
-              />
+              <textarea id="newArtistDescription" name="newArtistDescription" required />
 
               <label htmlFor="newArtistImage">Select Image:</label>
-              <input
-                type="file"
-                id="newArtistImage"
-                name="newArtistImage"
-                accept="image/*"
-              />
+              <input type="file" id="newArtistImage" name="newArtistImage" accept="image/*" required />
 
               <button type="submit">Save Artist</button>
             </form>
@@ -172,27 +132,14 @@ const ArtistPage_ad = () => {
         </div>
       )}
 
-      <div className="artist-container">
-        <div className="artist-row">
+<div className="image-container-n">
+        <div className="image-row">
           {currentArtists.slice(0, 5).map((artist, index) => (
-            <div key={index} className="artist-card">
+            <div key={index} className="image-card">
               <img src={artist.image} alt={artist.title} />
-              <div className="artist-info">
+              <div className="image-info">
                 <h3>{artist.title}</h3>
-                <div className="button-group">
-                  <button className='btn-edit' onClick={() => handleEdit(artist)}>EDIT</button>
-                  <button className='btn-dele' onClick={() => handleDelete(artist)}>DELETE</button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="artist-row">
-          {currentArtists.slice(5, 10).map((artist, index) => (
-            <div key={index} className="artist-card">
-              <img src={artist.image} alt={artist.title} />
-              <div className="artist-info">
-                <h3>{artist.title}</h3>
+                <h4>{artist.description}</h4>
                 <div className="button-group">
                   <button className='btn-edit' onClick={() => handleEdit(artist)}>EDIT</button>
                   <button className='btn-dele' onClick={() => handleDelete(artist)}>DELETE</button>
@@ -212,53 +159,54 @@ const ArtistPage_ad = () => {
             </button>
           ))}
         </div>
-
-        {isEditModalOpen && (
-          <div className="edit-modal">
-            <div className="modal-content">
-              <span className="close-modal" onClick={handleCloseModal}>×</span>
-              <h2>Edit Artist</h2>
-              <form onSubmit={handleSaveEdit}>
-                <label htmlFor="editArtistName">Artist Name:</label>
-                <input
-                  type="text"
-                  id="editArtistName"
-                  name="editArtistName"
-                  defaultValue={artistToEdit?.title}
-                  required
-                />
-
-                <label htmlFor="editArtistDescription">Description:</label>
-                <textarea
-                  id="editArtistDescription"
-                  name="editArtistDescription"
-                  defaultValue={artistToEdit?.description}
-                />
-
-                <label htmlFor="editArtistImage">Select Image:</label>
-                <input
-                  type="file"
-                  id="editArtistImage"
-                  name="editArtistImage"
-                  accept="image/*"
-                />
-
-                <button type="submit">Save Changes</button>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {isDeleteModalOpen && (
-          <div className="delete-modal">
-            <div className="delete-content">
-              <span className="close-modal" onClick={handleCloseModal}>×</span>
-              <h2>Are you sure you want to delete {artistToDelete?.title}?</h2>
-              <button className='btn-delete' onClick={handleConfirmDelete}>DELETE</button>
-            </div>
-          </div>
-        )}
       </div>
+
+      {isEditModalOpen && (
+        <div className="edit-modal">
+          <div className="modal-content">
+            <span className="close-modal" onClick={handleCloseModal}>×</span>
+            <h2>Edit Artist</h2>
+            <form onSubmit={handleSaveEdit}>
+              <label htmlFor="editArtistName">Artist Name:</label>
+              <input
+                type="text"
+                id="editArtistName"
+                name="editArtistName"
+                defaultValue={artistToEdit?.name}
+                required
+              />
+
+              <label htmlFor="editArtistDescription">Description:</label>
+              <textarea
+                id="editArtistDescription"
+                name="editArtistDescription"
+                defaultValue={artistToEdit?.description}
+                required
+              />
+
+              <label htmlFor="editArtistImage">Select Image:</label>
+              <input
+                type="file"
+                id="editArtistImage"
+                name="editArtistImage"
+                accept="image/*"
+              />
+
+              <button type="submit">Save Changes</button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {isDeleteModalOpen && (
+        <div className="delete-modal">
+          <div className="delete-content">
+            <span className="close-modal" onClick={handleCloseModal}>×</span>
+            <h2>Are you sure you want to delete {artistToDelete?.name}?</h2>
+            <button className='btn-delete' onClick={handleConfirmDelete}>DELETE</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

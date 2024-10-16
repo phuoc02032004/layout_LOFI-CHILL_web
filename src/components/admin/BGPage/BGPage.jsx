@@ -72,32 +72,7 @@ function BGPage() {
       console.error('Error updating visual:', error);
     }
 
-    // const imageIndex = images.findIndex((i) => i.id === imageToEdit.id);
-
-    // const updatedImages = [...images];
-
-    // if (updatedImageFile) {
-    //   const reader = new FileReader();
-    //   reader.onloadend = () => {
-    //     updatedImages[imageIndex] = {
-    //       ...updatedImages[imageIndex],
-    //       src: reader.result,
-    //       name: updatedName,
-    //     };
-    //     setImages(updatedImages);
-    //     setIsEditModalOpen(false);
-    //     setImageToEdit(null);
-    //   };
-    //   reader.readAsDataURL(updatedImageFile);
-    // } else {
-    //   updatedImages[imageIndex] = {
-    //     ...imageToEdit,
-    //     name: updatedName,
-    //   };
-    //   setImages(updatedImages);
-    //   setIsEditModalOpen(false);
-    //   setImageToEdit(null);
-    // }
+    
   };
 
   const handleAddClick = () => {
