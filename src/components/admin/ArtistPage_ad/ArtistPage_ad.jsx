@@ -13,7 +13,7 @@ const ArtistPage_ad = () => {
   const [artists, setArtists] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [artistsPerPage] = useState(10);
-  
+
   useEffect(() => {
     fetchArtists();
   }, []);
@@ -28,7 +28,7 @@ const ArtistPage_ad = () => {
     }
   };
 
- 
+
 
   const handleEdit = (artist) => {
     setArtistToEdit(artist);
@@ -88,7 +88,7 @@ const ArtistPage_ad = () => {
 
     try {
       await createArtist(newArtistName, newArtistDescription, newArtistImageFile); // Gọi API thêm nghệ sĩ
-      await fetchArtists(); 
+      await fetchArtists();
       setIsAddModalOpen(false);
     } catch (error) {
       console.error('Error creating artist:', error);
@@ -98,7 +98,7 @@ const ArtistPage_ad = () => {
   const indexOfLastArtist = currentPage * artistsPerPage;
   const indexOfFirstArtist = indexOfLastArtist - artistsPerPage;
   const currentArtists = artists.slice(indexOfFirstArtist, indexOfLastArtist);
-  
+
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const pageNumbers = [];
@@ -110,7 +110,7 @@ const ArtistPage_ad = () => {
     <div>
       <NavbarAD />
       <button className='btn-add' onClick={handleAddClick}>ADD</button>
-  
+
       {isAddModalOpen && (
         <div className="add-modal">
           <div className="modal-content">
@@ -132,7 +132,7 @@ const ArtistPage_ad = () => {
         </div>
       )}
 
-<div className="image-container-n">
+      <div className="image-container-n">
         <div className="image-row">
           {currentArtists.slice(0, 5).map((artist, index) => (
             <div key={index} className="image-card">
