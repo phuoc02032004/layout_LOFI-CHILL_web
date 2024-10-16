@@ -1,18 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './ArtistPage_ad.css';
 import Navbar from '../NavbarAdmin/Navbar';
-import Aso from '../../assets/images/Aso.jpg';
-import CYGN from '../../assets/images/CYGN.jpg';
-import ivention_ from '../../assets/images/ivention_.jpg';
-import Kupla from '../../assets/images/Kupla.jpg';
-import Leavv from '../../assets/images/Leavv.jpg';
-import Makzo from '../../assets/images/Makzo.png';
-import MamaAiuto from '../../assets/images/Mama Aiuto.jpg';
-import Misha from '../../assets/images/Misha.jpg';
-import mommy from '../../assets/images/mommy.jpg';
-import PsalmTrees from '../../assets/images/Psalm Trees.jpg';
-import Sadtoi from '../../assets/images/Sadtoi.jpg';
-import SleepyFish from '../../assets/images/Sleepy  Fish.jpg';
+import { getAllArtist, deleteArtist } from '../../../services/artist';
 
 const ArtistPage_ad = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -22,19 +11,21 @@ const ArtistPage_ad = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const [artists, setArtists] = useState([
-    { title: 'Aso', image: Aso, description: 'Description 1' },
-    { title: 'CYGN', image: CYGN, description: 'Description 2' },
-    { title: 'ivention_', image: ivention_, description: 'Description 3' },
-    { title: 'Kupla', image: Kupla, description: 'Description 4' },
-    { title: 'Leavv', image: Leavv, description: 'Description 5' },
-    { title: 'Makzo', image: Makzo, description: 'Description 6' },
-    { title: 'Mama Aiuto', image: MamaAiuto, description: 'Description 7' },
-    { title: 'Misha', image: Misha, description: 'Description 8' },
-    { title: 'mommy', image: mommy, description: 'Description 9' },
-    { title: 'Psalm Trees', image: PsalmTrees, description: 'Description 10' },
-    { title: 'Sadtoi', image: Sadtoi, description: 'Description 11' },
-    { title: 'Sleepy Fish', image: SleepyFish, description: 'Description 12' },
   ]);
+
+  useEffect(() => {
+    fetchArtist();
+  }, []);
+
+  const fetchArtist = async () => {
+    try {
+      const data = await getAllArtist();
+      console.log('Artists to render:', data);
+      setArtists(data);
+    } catch (error) {
+      console.error('Error fetching visuals:', error);
+    }
+  };
 
   const [currentPage, setCurrentPage] = useState(1);
   const [artistsPerPage] = useState(10);
@@ -136,7 +127,7 @@ const ArtistPage_ad = () => {
   return (
     <div>
       <Navbar />
-      <button className='btn-add' onClick={handleAddClick}>ADD</button> 
+      <button className='btn-add' onClick={handleAddClick}>ADD</button>
 
       {isAddModalOpen && (
         <div className="add-modal">

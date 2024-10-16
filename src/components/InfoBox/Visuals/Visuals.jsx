@@ -12,7 +12,6 @@ const Visuals = ({ onBackgroundChange }) => {
     return cachedVisuals ? JSON.parse(cachedVisuals) : [];
   });
 
-  // Gọi API chỉ khi không có dữ liệu trong localStorage
   useEffect(() => {
     const fetchVisuals = async () => {
       try {
