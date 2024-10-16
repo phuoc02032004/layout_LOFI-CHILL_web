@@ -122,6 +122,43 @@ export const getSpecificSong = ({ idPlaylist, id }) => new Promise(async (resolv
     }
 });
 
+// Get new song in
+export const getNewSong = () => new Promise(async (resolve, reject) => {
+    try {
+        const songRef = await db.collection('Music').get();
+        let allSong = [];
+
+        // Sử dụng for...of để lặp qua từng playlist
+        for (const playlistDoc of songRef.docs) {
+            const songSnapshot = await db.collection('Music').doc(playlistDoc.id).collection('Songs')
+                .orderBy('createdAt', 'desc')
+                .limit(3)
+                .get();
+
+            songSnapshot.forEach((songDoc) => {
+                allSong.push({
+                    id: songDoc.id,  
+                    ...songDoc.data()
+                });
+            });
+        }
+
+        // Trả về kết quả khi đã có tất cả các bài hát
+        return resolve({
+            err: 0,
+            mess: 'Get newest Song successfully',
+            song: allSong,
+        });
+    } catch (error) {
+        // Xử lý lỗi và trả về phản hồi lỗi
+        return reject({
+            err: 1,
+            mess: 'Error get newest songs',
+            error,
+        });
+    }
+});
+
 // Update a song
 export const updateSong = ({ idPlaylist, id, data }, fileMusic, fileImg) => new Promise(async (resolve, reject) => {
     try {
@@ -263,5 +300,43 @@ export const deleteSong = ({ idPlaylist, id }) => new Promise(async (resolve, re
     } catch (error) {
         reject(error);
         return { status: 500, message: 'Error delete song', error };
+    }
+});
+
+//Play song random from playlist
+export const playSong = ({ id }) => new Promise(async (resolve, reject) => {
+    try {
+        const songRef = db.collection('Music').doc(id).collection('Songs');
+        const songDoc = await songRef.get();
+        if (songDoc.empty) {
+            return resolve({
+                status: 404,
+                message: 'Song not found',
+            });
+        }
+
+        // Tạo mảng chứa các bài hát
+        const songs = [];
+        songDoc.forEach(doc => {
+            songs.push({
+                id: doc.id,
+                ...doc.data()
+            });
+        });
+
+        const shuffledSongs = songs.sort(() => 0.5 - Math.random());
+        const randomSong = shuffledSongs.slice(0, 5);
+
+        return resolve({
+            err: 0,
+            message: 'Song found',
+            song: randomSong
+        });
+    } catch (error) {
+        console.error('Error playing random song: ', error);
+        return reject({
+            status: 500,
+            message: 'Internal server error',
+        });
     }
 });

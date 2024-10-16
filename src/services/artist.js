@@ -45,13 +45,10 @@ export const createArtist = ({ name, Description }, fileImg) => new Promise(asyn
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         });
 
-        // Truy xuất lại dữ liệu artist vừa tạo
-        const createdArtist = await artistsRef.get();
 
         return resolve({
             err: 0,
             mes: 'Create artist successfully',
-            artist: createdArtist.data()
         });
     } catch (error) {
         reject(error);
@@ -63,24 +60,35 @@ export const createArtist = ({ name, Description }, fileImg) => new Promise(asyn
 export const getAllArtist = () => new Promise(async (resolve, reject) => {
     try {
         const artistsSnapshot = await db.collection('Artist').get();
+
+        // Check if the snapshot is empty
         if (artistsSnapshot.empty) {
             return resolve({
                 status: 404,
-                message: 'Artist not found',
+                message: 'No artists found', // Better message for empty case
             });
         }
+
+        // Map through the documents and construct the artist list
         const artists = artistsSnapshot.docs.map(doc => ({
             id: doc.id,
             ...doc.data()
         }));
+
+        // Resolve with the list of artists
         return resolve({
             err: 0,
-            mes: 'Get all artists successfully',
+            message: 'Get all artists successfully',
             artists: artists
         });
     } catch (error) {
-        reject(error);
-        return { status: 500, message: 'Error getting all artists', error };
+        console.error('Error getting all artists:', error);
+        // Reject with a proper error message
+        reject({
+            status: 500,
+            message: 'Error getting all artists',
+            error: error.message || error
+        });
     }
 });
 

@@ -81,6 +81,16 @@ export const getSpecificSong = async (req, res) => {
     }
 };
 
+export const getNewSong = async (req, res) => {
+    try {
+        const response = await services.song.getNewSong(req.body);
+        return res.status(200).json(response);
+    } catch (error) {
+        console.error('Error in get new song controller:', error);
+        return internalServerError(res);
+    }
+};
+
 export const updateSong = async (req, res) => {
     try {
         const { idPlaylist } = req.params;
@@ -128,6 +138,30 @@ export const deleteSong = async (req, res) => {
         return res.status(200).json(response);
     } catch (error) {
         console.error('Error in delete Song controller:', error);
+        return internalServerError(res);
+    }
+};
+
+export const playSong = async (req, res) => {
+    try {
+        const { id } = req.params;
+        // Kiểm tra nếu id không tồn tại
+        if (!{ id }) {
+            return res.status(404).json({
+                err: 1,
+                mes: 'Playlist ID is required',
+            });
+        }
+        const response = await services.song.playSong({ id });
+        if (response.status === 404) {
+            return res.status(404).json({
+                err: 1,
+                mes: 'Songs not found',
+            });
+        }
+        return res.status(200).json(response);
+    } catch (error) {
+        console.error('Error in get random song controller:', error);
         return internalServerError(res);
     }
 };

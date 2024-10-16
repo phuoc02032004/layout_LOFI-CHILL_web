@@ -1,6 +1,7 @@
 import admin from 'firebase-admin';
 import { Storage } from '@google-cloud/storage';
 const storage = new Storage();
+const bucket = admin.storage().bucket(process.env.BUCKET);
 
 const db = admin.firestore();
 
@@ -20,10 +21,6 @@ export const createPlaylist = ({ Title, Description }) => new Promise(async (res
 
         // Tạo playlist mới trong Firestore
         const newPlaylistRef = playlistsRef.doc();
-        await newPlaylistRef.set({
-            Title,
-            Description,
-        });
 
         // Truy xuất lại dữ liệu playlist vừa tạo
         const createdPlaylist = await newPlaylistRef.get();
@@ -35,6 +32,14 @@ export const createPlaylist = ({ Title, Description }) => new Promise(async (res
 
         // Tạo một file trống để đảm bảo thư mục được tạo
         await file.save('');
+
+        await newPlaylistRef.set({
+            Title,
+            Description,
+            filePathPlaylist: folderName,
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
 
         return resolve({
             err: 0,
@@ -51,7 +56,10 @@ export const createPlaylist = ({ Title, Description }) => new Promise(async (res
 export const getAllPlaylist = ({ }) => new Promise(async (resolve, reject) => {
     try {
         const playlistsSnapshot = await db.collection('Music').get();
-        const playlist = playlistsSnapshot.docs.map(doc => doc.data());
+        const playlist = playlistsSnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
         return resolve({
             err: 0,
             mes: 'Get all playlist successfully',
@@ -86,12 +94,12 @@ export const getSpecificPlaylist = ({ id }) => new Promise(async (resolve, rejec
 });
 
 
-
 //Update a playlist
 export const updatePlaylist = ({ id, data }) => new Promise(async (resolve, reject) => {
     try {
         const playlistRef = db.collection('Music').doc(id);
 
+        // Lấy playlist từ Firestore
         const playlistDoc = await playlistRef.get();
         if (!playlistDoc.exists) {
             return resolve({
@@ -100,42 +108,103 @@ export const updatePlaylist = ({ id, data }) => new Promise(async (resolve, reje
             });
         }
 
-        data.updatedAt = new Date();
+        const oldPlaylistData = playlistDoc.data();
 
+        // Kiểm tra nếu title thay đổi
+        if (data.title && data.title !== oldPlaylistData.title) {
+            const oldFolderPath = oldPlaylistData.filePathPlaylist;  // Đường dẫn cũ của folder
+
+            // Tạo đường dẫn mới cho folder playlist (dựa trên title mới)
+            const newFolderPath = `playlists/${data.title}`;  // Ví dụ đường dẫn mới cho playlist
+
+            // Đổi tên folder trong storage
+            const [files] = await bucket.getFiles({ prefix: oldFolderPath });
+
+            if (files.length > 0) {
+                // Di chuyển từng file sang folder mới
+                for (const file of files) {
+                    const newFilePath = file.name.replace(oldFolderPath, newFolderPath);
+                    await file.move(newFilePath);  // Di chuyển file đến đường dẫn mới
+                }
+            }
+
+            // Cập nhật đường dẫn mới vào playlist
+            data.filePathPlaylist = newFolderPath;
+
+            // Sau khi di chuyển các file, xóa folder cũ nếu cần (nếu folder cũ trống)
+            await bucket.file(oldFolderPath).delete();
+        }
+
+        // Cập nhật thời gian và dữ liệu khác
+        data.updatedAt = new Date();
         await playlistRef.update(data);
 
         // Lấy lại dữ liệu mới sau khi cập nhật
         const playlistUpdate = await playlistRef.get();
 
-        resolve({
+        return resolve({
             err: 0,
-            mes: 'Update playlist successfully',
-            playlist: playlistUpdate.data() // Lấy dữ liệu của playlist vừa tạo
+            mes: 'Update playlist and folder successfully',
+            playlist: playlistUpdate.data() // Trả về dữ liệu playlist sau khi cập nhật
         });
     } catch (error) {
-        reject(error);
-        return { status: 500, message: 'Error update playlist', error };
+        reject({
+            status: 500,
+            message: 'Error updating playlist and folder',
+            error
+        });
     }
 });
+
 
 // DELETE a playlist
 export const deletePlaylist = ({ id }) => new Promise(async (resolve, reject) => {
     try {
+        // Tham chiếu đến playlist
         const playlistRef = db.collection('Music').doc(id);
         const playlistDoc = await playlistRef.get();
+
+        // Kiểm tra nếu playlist không tồn tại
         if (!playlistDoc.exists) {
             return resolve({
                 status: 404,
                 message: 'Playlist not found',
             });
         }
+
+        const playlistData = playlistDoc.data();
+
+        // Kiểm tra nếu playlist có chứa đường dẫn của thư mục playlist
+        if (playlistData.filePathPlaylist) {
+            const folderPath = playlistData.filePathPlaylist;
+
+            // Liệt kê tất cả các file trong thư mục playlist
+            const [files] = await bucket.getFiles({ prefix: folderPath });
+
+            if (files.length > 0) {
+                // Xóa từng file trong thư mục playlist
+                for (const file of files) {
+                    await file.delete();
+                }
+            }
+
+            // Sau khi xóa tất cả các file, xóa thư mục playlist
+            await bucket.file(folderPath).delete();  // Nếu bạn muốn xóa cả thư mục
+        }
+
+        // Xóa chính playlist khỏi Firestore sau khi đã xóa các file
         await playlistRef.delete();
+
         return resolve({
             err: 0,
-            mes: 'Delete playlist successfully',
+            mes: 'Delete playlist and all files successfully',
         });
     } catch (error) {
-        reject(error);
-        return { status: 500, message: 'Error delete playlist', error };
+        reject({
+            status: 500,
+            message: 'Error deleting playlist and files',
+            error
+        });
     }
 });
+
