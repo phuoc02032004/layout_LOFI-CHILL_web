@@ -1,0 +1,13 @@
+.view-all-tracks {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .view-all-tracks button {
+    background-color: transparent; 
+    border: none; 
+    padding: 10px 20px; 
+    font-family: sans-serif;
+    font-size: 16px;
+    cursor: pointer; 
+  }
