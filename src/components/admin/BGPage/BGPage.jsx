@@ -12,7 +12,7 @@ function BGPage() {
 
   const [images, setImages] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [imagesPerPage] = useState(10);
+  const [imagesPerPage] = useState(5);
 
   useEffect(() => {
     fetchVisuals();
@@ -71,7 +71,6 @@ function BGPage() {
     } catch (error) {
       console.error('Error updating visual:', error);
     }
-
   };
 
   const handleAddClick = () => {
@@ -82,27 +81,25 @@ function BGPage() {
     event.preventDefault();
     const newVisualTitle = document.getElementById('newVisualName').value;
     const newImageFile = document.getElementById('newImageFile').files[0];
-    const newVideoFile = document.getElementById('newVideoFile').files[0]; // sửa lại lấy file đúng cách
+    const newVideoFile = document.getElementById('newVideoFile').files[0];
 
     try {
       await createVisual(newVisualTitle, newImageFile, newVideoFile);
-      await fetchVisuals(); // Refresh lại danh sách hình ảnh sau khi thêm mới
+      await fetchVisuals();
       setIsAddModalOpen(false);
     } catch (error) {
       console.error('Error adding visual:', error);
     }
   };
 
+  // Tính toán chỉ số của phần tử trên từng trang
   const indexOfLastImage = currentPage * imagesPerPage;
   const indexOfFirstImage = indexOfLastImage - imagesPerPage;
-  const currentImages = images.slice(indexOfFirstImage, indexOfLastImage);
+  const currentImages = images.slice(indexOfFirstImage, indexOfLastImage); // Hình ảnh trên trang hiện tại
 
+  // Tạo số trang
+  const totalPages = Math.ceil(images.length / imagesPerPage); // Số trang tổng
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  const pageNumbers = [];
-  for (let i = 1; i <= Math.ceil(images.length / imagesPerPage); i++) {
-    pageNumbers.push(i);
-  }
 
   return (
     <div>
@@ -116,28 +113,13 @@ function BGPage() {
             <h2>Add New Visual</h2>
             <form onSubmit={handleSaveAdd}>
               <label htmlFor="newVisualName">Visual Title:</label>
-              <input
-                type="text"
-                id="newVisualName"
-                name="newVisualName"
-                required
-              />
+              <input type="text" id="newVisualName" name="newVisualName" required />
 
               <label htmlFor="newImageFile">Select Thumbnail:</label>
-              <input
-                type="file"
-                id="newImageFile"
-                name="newImageFile"
-                accept="image/*"
-              />
+              <input type="file" id="newImageFile" name="newImageFile" accept="image/*" />
 
               <label htmlFor="newVideoFile">Select Video File:</label>
-              <input
-                type="file"
-                id="newVideoFile"
-                name="newVideoFile"
-                accept="video/*"
-              />
+              <input type="file" id="newVideoFile" name="newVideoFile" accept="video/*" />
 
               <button type="submit">Save Visual</button>
             </form>
@@ -147,7 +129,7 @@ function BGPage() {
 
       <div className="image-container-n">
         <div className="image-row">
-          {currentImages.slice(0, 5).map((image, index) => (
+          {currentImages.map((image, index) => (
             <div key={index} className="image-card">
               <img src={image.urlImg} alt={image.title} />
               <div className="image-info">
@@ -160,49 +142,36 @@ function BGPage() {
             </div>
           ))}
         </div>
+
+        {/* Hiển thị phân trang */}
         <div className="pagination">
-          {pageNumbers.map((number) => (
+          {Array.from({ length: totalPages }, (_, index) => (
             <button
-              key={number}
-              onClick={() => paginate(number)}
-              className={currentPage === number ? 'active' : ''}
+              key={index + 1}
+              onClick={() => paginate(index + 1)}
+              className={currentPage === index + 1 ? 'active' : ''}
             >
-              {number}
+              {index + 1}
             </button>
           ))}
         </div>
       </div>
 
+      {/* Modal Edit */}
       {isEditModalOpen && (
         <div className="edit-modal">
           <div className="modal-content">
             <span className="close-modal" onClick={handleCloseModal}>×</span>
             <h2>Edit Visual</h2>
             <form onSubmit={handleSaveEdit}>
-              <label htmlFor="editImageName">Visual Title:</label>
-              <input
-                type="text"
-                id="editVisualName"
-                name="editVisualName"
-                defaultValue={imageToEdit?.name}
-                required
-              />
+              <label htmlFor="editVisualName">Visual Title:</label>
+              <input type="text" id="editVisualName" name="editVisualName" defaultValue={imageToEdit?.name} required />
 
               <label htmlFor="editImageFile">Select Thumbnail:</label>
-              <input
-                type="file"
-                id="editImageFile"
-                name="editImageFile"
-                accept="image/*"
-              />
+              <input type="file" id="editImageFile" name="editImageFile" accept="image/*" />
 
-              <label htmlFor="editImageFile">Select Video File:</label>
-              <input
-                type="file"
-                id="editVideoFile"
-                name="editVideoFile"
-                accept="video/*"
-              />
+              <label htmlFor="editVideoFile">Select Video File:</label>
+              <input type="file" id="editVideoFile" name="editVideoFile" accept="video/*" />
 
               <button type="submit">Save Changes</button>
             </form>
@@ -210,6 +179,7 @@ function BGPage() {
         </div>
       )}
 
+      {/* Modal Delete */}
       {isDeleteModalOpen && (
         <div className="delete-modal">
           <div className="delete-content">
