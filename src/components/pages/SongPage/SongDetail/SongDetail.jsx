@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import './SongDetail.css';
 import Navbar from '../../../Navbar/Navbar';
 import Loading from '../../../Loading/Loading';
@@ -37,6 +37,8 @@ function SongDetail() {
     const location = useLocation();
     const [isLoading, setIsLoading] = useState(true);
     const { song } = location.state;
+    const artistName = song.artistData ? song.artistData.title : song.artist;  
+    const artistImage = song.artistData ? song.artistData.image : song.artist;
 
     const tracks = [
         {
@@ -222,16 +224,24 @@ function SongDetail() {
             <div className="song-detail-container">
                 <Navbar />
                 {isLoading && <Loading />}
-                <p>Song</p>
-                <h1 className='name-song'>{song.title}</h1>
-                <p className='descrep'>{song.description}</p>
-                <div class="socialIcons">
-                    <a href=""><FaFacebook /></a>
-                    <a href=""><FaInstagram /></a>
-                    <a href=""><IoLogoTwitter /></a>
-                    <a href=""><FaGooglePlus /></a>
-                    <a href=""><FaYoutube /></a>
+                <div className='info-song-here'>
+                  <img className='image-song-here' src={song.image} alt={song.title} />
+                  <div className='detail'>
+                    <h1 className='name-song'>{song.title}</h1>
+                    <p className='name-artist-h'>{artistName}</p>
+                    <p className='descrep'>{song.description}</p>
+                    <button className='btn-start'> START </button>
+                  </div>
                 </div>
+            </div>
+            <div className='art-here'>
+              <div className='art-here-1'>ARTIST</div>
+                <Link
+                className='art-here-2'
+                >
+                   <img src={artistImage} className="art-image-here" />
+                   <div className="art-name-here">{artistName}</div>
+                </Link>
             </div>
             <div className='tracks'>
                 <div className='name-track'>TRACKS</div>
@@ -240,7 +250,7 @@ function SongDetail() {
             </div>
 
             <div class='more'>
-            <div className="more-art">MORE ARTISTS</div>
+            <div className="more-art">MORE SONGS</div>
             <SongCarousel songs={songs} />
             </div>
             <Footer />

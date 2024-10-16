@@ -150,7 +150,7 @@ function ArtistDetail() {
             <div className="artist-detail-container">
                 <Navbar />
                 {isLoading && <Loading />}
-                <p>Artist</p>
+                <p style={{fontSize:'20px'}}>Artist</p>
                 <h1 className='name-artist'>{artist.title}</h1>
                 <p className='descrep'>{artist.description}</p>
                 <div class="socialIcons">
