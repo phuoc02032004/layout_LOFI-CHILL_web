@@ -5,7 +5,7 @@ import { name, Description } from '../helper/joi_schema.js';
 
 export const createArtist = async (req, res) => {
     try {
-        const { name, Description } = req.body;
+        const { name, Description, songID } = req.body;
         const { error } = joi.object({ name, Description }).validate(req.body);
         if (error) return res.status(400).json({ error: error.details[0].message });
 

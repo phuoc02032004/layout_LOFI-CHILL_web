@@ -45,7 +45,6 @@ export const createArtist = ({ name, Description }, fileImg) => new Promise(asyn
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         });
 
-
         return resolve({
             err: 0,
             mes: 'Create artist successfully',

@@ -6,7 +6,7 @@ const db = admin.firestore();
 const bucket = admin.storage().bucket(process.env.BUCKET);
 
 // Post a Song
-export const createSong = ({ idPlaylist, Artist, Title, Description }, fileMusic, fileImg) => new Promise(async (resolve, reject) => {
+export const createSong = ({ idPlaylist, ArtistID, Title, Description }, fileMusic, fileImg) => new Promise(async (resolve, reject) => {
     try {
         const songRef = db.collection('Music').doc(idPlaylist).collection('Songs');
 
@@ -46,8 +46,7 @@ export const createSong = ({ idPlaylist, Artist, Title, Description }, fileMusic
 
         // Thêm bài hát vào Firestore
         await songRef.add({
-            Artist,  // Sử dụng Artist từ tham số truyền vào
-            Title,   // Sử dụng Title từ tham số truyền vào
+            Title,
             Url: url,
             Description: Description,
             urlImg: urlImg,
@@ -73,7 +72,7 @@ export const createSong = ({ idPlaylist, Artist, Title, Description }, fileMusic
 });
 
 // Get all Song
-export const getAllSong = ({ id }) => new Promise(async (resolve, reject) => {
+export const getAllSongPlaylist = ({ id }) => new Promise(async (resolve, reject) => {
     try {
         const songRef = db.collection('Music').doc(id).collection('Songs');
         const songDoc = await songRef.get();
@@ -90,12 +89,46 @@ export const getAllSong = ({ id }) => new Promise(async (resolve, reject) => {
 
         return resolve({
             err: 0,
-            mes: 'Get all song successfully',
+            mes: 'Get all song in playlist successfully',
             song: songs
         });
     } catch (error) {
         reject(error);
-        return { status: 500, message: 'Error get all song', error };
+        return { status: 500, message: 'Error get all song in playlist', error };
+    }
+});
+
+export const getAllSong = () => new Promise(async (resolve, reject) => {
+    try {
+        const playlistsRef = db.collection('Music');
+        const playlistsSnapshot = await playlistsRef.get();
+
+        if (playlistsSnapshot.empty) {
+            reject('No playlists found');
+            return;
+        }
+
+        let allSongs = [];
+
+        // Lặp qua từng playlist để lấy các bài hát
+        for (const playlistDoc of playlistsSnapshot.docs) {
+            const playlistId = playlistDoc.id;
+
+            const songsRef = playlistsRef.doc(playlistId).collection('Songs');
+            const songsSnapshot = await songsRef.get();
+
+            if (!songsSnapshot.empty) {
+                songsSnapshot.forEach(songDoc => {
+                    allSongs.push({
+                        id: playlistId,
+                        ...songDoc.data()
+                    });
+                });
+            }
+        }
+        return resolve(allSongs);
+    } catch (error) {
+        return reject(error.message || 'Failed to fetch songs');
     }
 });
 
@@ -137,7 +170,7 @@ export const getNewSong = () => new Promise(async (resolve, reject) => {
 
             songSnapshot.forEach((songDoc) => {
                 allSong.push({
-                    id: songDoc.id,  
+                    id: songDoc.id,
                     ...songDoc.data()
                 });
             });

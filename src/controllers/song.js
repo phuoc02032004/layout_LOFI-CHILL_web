@@ -37,15 +37,7 @@ export const createSong = async (req, res) => {
 
 export const getAllSong = async (req, res) => {
     try {
-        const { id } = req.params;
-        // Kiểm tra nếu id không tồn tại
-        if (!{ id }) {
-            return res.status(404).json({
-                err: 1,
-                mes: 'Playlist ID is required',
-            });
-        }
-        const response = await services.song.getAllSong({ id });
+        const response = await services.song.getAllSong({});
         if (response.status === 404) {
             return res.status(404).json({
                 err: 1,
@@ -55,6 +47,30 @@ export const getAllSong = async (req, res) => {
         return res.status(200).json(response);
     } catch (error) {
         console.error('Error in get all song controller:', error);
+        return internalServerError(res);
+    }
+}
+
+export const getAllSongPlaylist = async (req, res) => {
+    try {
+        const { id } = req.params;
+        // Kiểm tra nếu id không tồn tại
+        if (!{ id }) {
+            return res.status(404).json({
+                err: 1,
+                mes: 'Playlist ID is required',
+            });
+        }
+        const response = await services.song.getAllSongPlaylist({ id });
+        if (response.status === 404) {
+            return res.status(404).json({
+                err: 1,
+                mes: 'Songs not found',
+            });
+        }
+        return res.status(200).json(response);
+    } catch (error) {
+        console.error('Error in get all song in playlist controller:', error);
         return internalServerError(res);
     }
 };

@@ -10,7 +10,8 @@ router.post('/createSong/:idPlaylist', upload.fields([
     { name: 'music', maxCount: 1 },
     { name: 'image', maxCount: 1 }]
 ), song.createSong);
-router.get('/getAllSong/:id', song.getAllSong);
+router.get('/getAllSongPlaylist/:id', song.getAllSong);
+router.get('/getAllSong', song.getAllSong);
 router.get('/getSpecificSong/:idPlaylist/:id', song.getSpecificSong);
 router.get('/getNewSong', song.getNewSong);
 router.put('/updateSong/:idPlaylist/:id', upload.fields([
