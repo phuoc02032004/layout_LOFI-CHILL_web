@@ -15,6 +15,7 @@ import { useFonts } from 'expo-font';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { BlurView } from 'expo-blur';
 import axios from 'axios';
+import { loginUser } from '@/services/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface RootStackParamList {
