@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const getNewMusic = async () => {
+const getNewSong = async () => {
     try {
         const response = await axios.get('http://localhost:3002/api/v1/song/getNewSong');
         console.log(response.data);
@@ -15,7 +15,7 @@ const getNewMusic = async () => {
     }
 };
 
-const playMusic = async (playlistId) => {
+const playSong = async (playlistId) => {
     try {
         const response = await axios.get(`http://localhost:3002/api/v1/song/playSong/${playlistId}`);
         console.log(response.data);
@@ -32,4 +32,4 @@ const playMusic = async (playlistId) => {
     }
 }
 
-export { getNewMusic, playMusic };
+export { getNewSong, playSong };

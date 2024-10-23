@@ -6,10 +6,12 @@ import videoCover from '../assets/videos/bk.mp4';
 import Loading from './../Loading/Loading';
 import SongCarousel from '../Carousel/SongCarousel';
 import ArtistCarousel from '../Carousel/ArtistCarousel';
-import { getNewMusic } from '../../services/music';
+import { getNewMusic } from '../../services/song';
 import Footer from '../footer/Footer';
 import { GrNext } from "react-icons/gr";
 import { GrPrevious } from "react-icons/gr";
+import { getAllArtist } from '../../services/artist'; // Import API getAllArtist
+
 
 import chillhopRadio from '../assets/images/chillhopradio.jpg';
 import lateNightVibes from '../assets/images/latenight.jpg';
@@ -17,23 +19,13 @@ import chillStudyBeats from '../assets/images/chillstudy.jpg';
 import sunnyDay from '../assets/images/sunnyday.jpg';
 import essentials from '../assets/images/essentials.jpg';
 
-import Aso from '../assets/images/Aso.jpg'
-import CYGN from '../assets/images/CYGN.jpg'
-import ivention_ from '../assets/images/ivention_.jpg'
-import Kupla from '../assets/images/Kupla.jpg'
-import Leavv from '../assets/images/Leavv.jpg'
-import Makzo from '../assets/images/Makzo.png'
-import MamaAiuto from '../assets/images/Mama Aiuto.jpg'
-import Misha from '../assets/images/Misha.jpg'
-import mommy from '../assets/images/mommy.jpg'
-import PsalmTrees from '../assets/images/Psalm Trees.jpg'
-import Sadtoi from '../assets/images/Sadtoi.jpg'
-import SleepyFish from '../assets/images/Sleepy  Fish.jpg'
+
 
 export default function HomePage() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [songs, setSongs] = useState([]);
+  const [artists, setArtists] = useState([]); // Khởi tạo state rỗng để lưu danh sách nghệ sĩ từ API
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const images = [
@@ -45,21 +37,6 @@ export default function HomePage() {
     { src: chillhopRadio, title: 'CHILLHOP RADIO' },
     { src: lateNightVibes, title: 'LATE NIGHT VIBES' },
   ];
-
-  const [artists] = useState([
-    { id: 1, title: 'Aso', image: Aso, description: 'Nghệ sĩ tài năng với phong cách âm nhạc độc đáo...' },
-    { id: 2, title: 'CYGN', image: CYGN, description: 'Nổi tiếng với giai điệu electronic sôi động...' },
-    { id: 3, title: 'ivention_', image: ivention_, description: 'Mang đến âm hưởng experimental đầy mới lạ...' },
-    { id: 4, title: 'Kupla', image: Kupla, description: 'Âm nhạc là sự kết hợp tinh tế giữa...' },
-    { id: 5, title: 'Leavv', image: Leavv, description: 'Leavv mang đến âm nhạc đầy cảm xúc...' },
-    { id: 6, title: 'Makzo', image: Makzo, description: 'Makzo với phong cách âm nhạc độc đáo...' },
-    { id: 7, title: 'Mama Aiuto', image: MamaAiuto, description: 'Mama Aiuto nổi tiếng với...' },
-    { id: 8, title: 'Misha', image: Misha, description: 'Misha mang đến âm nhạc đầy nội lực...' },
-    { id: 9, title: 'mommy', image: mommy, description: 'mommy với phong cách âm nhạc đặc biệt...' },
-    { id: 10, title: 'Psalm Trees', image: PsalmTrees, description: 'Psalm Trees là một nghệ sĩ...' },
-    { id: 11, title: 'Sadtoi', image: Sadtoi, description: 'Sadtoi với âm nhạc đầy cảm xúc...' },
-    { id: 12, title: 'Sleepy Fish', image: SleepyFish, description: 'Sleepy Fish mang đến không gian âm nhạc thư giãn...' },
-]);
 
   const imageWidth = 25;
 
@@ -78,6 +55,20 @@ export default function HomePage() {
   const introduceRef = useRef(null);
   const carouselRef = useRef(null);
 
+  // Gọi API getAllArtist để lấy danh sách nghệ sĩ
+  useEffect(() => {
+    const fetchArtists = async () => {
+      try {
+        const artistData = await getAllArtist();
+        setArtists(artistData); // Cập nhật danh sách nghệ sĩ
+      } catch (error) {
+        console.error('Error fetching artists:', error);
+      }
+    };
+
+    fetchArtists();
+  }, []);
+
   useEffect(() => {
     const video = document.createElement('video');
     video.src = videoCover;
@@ -93,22 +84,26 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
+    const carouselElement = carouselRef.current; // Lưu giá trị của carouselRef.current vào một biến cục bộ
+    
     const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
-        carouselRef.current.classList.add('show');
+        carouselElement.classList.add('show');
         introduceRef.current.classList.add('slide-out');
       }
     });
-
-    if (carouselRef.current) {
-      observer.observe(carouselRef.current);
+  
+    if (carouselElement) {
+      observer.observe(carouselElement);
     }
+  
     return () => {
-      if (carouselRef.current) {
-        observer.unobserve(carouselRef.current);
+      if (carouselElement) {
+        observer.unobserve(carouselElement); // Dùng biến cục bộ thay vì carouselRef.current
       }
     };
   }, []);
+  
 
   useEffect(() => {
     const fetchMusic = async () => {
@@ -167,6 +162,7 @@ export default function HomePage() {
       <SongCarousel songs={songs} />
 
       <div className="name_a">Artist</div>
+      {/* Hiển thị danh sách nghệ sĩ từ API */}
       <ArtistCarousel artists={artists} />
 
       <Footer />
@@ -175,3 +171,4 @@ export default function HomePage() {
     </div>
   );
 }
+

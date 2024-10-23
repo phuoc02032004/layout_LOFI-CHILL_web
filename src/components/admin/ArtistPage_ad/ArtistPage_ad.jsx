@@ -12,7 +12,7 @@ const ArtistPage_ad = () => {
 
   const [artists, setArtists] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [artistsPerPage] = useState(10);
+  const [artistsPerPage] = useState(5);
 
   useEffect(() => {
     fetchArtists();
@@ -99,12 +99,9 @@ const ArtistPage_ad = () => {
   const indexOfFirstArtist = indexOfLastArtist - artistsPerPage;
   const currentArtists = artists.slice(indexOfFirstArtist, indexOfLastArtist);
 
+  // Tạo số trang
+  const totalPages = Math.ceil(artists.length / artistsPerPage); // Số trang tổng
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  const pageNumbers = [];
-  for (let i = 1; i <= Math.ceil(artists.length / artistsPerPage); i++) {
-    pageNumbers.push(i);
-  }
 
   return (
     <div>
@@ -134,7 +131,7 @@ const ArtistPage_ad = () => {
 
       <div className="image-container-n">
         <div className="image-row">
-          {currentArtists.slice(0, 5).map((artist, index) => (
+          {currentArtists.map((artist, index) => (
             <div key={index} className="image-card">
               <img src={artist.image} alt={artist.title} />
               <div className="image-info">
@@ -149,13 +146,13 @@ const ArtistPage_ad = () => {
           ))}
         </div>
         <div className="pagination">
-          {pageNumbers.map((number) => (
+        {Array.from({ length: totalPages }, (_, index) => (
             <button
-              key={number}
-              onClick={() => paginate(number)}
-              className={currentPage === number ? 'active' : ''}
+              key={index + 1}
+              onClick={() => paginate(index + 1)}
+              className={currentPage === index + 1 ? 'active' : ''}
             >
-              {number}
+              {index + 1}
             </button>
           ))}
         </div>
