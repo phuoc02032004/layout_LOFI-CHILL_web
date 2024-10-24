@@ -4,11 +4,12 @@ import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { Video, ResizeMode } from 'expo-av';
 import Loading from '../Loading/Loading';
 import Header from '../Header/Header';
-import GenreCarousel from '../Carousel/GenreCarousel';
+import PresetCarousel from '../Carousel/PresetCarousel';
 import SongCarousel from '../Carousel/SongCarousel';
 import ArtistCarousel from '../Carousel/ArtistCarousel';
 import { ImageSlider } from '@/data/SliderData';
 import { Songs } from '@/data/SongData';
+import { Presets } from '@/data/PresetData';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -60,7 +61,7 @@ const HomeScreen = () => {
       <Header />
       <Video
         ref={videoRef}
-        source={require('../../assets/videos/bk.mp4')}
+        source={require('../../assets/videos/CampfireChill.mp4')}
         style={[styles.video, { width, height: '100%' }]}
         resizeMode={ResizeMode.COVER}
         shouldPlay={isFocused}
@@ -68,7 +69,8 @@ const HomeScreen = () => {
         isMuted
         usePoster={require('../../assets/images/imgCampfire.jpg')} 
       />
-      {/* Bao bọc nội dung cần cuộn */}
+      {/* Add a transparent overlay to darken the video background */}
+      <View style={styles.overlay} /> 
       <View style={styles.contentContainer}>
         <ScrollView style={styles.scrollView}>
           {isLoading && <Loading />}
@@ -84,6 +86,8 @@ const HomeScreen = () => {
               <Text style={styles.btnStartText}>START LISTENING</Text>
             </TouchableOpacity>
           </Animated.View>
+          <Text style={styles.newsong}>PRESETS</Text>
+          <PresetCarousel itemPreset={Presets}/>
           <Text style={styles.newsong}>NEW SONG</Text>
           <SongCarousel itemSong={Songs}/> 
           <Text style={styles.newsong}>ARTISTS</Text>
@@ -97,6 +101,7 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+
   },
   video: {
     position: 'absolute', 
@@ -107,7 +112,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
-    marginTop: 100, // Adjust the margin to position the content container correctly
+    marginTop: 60,
   },
   scrollView: {
     flex: 1, 
@@ -157,6 +162,15 @@ const styles = StyleSheet.create({
     color: '#fff',
     paddingLeft:30,
     paddingTop:30,
+    paddingBottom:5,
+  },
+  overlay: { // Add this style
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
   }
 });
 

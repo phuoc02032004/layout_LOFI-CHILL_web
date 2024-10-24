@@ -10,12 +10,13 @@ import {
   import { ImageSliderType } from "@/data/SliderData";
   import Animated, { useSharedValue, useAnimatedStyle, useAnimatedScrollHandler, interpolate } from "react-native-reanimated";
   
-  type Props = {
-    itemArtist: ImageSliderType[];
+
+type Props = {
+    itemPreset: ImageSliderType[];
   };
-  
-  const ArtistCarousel = ({ itemArtist }: Props) => {
-    const [newData] = useState([{ key: "spacer-left" }, ...itemArtist, { key: "spacer-right" }]);
+
+  const PresetCarousel = ({ itemPreset }: Props) => {
+    const [newData] = useState([{ key: "spacer-left" }, ...itemPreset, { key: "spacer-right" }]);
     const { width } = useWindowDimensions();
     const SIZE = width * 0.7;
     const SPACER = (width - SIZE) / 2;
@@ -27,6 +28,7 @@ import {
     });
   
     return (
+    <View style={styles.back}>
       <Animated.ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -61,15 +63,15 @@ import {
               </View>
             );
           } else {
-            // Trường hợp item là { key: string }
             return <View style={{ width: SPACER }} key={index} />;
           }
         })}
       </Animated.ScrollView>
+      </View>
     );
   };
   
-  export default ArtistCarousel;
+  export default PresetCarousel;
   
   const styles = StyleSheet.create({
     imageContainer: {
@@ -77,11 +79,16 @@ import {
       overflow: "hidden",
       borderWidth: 2,
       borderColor: 'rgba(225, 255, 255, 0.5)',
+      
     },
     image: {
       width: "100%",
-      height: undefined,
+      height: 500,
       aspectRatio: 1,
+    },
+    back: {
+  
+       
     },
     titleContainer: { 
       position: 'absolute', 

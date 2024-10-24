@@ -13,8 +13,8 @@ const Header = () => {
 
   return (
     <View style={styles.headerContainer}> 
-      {Platform.OS === 'ios' && ( 
-        <BlurView intensity={50} tint='dark' style={styles.blurContainer}> 
+      {Platform.OS === 'android' && ( 
+        <BlurView intensity={0} tint='dark' style={styles.blurContainer}> 
           <View style={styles.header}>
             <View style={styles.left} /> 
 
@@ -61,7 +61,7 @@ const Header = () => {
 const styles = StyleSheet.create({
   headerContainer: {
     position: 'absolute', 
-    top: 15,
+    top: 10,
     left: 0,
     right: 0,
     zIndex: 10, 
@@ -77,12 +77,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between', 
     alignItems: 'center', 
-    padding: 10,
     height: 60, 
     marginHorizontal: 60,
-    paddingHorizontal: 10,
-    borderRadius: 35,
-  
+    backgroundColor: 'transparent', // Remove default background color
   },
   left: {
     width: 50, 

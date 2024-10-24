@@ -37,9 +37,8 @@ const SongCarousel = ({ itemSong }: Props) => {
       onScroll={onScroll}
     >
       {newData.map((item, index) => {
-        // Kiểm tra kiểu
-        if ('image' in item) { // Kiểm tra xem item có thuộc tính 'image'
-          const style = useAnimatedStyle(() => {
+        if ('image' in item) {
+          const imageStyle = useAnimatedStyle(() => {
             const scale = interpolate(
               x.value,
               [(index - 2) * SIZE, (index - 1) * SIZE, index * SIZE],
@@ -52,9 +51,12 @@ const SongCarousel = ({ itemSong }: Props) => {
 
           return (
             <View style={{ width: SIZE }} key={index}>
-              <Animated.View style={[styles.imageContainer, style]}>
+              <Animated.View style={[styles.imageContainer, imageStyle]}>
                 <Image source={item.image} style={styles.image} />
               </Animated.View>
+              <View style={styles.titleContainer}> 
+                <Text style={styles.title}>{item.name}</Text> 
+              </View> 
             </View>
           );
         } else {
@@ -71,10 +73,29 @@ const styles = StyleSheet.create({
   imageContainer: {
     borderRadius: 34,
     overflow: "hidden",
+    position: 'relative', 
+    borderWidth: 2,
+    borderColor: 'rgba(225, 255, 255, 0.5)',
   },
   image: {
     width: "100%",
     height: undefined,
     aspectRatio: 1,
+  },
+  titleContainer: { 
+    position: 'absolute', 
+    bottom: 10, 
+    left: 70, 
+    right: 70, 
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+    padding: 5, 
+    borderRadius: 10, 
+    alignItems: 'center', 
+  },
+  title: {
+    color: '#fff',
+    fontSize: 16,
+    fontFamily: 'Poppins-Bold',
+    textAlign: 'center', 
   },
 });
