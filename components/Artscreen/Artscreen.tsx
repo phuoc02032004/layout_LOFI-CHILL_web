@@ -1,26 +1,117 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, FlatList, Image, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
+import { ImageSlider, ImageSliderType } from '@/data/SliderData';
 
-const Artistscreen = () => {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Artscreen</Text>
-    </View>
-  );
+const Artscreen = () => {
+    const [currentPage, setCurrentPage] = useState(0);
+    const itemsPerPage = 5;
+
+    // Lấy dữ liệu cho trang hiện tại
+    const currentItems = ImageSlider.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
+
+    const renderItem = ({ item }: { item: ImageSliderType }) => (
+        <View style={styles.card}>
+            <Image source={item.image} style={styles.image} />
+            <Text style={styles.name}>{item.name}</Text>
+            <Text style={styles.description}>{item.description}</Text>
+        </View>
+    );
+
+    return (
+        <View style={styles.container}>
+            <FlatList
+                data={currentItems}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.name}
+                showsVerticalScrollIndicator={false}
+                ListFooterComponent={<View style={styles.footerSpace} />}
+            />
+
+            {/* Overlay cho phân trang */}
+            <View style={styles.paginationContainer}>
+                {Array.from({ length: Math.ceil(ImageSlider.length / itemsPerPage) }, (_, index) => (
+                    <TouchableOpacity
+                        key={index}
+                        style={[
+                            styles.pageButton,
+                            index === currentPage && styles.activePage,
+                        ]}
+                        onPress={() => setCurrentPage(index)}
+                    >
+                        <Text style={styles.pageText}>{index + 1}</Text>
+                    </TouchableOpacity>
+                ))}
+            </View>
+        </View>
+    );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1, // Makes the container take up the full screen
-    justifyContent: 'center', // Center the content vertically
-    alignItems: 'center', // Center the content horizontally
-    backgroundColor: '#f0f0f0', // Background color for the screen
+    container: {
+        flex: 1,
+        backgroundColor:'#5C8FAE', // Màu nền trang
+        padding: 10,
+    },
+    card: {
+      backgroundColor: '#e0f2f1',
+      borderRadius: 12,
+      padding: 16,
+      marginBottom: 16,
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor: 'rgba(0, 0, 0, 0.1)', // Viền mềm mại
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.15, // Hiệu ứng bóng mờ
+      shadowRadius: 10,
+      elevation: 5, // Hiệu ứng nổi nhẹ
   },
-  text: {
-    fontSize: 24, // Size of the text
-    fontFamily: 'Poppins-Bold', // Font family for the text
-    color: '#333', // Text color
+    image: {
+        width: 100,
+        height: 100,
+        borderRadius: 50,
+        borderWidth: 2,
+        borderColor: '#d1d8e0', // Viền ảnh nhẹ nhàng
+        marginBottom: 10,
+    },
+    name: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: '#34495e',
+        marginTop: 8,
+    },
+    description: {
+        fontSize: 14,
+        color: '#7f8c8d',
+        marginTop: 4,
+        textAlign: 'center', // Canh giữa mô tả
+    },
+    paginationContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        position: 'absolute',
+        bottom: 20,
+        left: 0,
+        right: 0,
+    },
+    pageButton: {
+        marginBottom:70,
+        marginHorizontal: 5,
+        padding: 8,
+        backgroundColor: 'rgba(0, 0, 0, 0.2)',
+        borderRadius: 15,
+    },
+    activePage: {
+        backgroundColor: '#34495e', // Màu nền cho trang hiện tại
+    },
+    pageText: {
+        color: '#ffffff',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    footerSpace: {
+      height: 80, // Chiều cao khoảng trống ở cuối
   },
 });
 
-export default Artistscreen;
+export default Artscreen;

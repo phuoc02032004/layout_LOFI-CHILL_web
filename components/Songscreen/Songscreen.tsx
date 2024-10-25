@@ -24,6 +24,7 @@ const Songscreen = () => {
             renderItem={renderItem}
             keyExtractor={(item) => item.name} // Hoặc sử dụng một ID duy nhất nếu có
             showsVerticalScrollIndicator={false}
+            ListFooterComponent={<View style={styles.footerSpace} />}
         />
         {/* Overlay cho các số trang */}
         <View style={styles.overlay}>
@@ -58,14 +59,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     pageButton: {
-        margin: 5,
-        padding: 10,
-        backgroundColor: '#fff',
-        borderRadius: 5,
-        fontSize: 18,
+        marginBottom:10,
+        marginHorizontal: 5,
+        padding: 8,
+        backgroundColor: 'rgba(0, 0, 0, 0.2)',
+        borderRadius: 15,
     },
     activePage: {
-        backgroundColor: '#007BFF', // Màu nền cho trang đang hoạt động
+        backgroundColor: '#34495e', // Màu nền cho trang đang hoạt động
         color: '#fff', // Màu chữ cho trang đang hoạt động
     },
     card: {
@@ -92,6 +93,9 @@ const styles = StyleSheet.create({
     description: {
         fontSize: 14,
         color: '#888',
+    },
+    footerSpace: {
+        height: 80, // Chiều cao khoảng trống ở cuối
     },
 });
 export default Songscreen;
