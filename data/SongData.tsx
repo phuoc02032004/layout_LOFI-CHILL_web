@@ -9,13 +9,13 @@ export type Song = {
 
 export const Songs: Song[] = [
     {
-        name: 'Winter Chill',
+        name: 'Winter Chill1',
         image: require('@/assets/images/winter.jpg'),
         artist: 'Psalm Trees',
         description: "Một bản nhạc êm dịu và đầy không khí gợi lên sự yên bình của khung cảnh tuyết rơi. Với giai điệu piano tinh tế, tiếng dây mềm mại, và kết cấu âm thanh ambient, lý tưởng cho việc thư giãn hoặc tạo không khí yên tĩnh."
     },
     {
-        name: 'Slinky Groove',
+        name: 'Slinky Groove1',
         image: require('@/assets/images/slinky.jpg'),
         artist: 'Makzo',
         description: "Một giai điệu funky và sôi động với giai điệu bắt tai và nhịp điệu mạnh mẽ. Với tiếng bass groovy, guitar funky và một chút brass, hoàn hảo cho việc nhảy múa hoặc thêm năng lượng vào ngày của bạn."
