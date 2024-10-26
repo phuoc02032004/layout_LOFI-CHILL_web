@@ -1,6 +1,6 @@
 import { soundEffect } from '../controllers/index.js';
 import express from 'express';
-import { authenticateToken } from '../middleware/authToken.js';
+import { accessToken } from '../middleware/authToken.js';
 import multer from 'multer';
 const storage = multer.memoryStorage();
 const upload = multer({ storage });

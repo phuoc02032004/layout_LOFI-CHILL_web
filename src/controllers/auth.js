@@ -46,3 +46,14 @@ export const login = async (req, res) => {
     }
 };
 
+export const refreshToken = async (req, res) => {
+    try {
+        const refreshToken = req.body.token;
+        if (!refreshToken) res.sendStatus(401);
+        const response = await services.auth.refreshAccessToken(refreshToken);
+        return res.status(200).json(response);
+    } catch (error) {
+        console.error('Error in Refresh Token controller:', error);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
+};

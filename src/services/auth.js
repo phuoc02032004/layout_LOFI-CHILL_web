@@ -2,9 +2,18 @@ import admin from 'firebase-admin';
 import bcrypt from 'bcrypt';
 import { sendVerificationEmail } from '../utils/email.js';
 import jwt from 'jsonwebtoken';
+let refreshTokens = [];
 
 admin.initializeApp();
 const db = admin.firestore();
+
+function generateAccessToken(user) {
+    return jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '5m' })
+}
+
+function generateRefreshToken(user) {
+    return jwt.sign(user, process.env.REFRESH_JWT_SECRET, { expiresIn: '15d' })
+}
 
 export const register = ({ username, email, password }) => new Promise(async (resolve, reject) => {
 
@@ -111,16 +120,55 @@ export const login = ({ email, password }) => new Promise(async (resolve, reject
             return reject({ status: 401, error: 'Please verify your email address' }); // 401: yêu cầu xác thực email
         }
 
-        // Tạo JWT
-        const token = jwt.sign({ userId: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const userPayload = { email: user.email }
 
-        resolve({
+        // Tạo JWT
+        const accessToken = generateAccessToken(userPayload);
+        const refreshToken = generateRefreshToken(userPayload);
+
+        // Lưu refreshToken vào database (Firestore)
+        await userRef.doc(querySnapshot.docs[0].id).update({
+            refreshToken: refreshToken,
+            updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        return resolve({
             err: 0,
             mes: 'Log in successfully',
-            token: token
+            accessToken: accessToken,
+            refreshToken: refreshToken
         });
     } catch (error) {
         reject({ status: 500, message: 'Error logging in', error });
     }
 });
 
+// Xử lý refresh token để cấp mới accessToken
+export const refreshAccessToken = (refreshToken) => new Promise(async (resolve, reject) => {
+    try {
+        if (!refreshToken) return reject({ status: 401, message: 'Refresh token is required' });
+
+        // Kiểm tra refreshToken trong cơ sở dữ liệu
+        const userRef = db.collection('users');
+        const snapshot = await userRef.where('refreshToken', '==', refreshToken).get();
+        
+        if (snapshot.empty) {
+            return reject({ status: 403, message: 'refresh token is empty' });
+        }
+
+        // Xác minh refreshToken
+        jwt.verify(refreshToken, process.env.REFRESH_JWT_SECRET, (err, user) => {
+            if (err) {
+                return reject({ status: 403, message: 'Invalid refresh token' });
+            }
+
+            const userPayload = { email: user.email };
+            const newAccessToken = generateAccessToken(userPayload);
+
+            return resolve({ accessToken: newAccessToken });
+        });
+    } catch (error) {
+        console.error("Error refreshing token:", error);
+        reject({ status: 500, message: 'Error refreshing token', error });
+    }
+}).catch(error => error);
