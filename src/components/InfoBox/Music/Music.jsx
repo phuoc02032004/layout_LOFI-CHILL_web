@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './Music.css';
 import { getAllPlaylists } from '../../../services/playlist';
-import { playMusic } from '../../../services/music';
+import { playSong } from '../../../services/song';
 
 const Music = () => {
   const [stationsData, setStations] = useState([]);
@@ -43,7 +43,7 @@ const Music = () => {
       setCurrentTime(currentTime);
     } else {
       try {
-        const songs = await playMusic(playlistId);
+        const songs = await playSong(playlistId);
         if (songs.length > 0) {
           setPlaylistsState(prevState => ({
             ...prevState,

@@ -6,7 +6,7 @@ import videoCover from '../assets/videos/bk.mp4';
 import Loading from './../Loading/Loading';
 import SongCarousel from '../Carousel/SongCarousel';
 import ArtistCarousel from '../Carousel/ArtistCarousel';
-import { getNewMusic } from '../../services/song';
+import { getNewSong } from '../../services/song';
 import Footer from '../footer/Footer';
 import { GrNext } from "react-icons/gr";
 import { GrPrevious } from "react-icons/gr";
@@ -18,7 +18,7 @@ import lateNightVibes from '../assets/images/latenight.jpg';
 import chillStudyBeats from '../assets/images/chillstudy.jpg';
 import sunnyDay from '../assets/images/sunnyday.jpg';
 import essentials from '../assets/images/essentials.jpg';
-
+import Cookies from 'js-cookie';
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -112,7 +112,7 @@ export default function HomePage() {
           console.error('No access token found in cookie!');
           return;
         }
-        const musicData = await getNewMusic(accessToken);
+        const musicData = await getNewSong(accessToken);
         setSongs(musicData); // Cập nhật danh sách bài hát
       } catch (error) {
         console.error('Error fetching music:', error);
