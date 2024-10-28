@@ -35,6 +35,23 @@ const getAllPlaylists = async () => {
     }
 };
 
+const updatePlaylist = async (playlistId, Title, Description) => {
+    try {
+        const payload = {};
+        if (Title) payload.Title = Title;
+        if (Description) payload.Description = Description;
+        const response = await axios.put(`http://localhost:3002/api/v1/playlist/updatePlaylist/${playlistId}`, payload, {
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+        console.log('Playlist Updated:', response.data);
+        return response.data;
+    } catch (error) {
+        console.error('Error update Playlist:', error.response ? error.response.data : error.message);
+    }
+};
+
 const deletePlaylist = async (playlistId) => {
     try {
         const response = await axios.delete(`http://localhost:3002/api/v1/playlist/deletePlaylist/${playlistId}`);
@@ -44,4 +61,4 @@ const deletePlaylist = async (playlistId) => {
     }
 }
 
-export { createPlaylist, getAllPlaylists, deletePlaylist };
+export { createPlaylist, getAllPlaylists, updatePlaylist, deletePlaylist };

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import './GenreM.css';
-import { createPlaylist, deletePlaylist } from '../../../services/playlist';
-import { FaCoffee } from "react-icons/fa";
+import { createPlaylist, updatePlaylist, deletePlaylist } from '../../../services/playlist';
 
 const GenreM = ({ stations, setStations }) => {
   const [isDeleteGenreModalOpen, setIsDeleteGenreModalOpen] = useState(false);
@@ -34,31 +33,50 @@ const GenreM = ({ stations, setStations }) => {
 
   const handleConfirmDeleteGenre = async () => {
     try {
+      // Gọi API xóa playlist
       await deletePlaylist(genreToDelete.id);
+
+      // Lọc bỏ playlist vừa bị xóa khỏi danh sách stations
+      const updatedStations = stations.filter((station) => station.id !== genreToDelete.id);
+
+      // Cập nhật state để giao diện phản ánh thay đổi
+      setStations(updatedStations);
+
+      // Đóng modal xác nhận xóa
+      setIsDeleteGenreModalOpen(false);
+      setGenreToDelete(null);
     } catch (error) {
       console.error('Error during Playlist deletion:', error);
     } finally {
+      // Đảm bảo modal sẽ đóng lại ngay cả khi xảy ra lỗi
       setIsDeleteGenreModalOpen(false);
       setGenreToDelete(null);
     }
-
   };
 
-  const handleSaveEditGenre = (event) => {
+
+  const handleSaveEditGenre = async (event) => {
     event.preventDefault();
     const updatedGenreName = document.getElementById('editGenreName').value;
     const updatedGenreDescription = document.getElementById('editGenreDescription').value;
 
-    const genreIndex = stations.findIndex((g) => g.id === genreToEdit.id);
-    const updatedGenres = [...stations];
-    updatedGenres[genreIndex] = {
-      ...genreToEdit,
-      name: updatedGenreName,
-      description: updatedGenreDescription,
-    };
-    setStations(updatedGenres);
-    setIsEditGenreModalOpen(false);
-    setGenreToEdit(null);
+    try {
+      await updatePlaylist(genreToEdit.id, updatedGenreName, updatedGenreDescription); // Gọi API cập nhật
+      const updatedStations = stations.map((station) =>
+        station.id === genreToEdit.id
+          ? { ...station, name: updatedGenreName, description: updatedGenreDescription }
+          : station
+      );
+
+      // Cập nhật state để giao diện phản ánh thay đổi
+      setStations(updatedStations);
+
+      // Đóng modal
+      setIsEditGenreModalOpen(false);
+      setGenreToEdit(null);
+    } catch (error) {
+      console.error('Error updating artist:', error);
+    }
   };
 
   const handleSaveAddGenre = async (event) => {
