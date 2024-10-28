@@ -8,7 +8,7 @@ const upload = multer({ storage });
 
 
 router.post('/createArtist', upload.single('fileImg'), artist.createArtist);
-router.get('/getAllArtist', accessToken, artist.getAllArtist);
+router.get('/getAllArtist', artist.getAllArtist);
 router.get('/getSpecificArtist/:id', artist.getSpecificArtist);
 router.put('/updateArtist/:id', upload.single('fileImg'), artist.updateArtist);
 router.delete('/deleteArtist/:id', artist.deleteArtist);

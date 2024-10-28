@@ -4,7 +4,7 @@ const storage = new Storage();
 const db = admin.firestore();
 
 // Create a new preset
-export const createPreset = ({ Title, Description, musicUrl, imageUrl, visualUrl, soundUrl }) => new Promise(async (resolve, reject) => {
+export const createPreset = ({ Title, Description, musicUrl, imageUrl, visualUrl, soundUrl, soundVol }) => new Promise(async (resolve, reject) => {
     try {
         const presetsRef = db.collection('Preset');
         const snapshot = await presetsRef.where('Title', '==', Title).get();
@@ -18,7 +18,7 @@ export const createPreset = ({ Title, Description, musicUrl, imageUrl, visualUrl
 
         const newPresetRef = presetsRef.doc();
         await newPresetRef.set({
-            Title, Description, musicUrl, imageUrl, visualUrl, soundUrl,
+            Title, Description, musicUrl, imageUrl, visualUrl, soundUrl, soundVol,
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
             updatedAt: admin.firestore.FieldValue.serverTimestamp()
         });

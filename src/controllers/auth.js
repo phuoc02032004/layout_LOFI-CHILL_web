@@ -35,7 +35,7 @@ export const login = async (req, res) => {
         if (error) return res.status(400).json({ error: error.details[0].message });
 
         try {
-            const response = await services.auth.login(req.body);
+            const response = await services.auth.login(req.body, res);
             return res.status(200).json(response); // Thành công trả về status 200
         } catch (loginError) {
             return res.status(loginError.status || 500).json({ error: loginError.error || 'Internal Server Error' });

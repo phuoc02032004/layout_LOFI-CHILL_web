@@ -12,7 +12,7 @@ function generateAccessToken(user) {
 }
 
 function generateRefreshToken(user) {
-    return jwt.sign(user, process.env.REFRESH_JWT_SECRET, { expiresIn: '15d' })
+    return jwt.sign(user, process.env.REFRESH_JWT_SECRET, { expiresIn: '7d' })
 }
 
 export const register = ({ username, email, password }) => new Promise(async (resolve, reject) => {
@@ -93,13 +93,13 @@ export const verify = ({ email, code }) => new Promise(async (resolve, reject) =
 });
 
 
-export const login = ({ email, password }) => new Promise(async (resolve, reject) => {
+export const login = ({ email, password }, res) => new Promise(async (resolve, reject) => {
     try {
         const userRef = db.collection('users');
         const querySnapshot = await userRef.where('email', '==', email).get();
         if (querySnapshot.empty) {
             console.log('User does not exist');
-            return reject({ status: 400, error: 'Invalid credentials' }); // Trả về mã 400 cho lỗi đăng nhập
+            return reject({ status: 400, error: 'Invalid credentials' });
         }
 
         let user = querySnapshot.docs[0].data();
@@ -111,16 +111,16 @@ export const login = ({ email, password }) => new Promise(async (resolve, reject
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             console.log('Password does not match');
-            return reject({ status: 400, error: 'Invalid credentials' }); // Mật khẩu không khớp
+            return reject({ status: 400, error: 'Invalid credentials' });
         }
 
         // Kiểm tra email đã xác thực chưa
         if (!user.isVerified) {
             console.log('Email not verified');
-            return reject({ status: 401, error: 'Please verify your email address' }); // 401: yêu cầu xác thực email
+            return reject({ status: 401, error: 'Please verify your email address' });
         }
 
-        const userPayload = { email: user.email }
+        const userPayload = { email: user.email };
 
         // Tạo JWT
         const accessToken = generateAccessToken(userPayload);
@@ -132,14 +132,30 @@ export const login = ({ email, password }) => new Promise(async (resolve, reject
             updatedAt: admin.firestore.FieldValue.serverTimestamp()
         });
 
+        // Đặt refreshToken vào cookie trước khi resolve
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 ngày
+        });
+
+        res.cookie('accessToken', accessToken, {
+            httpOnly: false,
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: 7 * 24 * 60 * 60 * 1000
+        })
+
+        // Trả về response sau khi đặt cookie
         return resolve({
             err: 0,
             mes: 'Log in successfully',
             accessToken: accessToken,
             refreshToken: refreshToken
         });
+        
     } catch (error) {
-        reject({ status: 500, message: 'Error logging in', error });
+        console.error("Error logging in:", error);
+        return reject({ status: 500, message: 'Error logging in', error });
     }
 });
 
@@ -151,7 +167,7 @@ export const refreshAccessToken = (refreshToken) => new Promise(async (resolve, 
         // Kiểm tra refreshToken trong cơ sở dữ liệu
         const userRef = db.collection('users');
         const snapshot = await userRef.where('refreshToken', '==', refreshToken).get();
-        
+
         if (snapshot.empty) {
             return reject({ status: 403, message: 'refresh token is empty' });
         }

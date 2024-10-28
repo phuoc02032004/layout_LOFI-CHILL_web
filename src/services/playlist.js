@@ -112,32 +112,30 @@ export const updatePlaylist = ({ id, data }) => new Promise(async (resolve, reje
 
         // Kiểm tra nếu title thay đổi
         if (data.title && data.title !== oldPlaylistData.title) {
-            const oldFolderPath = oldPlaylistData.filePathPlaylist;  // Đường dẫn cũ của folder
-
-            // Tạo đường dẫn mới cho folder playlist (dựa trên title mới)
-            const newFolderPath = `playlists/${data.title}`;  // Ví dụ đường dẫn mới cho playlist
+            const oldFolderPath = oldPlaylistData.filePathPlaylist;
+            const newFolderPath = `playlists/${data.title}`;
 
             // Đổi tên folder trong storage
             const [files] = await bucket.getFiles({ prefix: oldFolderPath });
 
             if (files.length > 0) {
-                // Di chuyển từng file sang folder mới
-                for (const file of files) {
+                await Promise.all(files.map(file => {
                     const newFilePath = file.name.replace(oldFolderPath, newFolderPath);
-                    await file.move(newFilePath);  // Di chuyển file đến đường dẫn mới
-                }
+                    return file.move(newFilePath);
+                }));
             }
 
             // Cập nhật đường dẫn mới vào playlist
             data.filePathPlaylist = newFolderPath;
-
-            // Sau khi di chuyển các file, xóa folder cũ nếu cần (nếu folder cũ trống)
-            await bucket.file(oldFolderPath).delete();
         }
 
-        // Cập nhật thời gian và dữ liệu khác
+        // Cập nhật thời gian và dữ liệu khác vào Firestore
         data.updatedAt = new Date();
-        await playlistRef.update(data);
+
+        // Ghi cập nhật vào Firestore, bao gồm cả filePathPlaylist
+        await playlistRef.update({
+            ...data,
+        });
 
         // Lấy lại dữ liệu mới sau khi cập nhật
         const playlistUpdate = await playlistRef.get();
@@ -145,7 +143,7 @@ export const updatePlaylist = ({ id, data }) => new Promise(async (resolve, reje
         return resolve({
             err: 0,
             mes: 'Update playlist and folder successfully',
-            playlist: playlistUpdate.data() // Trả về dữ liệu playlist sau khi cập nhật
+            playlist: playlistUpdate.data()
         });
     } catch (error) {
         reject({
@@ -155,7 +153,6 @@ export const updatePlaylist = ({ id, data }) => new Promise(async (resolve, reje
         });
     }
 });
-
 
 // DELETE a playlist
 export const deletePlaylist = ({ id }) => new Promise(async (resolve, reject) => {
@@ -187,9 +184,6 @@ export const deletePlaylist = ({ id }) => new Promise(async (resolve, reject) =>
                     await file.delete();
                 }
             }
-
-            // Sau khi xóa tất cả các file, xóa thư mục playlist
-            await bucket.file(folderPath).delete();  // Nếu bạn muốn xóa cả thư mục
         }
 
         // Xóa chính playlist khỏi Firestore sau khi đã xóa các file

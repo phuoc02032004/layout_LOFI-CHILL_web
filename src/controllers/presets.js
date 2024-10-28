@@ -1,13 +1,13 @@
 import * as services from '../services/index.js';
 import { internalServerError } from '../middleware/handle_error.js';
 import joi from 'joi';
-import { Title, Description, musicUrl, imageUrl, visualUrl, soundUrl } from '../helper/joi_schema.js';
+import { Title, Description, musicUrl, imageUrl, visualUrl, soundUrl, soundVol } from '../helper/joi_schema.js';
 
 // Create a new preset
 export const createPreset = async (req, res) => {
     try {
         const { error } = joi.object({
-            Title, Description, musicUrl, imageUrl, visualUrl, soundUrl
+            Title, Description, musicUrl, imageUrl, visualUrl, soundUrl, soundVol
         }).validate(req.body);
 
         if (error) {
