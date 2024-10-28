@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const getNewMusic = async (accessToken) => {
+const getNewSong = async (accessToken) => {
     try {
         const response = await axios.get('http://localhost:3002/api/v1/song/getNewSong', {
             headers: {
@@ -20,7 +20,7 @@ const getNewMusic = async (accessToken) => {
     }
 };
 
-const playMusic = async (playlistId) => {
+const playSong = async (playlistId) => {
     try {
         const response = await axios.get(`http://localhost:3002/api/v1/song/playSong/${playlistId}`);
         console.log(response.data);
@@ -37,4 +37,4 @@ const playMusic = async (playlistId) => {
     }
 }
 
-export { getNewMusic, playMusic };
+export { getNewSong, playSong };
