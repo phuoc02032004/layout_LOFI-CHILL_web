@@ -29,6 +29,7 @@ import mommy from '../assets/images/mommy.jpg'
 import PsalmTrees from '../assets/images/Psalm Trees.jpg'
 import Sadtoi from '../assets/images/Sadtoi.jpg'
 import SleepyFish from '../assets/images/Sleepy  Fish.jpg'
+import Cookies from 'js-cookie';
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -59,7 +60,7 @@ export default function HomePage() {
     { id: 10, title: 'Psalm Trees', image: PsalmTrees, description: 'Psalm Trees là một nghệ sĩ...' },
     { id: 11, title: 'Sadtoi', image: Sadtoi, description: 'Sadtoi với âm nhạc đầy cảm xúc...' },
     { id: 12, title: 'Sleepy Fish', image: SleepyFish, description: 'Sleepy Fish mang đến không gian âm nhạc thư giãn...' },
-]);
+  ]);
 
   const imageWidth = 25;
 
@@ -113,7 +114,12 @@ export default function HomePage() {
   useEffect(() => {
     const fetchMusic = async () => {
       try {
-        const musicData = await getNewMusic();
+        const accessToken = Cookies.get('accessToken'); // Không cần await
+        if (!accessToken) {
+          console.error('No access token found in cookie!');
+          return;
+        }
+        const musicData = await getNewMusic(accessToken);
         setSongs(musicData); // Cập nhật danh sách bài hát
       } catch (error) {
         console.error('Error fetching music:', error);

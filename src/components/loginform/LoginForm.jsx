@@ -20,7 +20,6 @@ const LoginForm = () => {
         email,
         password
       )
-      localStorage.setItem('token', response.data.token);
 
       navigate('/homepage');
     } catch (error) {

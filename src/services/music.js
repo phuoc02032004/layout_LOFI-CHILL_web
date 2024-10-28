@@ -1,8 +1,13 @@
 import axios from "axios";
 
-const getNewMusic = async () => {
+const getNewMusic = async (accessToken) => {
     try {
-        const response = await axios.get('http://localhost:3002/api/v1/song/getNewSong');
+        const response = await axios.get('http://localhost:3002/api/v1/song/getNewSong', {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
+
         console.log(response.data);
         const data = response.data.song.map(song => ({
             title: song.Title,
