@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     },
     overlay: {
         position: 'absolute',
-        bottom: 90, // Khoảng cách từ đáy của màn hình
+        bottom: 90, 
         left: 0,
         right: 0,
         flexDirection: 'row',

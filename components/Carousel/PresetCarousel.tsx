@@ -79,7 +79,6 @@ type Props = {
       overflow: "hidden",
       borderWidth: 2,
       borderColor: 'rgba(225, 255, 255, 0.5)',
-      
     },
     image: {
       width: "100%",

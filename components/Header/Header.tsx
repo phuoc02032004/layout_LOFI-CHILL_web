@@ -65,6 +65,8 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 10, 
+    backgroundColor: 'linear-gradient(to top, rgba(28, 39, 48, 0), rgba(28, 39, 48, 0.8))',
+
   },
   blurContainer: {
     position: 'absolute',
@@ -79,7 +81,7 @@ const styles = StyleSheet.create({
     alignItems: 'center', 
     height: 60, 
     marginHorizontal: 60,
-    backgroundColor: 'transparent', // Remove default background color
+    backgroundColor: 'linear-gradient(to top, rgba(28, 39, 48, 0), rgba(28, 39, 48, 0.8))',
   },
   left: {
     width: 50, 

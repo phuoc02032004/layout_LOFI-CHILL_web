@@ -1,30 +1,25 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import Header from '../Header/Header';
-import Songscreen from '../Songscreen/Songscreen';
-import Artscreen from '../Artscreen/Artscreen';
+import React from "react";
+import { View, Text, StyleSheet } from "react-native";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import Header from "../Header/Header";
+import Songscreen from "./Songscreen";
+import Artscreen from "./Artscreen";
 
 const Tab = createMaterialTopTabNavigator();
 
-
-
 const LofiScreen = () => {
   return (
-
     <>
-
-
       <View style={styles.container}>
         <Header />
         <View style={styles.topnav}>
           <Tab.Navigator
             screenOptions={{
-              tabBarActiveTintColor: 'tomato',
-              tabBarInactiveTintColor: '#fff',
-              tabBarIndicatorStyle: { backgroundColor: 'tomato' },
-              tabBarStyle: { backgroundColor: '#213E50' },
-              tabBarLabelStyle: { fontFamily: 'Poppins-Bold' },
+              tabBarActiveTintColor: "tomato",
+              tabBarInactiveTintColor: "#fff",
+              tabBarIndicatorStyle: { backgroundColor: "tomato" },
+              tabBarStyle: { backgroundColor: "#213E50" },
+              tabBarLabelStyle: { fontFamily: "Poppins-Bold" },
             }}
           >
             <Tab.Screen name="Song" component={Songscreen} />
@@ -38,22 +33,22 @@ const LofiScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#213E50',
+    backgroundColor: "#213E50",
   },
   topnav: {
-    marginTop:60,
+    marginTop: 60,
     flex: 1,
-    backgroundColor: '#213E50',
+    backgroundColor: "#213E50",
   },
   tabContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   tabText: {
     fontSize: 20,
-    fontFamily: 'Poppins-Bold',
-    color: 'tomato',
+    fontFamily: "Poppins-Bold",
+    color: "tomato",
   },
 });
 

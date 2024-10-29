@@ -34,7 +34,7 @@ export const Backgrounds = [
     },
     {
         name: 'Late night',
-        Thumnail: require('@/assets/images/imglate.jpg'),
+        Thumnail: require('@/assets/images/imglate.png'),
         video: require('@/assets/videos/Latenight.mp4'),
         description: 'hoc'
     },

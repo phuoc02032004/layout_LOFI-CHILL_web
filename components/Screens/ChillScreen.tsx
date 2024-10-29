@@ -3,12 +3,15 @@ import { View, Dimensions, Text, StyleSheet } from 'react-native';
 import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av';
 import Loading from '../Loading/Loading';
 import Header from '../Header/Header';
+import ControlChill from '../navigation/ControlChill';
 
 const ChillScreen = () => {
   const { height, width } = Dimensions.get('window');
   const videoRef = useRef<Video>(null);
   const [status, setStatus] = useState<AVPlaybackStatus | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [backgroundVideo, setBackgroundVideo] = useState(require('../../assets/videos/bk.mp4'));
+  const [overlayText, setOverlayText] = useState("This is Chill Screen");
 
   useEffect(() => {
     const loadVideo = async () => {
@@ -25,7 +28,11 @@ const ChillScreen = () => {
 
     setIsLoading(true);
     loadVideo();
-  }, []);
+  }, [backgroundVideo]);
+
+  const handleTabPress = (title: string) => {
+    setOverlayText(title);
+  };
 
   return (
     <View style={styles.container}>
@@ -33,7 +40,7 @@ const ChillScreen = () => {
       {isLoading && <Loading />}
       <Video
         ref={videoRef}
-        source={require('../../assets/videos/bk.mp4')} 
+        source={backgroundVideo} 
         style={[styles.video, { height, width }]}
         resizeMode={ResizeMode.COVER}
         shouldPlay
@@ -44,8 +51,14 @@ const ChillScreen = () => {
         onError={(error) => console.error('Video Error:', error)}
       />
       <View style={styles.overlay}>
-        <Text style={styles.text}>This is Chill Screen</Text> 
+        <Text style={styles.text}>{overlayText}</Text> 
       </View>
+      <ControlChill 
+        showInitially={true}
+        onBackgroundChange={(newBackground) => {
+          setBackgroundVideo(newBackground);
+        }}
+      />
     </View>
   );
 };
@@ -65,12 +78,11 @@ const styles = StyleSheet.create({
     bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    // backgroundColor: 'rgba(0, 0, 0, 0.5)', 
   },
   text: {
     fontSize: 24,
     fontFamily: 'Poppins-Bold',
-    color: 'white'
+    color: 'white',
   },
 });
 
