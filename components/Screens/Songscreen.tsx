@@ -1,42 +1,60 @@
 import React, { useState } from 'react';
-import { View, FlatList, Image, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
+import { View, FlatList, Image, Text, StyleSheet,  TouchableOpacity } from 'react-native';
 import { Songs, Song } from '@/data/SongData';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+type RootStackParamList = {
+    SongDetailScreen: { song: Song };
+    Songscreen: undefined; // thêm dòng này nếu màn hình này cũng thuộc stack
+};
+
+type SongscreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Songscreen'>;
+    
 
 const Songscreen = () => {
     const [currentPage, setCurrentPage] = useState(0);
     const itemsPerPage = 5; // Số bài hát mỗi trang
 
+
     // Lấy dữ liệu cho trang hiện tại
     const currentSongs = Songs.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
     const totalPages = Math.ceil(Songs.length / itemsPerPage);
 
+    //Chuyển hướng trang
+    const navigation = useNavigation<SongscreenNavigationProp>();
+    
+
     const renderItem = ({ item }: { item: Song }) => ( // Khai báo kiểu cho item
-        <View style={styles.card}>
-            <Image source={item.image} style={styles.image} />
-            <Text style={styles.name}>{item.name}</Text>
-        </View>
+
+        <TouchableOpacity onPress={() => navigation.navigate('SongDetailScreen', { song: item })}>
+            <View style={styles.card}>
+                <Image source={item.image} style={styles.image} />
+                <Text style={styles.name}>{item.name}</Text>
+            </View>
+        </TouchableOpacity>
     );
 
     return (
         <View style={styles.container}>
-        <FlatList
-            data={currentSongs}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.name} // Hoặc sử dụng một ID duy nhất nếu có
-            showsVerticalScrollIndicator={false}
-            ListFooterComponent={<View style={styles.footerSpace} />}
-        />
-        {/* Overlay cho các số trang */}
-        <View style={styles.overlay}>
-            {Array.from({ length: totalPages }, (_, index) => (
-                <TouchableOpacity key={index} onPress={() => setCurrentPage(index)}>
-                    <Text style={[styles.pageButton, currentPage === index && styles.activePage]}>
-                        {index + 1}
-                    </Text>
-                </TouchableOpacity>
-            ))}
+            <FlatList
+                data={currentSongs}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.name} // Hoặc sử dụng một ID duy nhất nếu có
+                showsVerticalScrollIndicator={false}
+                ListFooterComponent={<View style={styles.footerSpace} />}
+            />
+            {/* Overlay cho các số trang */}
+            <View style={styles.overlay}>
+                {Array.from({ length: totalPages }, (_, index) => (
+                    <TouchableOpacity key={index} onPress={() => setCurrentPage(index)}>
+                        <Text style={[styles.pageButton, currentPage === index && styles.activePage]}>
+                            {index + 1}
+                        </Text>
+                    </TouchableOpacity>
+                ))}
+            </View>
         </View>
-    </View>
     );
 };
 
@@ -52,14 +70,14 @@ const styles = StyleSheet.create({
     },
     overlay: {
         position: 'absolute',
-        bottom: 90, 
+        bottom: 90,
         left: 0,
         right: 0,
         flexDirection: 'row',
         justifyContent: 'center',
     },
     pageButton: {
-        marginBottom:10,
+        marginBottom: 10,
         marginHorizontal: 5,
         padding: 8,
         backgroundColor: 'rgba(0, 0, 0, 0.2)',
