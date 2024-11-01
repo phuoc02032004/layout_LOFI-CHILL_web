@@ -1,7 +1,5 @@
-import React, { useCallback, useMemo, useRef } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
-import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import React from 'react';
+import { Modal, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 
 interface InfoBoxProps {
   title: string;
@@ -11,62 +9,53 @@ interface InfoBoxProps {
 }
 
 const InfoBox: React.FC<InfoBoxProps> = ({ title, content, onClose, isVisible }) => {
-  const bottomSheetRef = useRef<BottomSheetModal>(null);
-  const snapPoints = useMemo(() => ['25%', '50%', '90%'], []);
-
-  const handleOpen = useCallback(() => {
-    if (isVisible) {
-      bottomSheetRef.current?.present();
-    }
-  }, [isVisible]);
-
-  const handleClose = () => {
-    bottomSheetRef.current?.dismiss();
-    onClose();
-  };
-
-  // Khi `isVisible` thay đổi, mở BottomSheet
-  React.useEffect(() => {
-    handleOpen();
-  }, [handleOpen]);
+  if (!isVisible) return null;
 
   return (
-    <BottomSheetModalProvider>
-      <BottomSheetModal
-        ref={bottomSheetRef}
-        index={1}
-        snapPoints={snapPoints}
-        onDismiss={handleClose}
-        backgroundStyle={styles.bottomSheetBackground}
-      >
-        <View style={styles.contentContainer}>
+    <Modal transparent={true} animationType="slide" visible={isVisible} onRequestClose={onClose}>
+      <View style={styles.overlay}>
+        <View style={styles.container}>
           <Text style={styles.title}>{title}</Text>
-          <FontAwesome name="chevron-down" size={20} color="#ffbd6f" onPress={handleClose} />
           <View style={styles.content}>{content}</View>
+          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+            <Text style={styles.closeButtonText}>Close</Text>
+          </TouchableOpacity>
         </View>
-      </BottomSheetModal>
-    </BottomSheetModalProvider>
+      </View>
+    </Modal>
   );
 };
 
 const styles = StyleSheet.create({
-  contentContainer: {
+  overlay: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#1C2730fc',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  container: {
+    width: '80%',
+    backgroundColor: 'white',
     borderRadius: 10,
+    padding: 20,
+    elevation: 5,
   },
   title: {
-    fontSize: 25,
-    fontWeight: '700',
+    fontSize: 20,
+    fontWeight: 'bold',
     marginBottom: 10,
-    color: 'white',
   },
   content: {
-    paddingTop: 10,
+    marginBottom: 20,
   },
-  bottomSheetBackground: {
-    backgroundColor: '#1C2730fc',
+  closeButton: {
+    backgroundColor: 'blue',
+    padding: 10,
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    color: 'white',
+    textAlign: 'center',
   },
 });
 
