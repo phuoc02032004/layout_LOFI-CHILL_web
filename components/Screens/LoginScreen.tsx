@@ -8,14 +8,14 @@ import {
   ImageBackground,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import axios from 'axios';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import CheckBox from 'expo-checkbox';
 import { useFonts } from 'expo-font';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { BlurView } from 'expo-blur';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {loginUser} from '../../services/auth'
+import { loginUser } from '../../services/auth';
+import axios from 'axios';
 
 interface RootStackParamList {
   LoginScreen: undefined;
@@ -59,7 +59,7 @@ const LoginScreen = () => {
 
     try {
       const response = await loginUser(email, password);
-      await AsyncStorage.setItem('token', response.token);
+      await AsyncStorage.setItem('token', response.accessToken);
 
       if (rememberMe) {
         await AsyncStorage.setItem('email', email);
