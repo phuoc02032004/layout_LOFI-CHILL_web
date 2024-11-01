@@ -1,84 +1,72 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Animated } from 'react-native';
+import React, { useCallback, useMemo, useRef } from 'react';
+import { StyleSheet, View, Text } from 'react-native';
+import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 interface InfoBoxProps {
   title: string;
   content: React.ReactNode;
   onClose: () => void;
+  isVisible: boolean;
 }
 
-const InfoBox: React.FC<InfoBoxProps> = ({ title, content, onClose }) => {
-  const [isClosing, setIsClosing] = useState(false);
-  const [opacity] = useState(new Animated.Value(1)); // Khởi tạo opacity với giá trị 1
-  const [translateY] = useState(new Animated.Value(0)); // Khởi tạo translateY với giá trị 0
+const InfoBox: React.FC<InfoBoxProps> = ({ title, content, onClose, isVisible }) => {
+  const bottomSheetRef = useRef<BottomSheetModal>(null);
+  const snapPoints = useMemo(() => ['25%', '50%', '90%'], []);
 
-  const handleCloseClick = () => {
-    setIsClosing(true);
-    Animated.parallel([
-      Animated.timing(opacity, { toValue: 0, duration: 500, useNativeDriver: true }),
-      Animated.timing(translateY, { toValue: 100, duration: 500, useNativeDriver: true }), // Dịch chuyển xuống dưới
-    ]).start(() => {
-      onClose();
-    });
+  const handleOpen = useCallback(() => {
+    if (isVisible) {
+      bottomSheetRef.current?.present();
+    }
+  }, [isVisible]);
+
+  const handleClose = () => {
+    bottomSheetRef.current?.dismiss();
+    onClose();
   };
 
-  const animationStyle = {
-    opacity: opacity,
-    transform: [
-      {
-        translateY: translateY,
-      },
-    ],
-  };
+  // Khi `isVisible` thay đổi, mở BottomSheet
+  React.useEffect(() => {
+    handleOpen();
+  }, [handleOpen]);
 
   return (
-    <Animated.View style={[styles.infoBox, animationStyle, isClosing ? styles.hide : styles.show]}>
-      <TouchableOpacity style={styles.closeButton} onPress={handleCloseClick}>
-        <FontAwesome name="chevron-down" size={20} color="#ffbd6f" />
-      </TouchableOpacity>
-      <Text style={styles.title}>{title}</Text>
-      <View style={styles.contentContainer}>{content}</View>
-    </Animated.View>
+    <BottomSheetModalProvider>
+      <BottomSheetModal
+        ref={bottomSheetRef}
+        index={1}
+        snapPoints={snapPoints}
+        onDismiss={handleClose}
+        backgroundStyle={styles.bottomSheetBackground}
+      >
+        <View style={styles.contentContainer}>
+          <Text style={styles.title}>{title}</Text>
+          <FontAwesome name="chevron-down" size={20} color="#ffbd6f" onPress={handleClose} />
+          <View style={styles.content}>{content}</View>
+        </View>
+      </BottomSheetModal>
+    </BottomSheetModalProvider>
   );
 };
 
 const styles = StyleSheet.create({
-  infoBox: {
-    position: 'absolute',
-    bottom: 120, 
-    backgroundColor: '#1C2730fc',
-    color: '#fff',
+  contentContainer: {
+    flex: 1,
     padding: 20,
-    borderRadius: 5,
-    zIndex: 1,
-    width: 400,
-    height: 250,
-    overflow: 'scroll',
-  },
-  show: {
-    opacity: 1,
-    transform: [{ translateY: 0 }],
-  },
-  hide: {
-    opacity: 0,
-    transform: [{ translateY: 100 }],
-  },
-  closeButton: {
-    position: 'absolute',
-    top: 10,
-    right: 15,
-    backgroundColor: 'transparent',
-    padding: 10,
+    backgroundColor: '#1C2730fc',
+    borderRadius: 10,
   },
   title: {
     fontSize: 25,
     fontWeight: '700',
-    textAlign: 'left',
     marginBottom: 10,
+    color: 'white',
   },
-  contentContainer: {
+  content: {
     paddingTop: 10,
+  },
+  bottomSheetBackground: {
+    backgroundColor: '#1C2730fc',
   },
 });
 

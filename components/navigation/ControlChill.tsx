@@ -15,9 +15,17 @@ interface ControlChillProps {
 
 const ControlChill: React.FC<ControlChillProps> = ({ showInitially, onBackgroundChange }) => {
   const [activeButton, setActiveButton] = useState<string | null>(null);
-  
-  const handleClick = (buttonName: string) => setActiveButton(buttonName);
-  const handleClose = () => setActiveButton(null);
+  const [isInfoBoxVisible, setInfoBoxVisible] = useState(false);
+
+  const handleClick = (buttonName: string) => {
+    setActiveButton(buttonName);
+    setInfoBoxVisible(true);
+  };
+
+  const handleClose = () => {
+    setInfoBoxVisible(false);
+    setActiveButton(null);
+  };
 
   const getContent = () => {
     switch (activeButton) {
@@ -59,7 +67,12 @@ const ControlChill: React.FC<ControlChillProps> = ({ showInitially, onBackground
       </View>
 
       {activeButton && (
-        <InfoBox title={activeButton} content={getContent()} onClose={handleClose} />
+        <InfoBox
+          title={activeButton}
+          content={getContent()}
+          onClose={handleClose}
+          isVisible={isInfoBoxVisible}
+        />
       )}
     </View>
   );
