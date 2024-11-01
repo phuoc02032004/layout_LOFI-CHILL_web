@@ -5,14 +5,29 @@ import {
   ScrollView,
   Image,
   useWindowDimensions,
+  TouchableOpacity,
 } from "react-native";
 import React, { useState } from "react";
-import { ImageSliderType } from "@/data/SliderData";
 import Animated, { useSharedValue, useAnimatedStyle, useAnimatedScrollHandler, interpolate } from "react-native-reanimated";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { Song } from '@/data/SongData';
+import { useNavigation } from "expo-router";
+
 
 type Props = {
-  itemSong: ImageSliderType[];
+  itemSong: Song[];
 };
+
+
+// Khai báo kiểu cho Stack Param List
+type RootStackParamList = {
+  SongDetailScreen: { song: Song };
+  Songscreen: undefined; // thêm dòng này nếu màn hình này cũng thuộc stack
+};
+
+// Sử dụng NativeStackNavigationProp với kiểu RootStackParamList
+type SongscreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Songscreen'>;
+
 
 const SongCarousel = ({ itemSong }: Props) => {
   const [newData] = useState([{ key: "spacer-left" }, ...itemSong, { key: "spacer-right" }]);
@@ -25,6 +40,10 @@ const SongCarousel = ({ itemSong }: Props) => {
       x.value = event.contentOffset.x;
     }
   });
+
+
+  const navigation = useNavigation<SongscreenNavigationProp>();
+
 
   return (
     <Animated.ScrollView
@@ -50,6 +69,10 @@ const SongCarousel = ({ itemSong }: Props) => {
           });
 
           return (
+            //Chuyển hướng trang
+            <TouchableOpacity onPress={() => navigation.navigate('SongDetailScreen', { song: item })}>
+
+
             <View style={{ width: SIZE }} key={index}>
               <Animated.View style={[styles.imageContainer, imageStyle]}>
                 <Image source={item.image} style={styles.image} />
@@ -58,6 +81,9 @@ const SongCarousel = ({ itemSong }: Props) => {
                 <Text style={styles.title}>{item.name}</Text> 
               </View> 
             </View>
+
+            
+            </TouchableOpacity>
           );
         } else {
           return <View style={{ width: SPACER }} key={index} />;
