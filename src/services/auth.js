@@ -126,24 +126,11 @@ export const login = ({ email, password }, res) => new Promise(async (resolve, r
         const accessToken = generateAccessToken(userPayload);
         const refreshToken = generateRefreshToken(userPayload);
 
-        // Lưu refreshToken vào database (Firestore)
+        // Lưu refreshToken vào database
         await userRef.doc(querySnapshot.docs[0].id).update({
             refreshToken: refreshToken,
             updatedAt: admin.firestore.FieldValue.serverTimestamp()
         });
-
-        // Đặt refreshToken vào cookie trước khi resolve
-        res.cookie('refreshToken', refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 ngày
-        });
-
-        res.cookie('accessToken', accessToken, {
-            httpOnly: false,
-            secure: process.env.NODE_ENV === 'production',
-            maxAge: 7 * 24 * 60 * 60 * 1000
-        })
 
         // Trả về response sau khi đặt cookie
         return resolve({
