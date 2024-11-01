@@ -1,40 +1,47 @@
 import { ImageSourcePropType } from "react-native";
 
 export type ImageSliderType = {
-    name: string,
+    id: number; // ID nghệ sĩ
+    name: string;
     image: ImageSourcePropType;
-    description: String,
+    description: string;
 };
 
-export const ImageSlider = [
+export const ImageSlider: ImageSliderType[] = [
     {
+        id: 1,
         name: 'Phát',
         image: require('@/assets/images/Aso.jpg'),
-        description: 'dep trai'
+        description: 'Đẹp trai'
     },
     {
-        name: 'Phuớc',
+        id: 2,
+        name: 'Phước',
         image: require('@/assets/images/CYGN.jpg'),
-        description: 'dep trai'
+        description: 'Đẹp trai'
     },
     {
+        id: 3,
         name: 'Phú',
         image: require('@/assets/images/ivention_.jpg'),
-        description: 'dep trai'
+        description: 'Đẹp trai'
     },
     {
+        id: 4,
         name: 'Khánh',
         image: require('@/assets/images/Kupla.jpg'),
-        description: 'dep trai'
+        description: 'Đẹp trai'
     },
     {
+        id: 5,
         name: 'Leavv',
         image: require('@/assets/images/Leavv.jpg'),
-        description: 'dep trai'
+        description: 'Đẹp trai'
     },
     {
+        id: 6,
         name: 'Mama Aiuto',
         image: require('@/assets/images/Mama Aiuto.jpg'),
-        description: 'dep trai'
+        description: 'Đẹp trai'
     }
-]
+];

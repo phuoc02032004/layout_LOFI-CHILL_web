@@ -40,7 +40,7 @@ const Songscreen = () => {
             <FlatList
                 data={currentSongs}
                 renderItem={renderItem}
-                keyExtractor={(item) => item.name} // Hoặc sử dụng một ID duy nhất nếu có
+                keyExtractor={(item) => item.name} 
                 showsVerticalScrollIndicator={false}
                 ListFooterComponent={<View style={styles.footerSpace} />}
             />

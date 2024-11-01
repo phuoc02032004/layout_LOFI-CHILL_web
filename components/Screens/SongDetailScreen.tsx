@@ -23,7 +23,7 @@ const SongDetailScreen = () => {
                 <Text style={styles.desc} >{song.description}</Text>
             </View>
             <View style={styles.art_detail}>
-                {song.artist && <Text style={styles.art_name}>{song.artist}</Text>}
+                 {/* <Text style={styles.art_name}>{song.}</Text> */}
             </View>
         </View>
     );

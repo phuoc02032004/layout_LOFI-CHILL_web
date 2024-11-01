@@ -1,20 +1,36 @@
 import React, { useState } from 'react';
 import { View, FlatList, Image, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
 import { ImageSlider, ImageSliderType } from '@/data/SliderData';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+
+type RootStackParamList = {
+    ArtistDetailscreen: { artistId: number };
+    Artscreen: undefined; // thêm dòng này nếu màn hình này cũng thuộc stack
+};
+
+type SongscreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Artscreen'>;
+
+//Chuyển hướng trang
+
 
 const Artscreen = () => {
     const [currentPage, setCurrentPage] = useState(0);
     const itemsPerPage = 5;
 
+    const navigation = useNavigation<SongscreenNavigationProp>();
+
     // Lấy dữ liệu cho trang hiện tại
     const currentItems = ImageSlider.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
 
     const renderItem = ({ item }: { item: ImageSliderType }) => (
-        <View style={styles.card}>
-            <Image source={item.image} style={styles.image} />
-            <Text style={styles.name}>{item.name}</Text>
-            <Text style={styles.description}>{item.description}</Text>
-        </View>
+        <TouchableOpacity onPress={() => navigation.navigate('ArtistDetailscreen', { artistId: item.id })}>
+            <View style={styles.card}>
+                <Image source={item.image} style={styles.image} />
+                <Text style={styles.name}>{item.name}</Text>
+            </View>
+        </TouchableOpacity>
     );
 
     return (
@@ -49,23 +65,23 @@ const Artscreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor:'#5C8FAE', // Màu nền trang
+        backgroundColor: '#5C8FAE', // Màu nền trang
         padding: 10,
     },
     card: {
-      backgroundColor: '#e0f2f1',
-      borderRadius: 12,
-      padding: 16,
-      marginBottom: 16,
-      alignItems: 'center',
-      borderWidth: 1,
-      borderColor: 'rgba(0, 0, 0, 0.1)', // Viền mềm mại
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.15, // Hiệu ứng bóng mờ
-      shadowRadius: 10,
-      elevation: 5, // Hiệu ứng nổi nhẹ
-  },
+        backgroundColor: '#e0f2f1',
+        borderRadius: 12,
+        padding: 16,
+        marginBottom: 16,
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: 'rgba(0, 0, 0, 0.1)', // Viền mềm mại
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.15, // Hiệu ứng bóng mờ
+        shadowRadius: 10,
+        elevation: 5, // Hiệu ứng nổi nhẹ
+    },
     image: {
         width: 100,
         height: 100,
@@ -95,7 +111,7 @@ const styles = StyleSheet.create({
         right: 0,
     },
     pageButton: {
-        marginBottom:70,
+        marginBottom: 70,
         marginHorizontal: 5,
         padding: 8,
         backgroundColor: 'rgba(0, 0, 0, 0.2)',
@@ -110,8 +126,8 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     footerSpace: {
-      height: 80, // Chiều cao khoảng trống ở cuối
-  },
+        height: 80, // Chiều cao khoảng trống ở cuối
+    },
 });
 
 export default Artscreen;
