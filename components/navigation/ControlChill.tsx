@@ -20,11 +20,13 @@ const ControlChill: React.FC<ControlChillProps> = ({ showInitially, onBackground
   const handleClick = (buttonName: string) => {
     setActiveButton(buttonName);
     setInfoBoxVisible(true);
+    console.log(`Opening InfoBox for ${buttonName}`); // Debug log
   };
 
   const handleClose = () => {
     setInfoBoxVisible(false);
     setActiveButton(null);
+    console.log('Closing InfoBox'); // Debug log
   };
 
   const getContent = () => {
