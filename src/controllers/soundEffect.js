@@ -5,8 +5,8 @@ import { Title, Description } from '../helper/joi_schema.js';
 
 export const createSoundEffect = async (req, res) => {
     try {
-        const { Title, Description } = req.body;
-        const { error } = joi.object({ Title, Description }).validate(req.body);
+        const { Title, Description, vip } = req.body;
+        const { error } = joi.object({ Title, Description, vip: joi().boolean().require() }).validate(req.body);
         if (error) return res.status(400).json({ error: error.details[0].message });
 
         if (!req.file) {
@@ -14,7 +14,7 @@ export const createSoundEffect = async (req, res) => {
             return res.status(400).json({ error: 'Sound file is required' });
         }
 
-        const response = await services.soundEffect.createSoundEffect({ Title, Description }, req.file);
+        const response = await services.soundEffect.createSoundEffect({ Title, Description, vip }, req.file);
         return res.status(200).json(response);
     } catch (error) {
         console.error('Error in create soundEffect controller:', error);

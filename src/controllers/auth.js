@@ -16,16 +16,16 @@ export const register = async (req, res) => {
 };
 
 
-export const verify = async (req, res) => {
-    try {
-        const { email, code } = req.body;
-        const response = await services.auth.verify({ email, code });
-        return res.status(200).json(response);
-    } catch (error) {
-        console.error('Error in verify controller:', error);
-        return res.status(500).json({ error: 'Internal Server Error', details: error.message });
-    }
-};
+// export const verify = async (req, res) => {
+//     try {
+//         const { email, code } = req.body;
+//         const response = await services.auth.verify({ email, code });
+//         return res.status(200).json(response);
+//     } catch (error) {
+//         console.error('Error in verify controller:', error);
+//         return res.status(500).json({ error: 'Internal Server Error', details: error.message });
+//     }
+// };
 
 export const login = async (req, res) => {
     try {

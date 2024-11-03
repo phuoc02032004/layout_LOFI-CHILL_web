@@ -2,13 +2,15 @@ import admin from 'firebase-admin';
 import bcrypt from 'bcrypt';
 import { sendVerificationEmail } from '../utils/email.js';
 import jwt from 'jsonwebtoken';
-let refreshTokens = [];
-
+import { auth, db } from '../config/firebaseConfig.js';
+import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
+import { collection, query, where, getDocs, updateDoc, serverTimestamp, addDoc, setDoc, doc } from "firebase/firestore";
+import { signInWithEmailAndPassword } from "firebase/auth";
 admin.initializeApp();
-const db = admin.firestore();
 
-function generateAccessToken(user) {
-    return jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '5m' })
+function generateAccessToken(user, isVip) {
+    const userPayload = { ...user, isVip }
+    return jwt.sign(userPayload, process.env.JWT_SECRET, { expiresIn: '5m' })
 }
 
 function generateRefreshToken(user) {
@@ -16,130 +18,99 @@ function generateRefreshToken(user) {
 }
 
 export const register = ({ username, email, password }) => new Promise(async (resolve, reject) => {
-
     try {
-        const userRef = db.collection('users');
-        const snapshot = await userRef.where('email', '==', email).get();
+        const userRef = collection(db, 'users');
+        const q = query(userRef, where("email", "==", email));
+        const snapshot = await getDocs(q);
 
         // Kiểm tra xem email đã được sử dụng chưa
         if (!snapshot.empty) {
             return reject({ status: 400, message: 'Email already in use' });
         }
 
+        // Tạo tài khoản người dùng bằng Firebase Authentication
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
         // Mã hóa mật khẩu
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Tạo mã xác thực
-        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-
-        // Tạo user mới
-        await userRef.add({
+        // Lưu thông tin bổ sung vào Firestore
+        await setDoc(doc(db, "users", user.uid), {
             email,
             password: hashedPassword,
             username,
-            verificationCode,
+            role: 0,
             isVerified: false,
             isVip: false,
             vipExpiration: null,
             vipExpiredAt: null,
-            createdAt: admin.firestore.FieldValue.serverTimestamp(),
-            updatedAt: admin.firestore.FieldValue.serverTimestamp()
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
         });
 
         // Gửi email xác thực
-        await sendVerificationEmail(email, verificationCode);
+        await sendEmailVerification(user);
 
         resolve({
             err: 0,
             mes: 'User created successfully. Please check your email for verification.'
         });
     } catch (error) {
-        reject(error);
-        return { status: 500, message: 'Error registering user', error };
+        reject({ status: 500, message: 'Error registering user', error });
     }
 });
 
-export const verify = ({ email, code }) => new Promise(async (resolve, reject) => {
+export const login = ({ email, password }) => new Promise(async (resolve, reject) => {
     try {
-        const userRef = db.collection('users');
-        const querySnapshot = await userRef.where('email', '==', email).get();
+        const userRef = collection(db, 'users');
+        const q = query(userRef, where('email', '==', email));
+        const querySnapshot = await getDocs(q);
 
-        // Kiểm tra nếu không có tài liệu nào khớp với email
         if (querySnapshot.empty) {
-            return reject({ status: 404, message: 'User not found' }); // Đổi thành 404
-        }
-
-        // Lấy tài liệu người dùng (lấy tài liệu đầu tiên trong kết quả)
-        const userDoc = querySnapshot.docs[0];
-        const user = userDoc.data();
-
-        // Kiểm tra mã xác thực
-        if (user.verificationCode === code) {
-            await userDoc.ref.update({
-                isVerified: true,
-                verifiedAt: admin.firestore.FieldValue.serverTimestamp(),
-            });
-            return resolve({
-                status: 200,
-                message: 'Email verified successfully'
-            });
-        } else {
-            return reject({ status: 400, message: 'Invalid verification code' });
-        }
-    } catch (error) {
-        console.error('Error in verification process:', error); // Log lỗi chi tiết
-        return reject({ status: 500, message: 'Error verifying email', error });
-    }
-});
-
-
-export const login = ({ email, password }, res) => new Promise(async (resolve, reject) => {
-    try {
-        const userRef = db.collection('users');
-        const querySnapshot = await userRef.where('email', '==', email).get();
-        if (querySnapshot.empty) {
-            console.log('User does not exist');
             return reject({ status: 400, error: 'Invalid credentials' });
         }
 
-        let user = querySnapshot.docs[0].data();
-        querySnapshot.forEach(doc => {
-            user = doc.data();
-        });
+        let userData = querySnapshot.docs[0].data();
+        const isMatch = await bcrypt.compare(password, userData.password);
 
-        // Kiểm tra mật khẩu
-        const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            console.log('Password does not match');
             return reject({ status: 400, error: 'Invalid credentials' });
         }
 
-        // Kiểm tra email đã xác thực chưa
-        if (!user.isVerified) {
-            console.log('Email not verified');
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // Kiểm tra trạng thái email đã xác thực chưa
+        if (user.emailVerified && !userData.isVerified) {
+            await updateDoc(querySnapshot.docs[0].ref, {
+                isVerified: true,
+                verifiedAt: serverTimestamp(),
+            });
+            userData.isVerified = true;
+        }
+
+        if (!userData.isVerified) {
             return reject({ status: 401, error: 'Please verify your email address' });
         }
 
-        const userPayload = { email: user.email };
+        const userPayloadAccess = { email: userData.email, isVip: userData.isVip };
+        const userPayloadRefresh = { email: userData.email };
+        const accessToken = generateAccessToken(userPayloadAccess);
+        const refreshToken = generateRefreshToken(userPayloadRefresh);
 
-        // Tạo JWT
-        const accessToken = generateAccessToken(userPayload);
-        const refreshToken = generateRefreshToken(userPayload);
-
-        // Lưu refreshToken vào database
-        await userRef.doc(querySnapshot.docs[0].id).update({
+        await updateDoc(querySnapshot.docs[0].ref, {
             refreshToken: refreshToken,
-            updatedAt: admin.firestore.FieldValue.serverTimestamp()
+            updatedAt: serverTimestamp()
         });
 
-        // Trả về response sau khi đặt cookie
-        return resolve({
+        resolve({
             err: 0,
             mes: 'Log in successfully',
             accessToken: accessToken,
             refreshToken: refreshToken
         });
-        
+
     } catch (error) {
         console.error("Error logging in:", error);
         return reject({ status: 500, message: 'Error logging in', error });

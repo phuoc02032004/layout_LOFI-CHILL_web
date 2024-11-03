@@ -8,7 +8,7 @@ const bucket = admin.storage().bucket(process.env.BUCKET);
 
 
 // POST a new SoundEffect
-export const createSoundEffect = ({ Title, Description }, file) => new Promise(async (resolve, reject) => {
+export const createSoundEffect = ({ Title, Description, vip }, file) => new Promise(async (resolve, reject) => {
     try {
 
         // Kiểm tra xem soundEffect đã tồn tại chưa
@@ -35,6 +35,7 @@ export const createSoundEffect = ({ Title, Description }, file) => new Promise(a
         await soundEffectRef.add({
             Title,
             Description,
+            vip: vip,
             url: url,
             filePath: filename,
             createdAt: admin.firestore.FieldValue.serverTimestamp(),

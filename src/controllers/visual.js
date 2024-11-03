@@ -5,11 +5,11 @@ import { Title } from '../helper/joi_schema.js';
 
 export const createVisual = async (req, res) => {
     try {
-        const { Title } = req.body;
-        const { error } = joi.object({ Title }).validate(req.body);
+        const { Title, vip } = req.body;
+        const { error } = joi.object({ Title, vip: joi.boolean().required() }).validate(req.body);
 
         if (error) return res.status(400).json({ error: error.details[0].message });
-        
+
         // Kiểm tra các tệp đã được tải lên
         if (!req.files || !req.files.image || !req.files.video) {
             return res.status(400).json({
@@ -23,7 +23,7 @@ export const createVisual = async (req, res) => {
 
         // Gọi dịch vụ với dữ liệu tệp ảnh và video
         const response = await services.visual.createVisual(
-            { Title },
+            { Title, vip },
             imageFile,
             videoFile
         );
