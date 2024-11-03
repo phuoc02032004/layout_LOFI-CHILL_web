@@ -1,18 +1,19 @@
 import React from 'react';
 import { View, Text, Button } from 'react-native';
+import { Presets } from '@/data/PresetData';
 
-interface PresetsProps {
+interface PresetProps {
   onTabPress: (content: React.ReactNode) => void;
 }
 
-const Presets: React.FC<PresetsProps> = ({ onTabPress }) => {
+const Preset: React.FC<PresetProps> = ({ onTabPress }) => {
   return (
     <View>
-      <Text>Presets Screen</Text>
+      <Text>Preset Screen</Text>
       <Button title="Show Preset 1" onPress={() => onTabPress(<Text>Nội dung Preset 1</Text>)} />
       <Button title="Show Preset 2" onPress={() => onTabPress(<Text>Nội dung Preset 2</Text>)} />
     </View>
   );
 };
 
-export default Presets;
+export default Preset;

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Modal, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 
 interface InfoBoxProps {
   title: string;
@@ -18,7 +19,7 @@ const InfoBox: React.FC<InfoBoxProps> = ({ title, content, onClose, isVisible })
           <Text style={styles.title}>{title}</Text>
           <View style={styles.content}>{content}</View>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>Close</Text>
+            <MaterialIcons name="close" size={40} color="white" />
           </TouchableOpacity>
         </View>
       </View>
@@ -29,12 +30,12 @@ const InfoBox: React.FC<InfoBoxProps> = ({ title, content, onClose, isVisible })
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'transparent',
     justifyContent: 'center',
     alignItems: 'center',
   },
   container: {
-    width: '80%',
+    width: '90%',
     backgroundColor: 'white',
     borderRadius: 10,
     padding: 20,
@@ -49,13 +50,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   closeButton: {
-    backgroundColor: 'blue',
-    padding: 10,
-    borderRadius: 5,
-  },
-  closeButtonText: {
-    color: 'white',
-    textAlign: 'center',
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    backgroundColor: '#333',
+    borderRadius: 10,
   },
 });
 
