@@ -11,7 +11,6 @@ const ChillScreen = () => {
   const [status, setStatus] = useState<AVPlaybackStatus | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [backgroundVideo, setBackgroundVideo] = useState(require('../../assets/videos/bk.mp4'));
-  const [overlayText, setOverlayText] = useState("This is Chill Screen");
 
   useEffect(() => {
     const loadVideo = async () => {
@@ -30,9 +29,6 @@ const ChillScreen = () => {
     loadVideo();
   }, [backgroundVideo]);
 
-  const handleTabPress = (title: string) => {
-    setOverlayText(title);
-  };
 
   return (
     <View style={styles.container}>
@@ -50,9 +46,7 @@ const ChillScreen = () => {
         onPlaybackStatusUpdate={(status) => setStatus(status as AVPlaybackStatus)}
         onError={(error) => console.error('Video Error:', error)}
       />
-      <View style={styles.overlay}>
-        <Text style={styles.text}>{overlayText}</Text> 
-      </View>
+    
       <ControlChill 
         showInitially={true}
         onBackgroundChange={(newBackground) => {

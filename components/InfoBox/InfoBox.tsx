@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { Modal, StyleSheet, View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 
 interface InfoBoxProps {
@@ -17,9 +17,9 @@ const InfoBox: React.FC<InfoBoxProps> = ({ title, content, onClose, isVisible })
       <View style={styles.overlay}>
         <View style={styles.container}>
           <Text style={styles.title}>{title}</Text>
-          <View style={styles.content}>{content}</View>
+          <ScrollView style={styles.content}>{content}</ScrollView> 
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <MaterialIcons name="close" size={40} color="white" />
+            <MaterialIcons name="close" size={40} color="black" />
           </TouchableOpacity>
         </View>
       </View>
@@ -36,10 +36,12 @@ const styles = StyleSheet.create({
   },
   container: {
     width: '90%',
+    height: 400,
     backgroundColor: 'white',
     borderRadius: 10,
     padding: 20,
     elevation: 5,
+    overflow: 'hidden',
   },
   title: {
     fontSize: 20,
@@ -47,13 +49,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   content: {
-    marginBottom: 20,
+    marginBottom: 20, // Giữ khoảng cách dưới cùng của content
   },
   closeButton: {
     position: 'absolute',
     top: 10,
     right: 10,
-    backgroundColor: '#333',
     borderRadius: 10,
   },
 });

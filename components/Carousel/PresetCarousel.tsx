@@ -39,8 +39,7 @@ type Props = {
         onScroll={onScroll}
       >
         {newData.map((item, index) => {
-          // Kiểm tra kiểu
-          if ('image' in item) { // Kiểm tra xem item có thuộc tính 'image'
+          if ('image' in item) { 
             const style = useAnimatedStyle(() => {
               const scale = interpolate(
                 x.value,
