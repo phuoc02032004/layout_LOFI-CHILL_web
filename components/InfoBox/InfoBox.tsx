@@ -1,5 +1,6 @@
 import React from 'react';
-import { Modal, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { Modal, StyleSheet, View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 
 interface InfoBoxProps {
   title: string;
@@ -16,9 +17,9 @@ const InfoBox: React.FC<InfoBoxProps> = ({ title, content, onClose, isVisible })
       <View style={styles.overlay}>
         <View style={styles.container}>
           <Text style={styles.title}>{title}</Text>
-          <View style={styles.content}>{content}</View>
+          <ScrollView style={styles.content}>{content}</ScrollView> 
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>Close</Text>
+            <MaterialIcons name="close" size={40} color="white" />
           </TouchableOpacity>
         </View>
       </View>
@@ -29,33 +30,33 @@ const InfoBox: React.FC<InfoBoxProps> = ({ title, content, onClose, isVisible })
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'transparent',
     justifyContent: 'center',
     alignItems: 'center',
   },
   container: {
-    width: '80%',
-    backgroundColor: 'white',
+    width: '90%',
+    height: 400,
+    backgroundColor: 'rgba(28, 39, 48, 0.99)',
     borderRadius: 10,
     padding: 20,
     elevation: 5,
+    overflow: 'hidden',
   },
   title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
+    fontSize: 30,
+    marginBottom: 5,
+    fontFamily: 'Poppins-Bold',
+    color: 'white',
   },
   content: {
-    marginBottom: 20,
+    marginBottom: 10,
   },
   closeButton: {
-    backgroundColor: 'blue',
-    padding: 10,
-    borderRadius: 5,
-  },
-  closeButtonText: {
-    color: 'white',
-    textAlign: 'center',
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    borderRadius: 10,
   },
 });
 

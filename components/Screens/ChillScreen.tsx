@@ -3,7 +3,7 @@ import { View, Dimensions, Text, StyleSheet } from 'react-native';
 import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av';
 import Loading from '../Loading/Loading';
 import Header from '../Header/Header';
-import ControlChill from '../navigation/ControlChill';
+import ControlChill from '../navigation/ControlChill'; 
 
 const ChillScreen = () => {
   const { height, width } = Dimensions.get('window');
@@ -11,7 +11,6 @@ const ChillScreen = () => {
   const [status, setStatus] = useState<AVPlaybackStatus | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [backgroundVideo, setBackgroundVideo] = useState(require('../../assets/videos/bk.mp4'));
-  const [overlayText, setOverlayText] = useState("This is Chill Screen");
 
   useEffect(() => {
     const loadVideo = async () => {
@@ -30,8 +29,8 @@ const ChillScreen = () => {
     loadVideo();
   }, [backgroundVideo]);
 
-  const handleTabPress = (title: string) => {
-    setOverlayText(title);
+  const handleBackgroundChange = (newBackground: string) => {
+    setBackgroundVideo(newBackground);
   };
 
   return (
@@ -50,14 +49,10 @@ const ChillScreen = () => {
         onPlaybackStatusUpdate={(status) => setStatus(status as AVPlaybackStatus)}
         onError={(error) => console.error('Video Error:', error)}
       />
-      <View style={styles.overlay}>
-        <Text style={styles.text}>{overlayText}</Text> 
-      </View>
+    
       <ControlChill 
         showInitially={true}
-        onBackgroundChange={(newBackground) => {
-          setBackgroundVideo(newBackground);
-        }}
+        onBackgroundChange={handleBackgroundChange} 
       />
     </View>
   );

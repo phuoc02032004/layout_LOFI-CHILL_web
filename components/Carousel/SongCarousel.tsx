@@ -13,21 +13,16 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Song } from '@/data/SongData';
 import { useNavigation } from "expo-router";
 
-
 type Props = {
   itemSong: Song[];
 };
 
-
-// Khai báo kiểu cho Stack Param List
 type RootStackParamList = {
   SongDetailScreen: { song: Song };
-  Songscreen: undefined; // thêm dòng này nếu màn hình này cũng thuộc stack
+  Songscreen: undefined;
 };
 
-// Sử dụng NativeStackNavigationProp với kiểu RootStackParamList
 type SongscreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Songscreen'>;
-
 
 const SongCarousel = ({ itemSong }: Props) => {
   const [newData] = useState([{ key: "spacer-left" }, ...itemSong, { key: "spacer-right" }]);
@@ -41,9 +36,7 @@ const SongCarousel = ({ itemSong }: Props) => {
     }
   });
 
-
   const navigation = useNavigation<SongscreenNavigationProp>();
-
 
   return (
     <Animated.ScrollView
@@ -69,20 +62,15 @@ const SongCarousel = ({ itemSong }: Props) => {
           });
 
           return (
-            //Chuyển hướng trang
-            <TouchableOpacity onPress={() => navigation.navigate('SongDetailScreen', { song: item })}>
-
-
-            <View style={{ width: SIZE }} key={index}>
-              <Animated.View style={[styles.imageContainer, imageStyle]}>
-                <Image source={item.image} style={styles.image} />
-              </Animated.View>
-              <View style={styles.titleContainer}> 
-                <Text style={styles.title}>{item.name}</Text> 
-              </View> 
-            </View>
-
-            
+            <TouchableOpacity key={item.key} onPress={() => navigation.navigate('SongDetailScreen', { song: item })}>
+              <View style={{ width: SIZE }}>
+                <Animated.View style={[styles.imageContainer, imageStyle]}>
+                  <Image source={item.image} style={styles.image} />
+                </Animated.View>
+                <View style={styles.titleContainer}> 
+                  <Text style={styles.title}>{item.name}</Text> 
+                </View> 
+              </View>
             </TouchableOpacity>
           );
         } else {

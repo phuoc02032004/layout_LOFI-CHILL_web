@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Button } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Button } from 'react-native';
 
 interface MusicProps {
   onTabPress: (title: string, content: React.ReactNode) => void;
@@ -8,11 +8,41 @@ interface MusicProps {
 const Music: React.FC<MusicProps> = ({ onTabPress }) => {
   return (
     <View>
-      <Text>Music Screen</Text>
-      <Button title="Show Music 1" onPress={() => onTabPress('Music 1', <Text>Nội dung Music 1</Text>)} />
-      <Button title="Show Music 2" onPress={() => onTabPress('Music 2', <Text>Nội dung Music 2</Text>)} />
+      <Text>Sounds Screen</Text>
+      <Button title="Show Sound 1" onPress={() => onTabPress('Sound 1', <Text>Nội dung Sound 1</Text>)} />
+      <Button title="Show Sound 2" onPress={() => onTabPress('Sound 2', <Text>Nội dung Sound 2</Text>)} />
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#222',
+    padding: 20,
+  },
+  musicItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 15,
+    padding: 10,
+    backgroundColor: '#333',
+    borderRadius: 10,
+  },
+  iconContainer: {
+    marginRight: 15,
+  },
+  musicInfo: {
+    flex: 1,
+  },
+  musicName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  musicDescription: {
+    color: 'white',
+  },
+});
 
 export default Music;

@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
-import { Backgrounds } from '@/data/BackgroundData';
 import Video from 'react-native-video';
+import { getAllVisual } from '@/services/visual';
 
 interface VisualsWrapperProps {
   onBackgroundChange: (newBackground: string) => void;
@@ -11,17 +11,34 @@ interface VisualsWrapperProps {
 const VisualsWrapper: React.FC<VisualsWrapperProps> = ({ onBackgroundChange }) => {
   const videoRef = useRef<React.ElementRef<typeof Video> | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
+  const [visualData, setVisualData] = useState([]);
 
   useEffect(() => {
-    if (selectedVideo) {
+    const fetchData = async () => {
+      try {
+        const response = await getAllVisual();
+        if (Array.isArray(response.visual)) { 
+          setVisualData(response.visual);
+        } else {
+          console.error('Invalid visual data received from getAllVisual().');
+        }
+      } catch (error) {
+        console.error('Error fetching visual data:', error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (selectedVideo && typeof selectedVideo === 'string') { 
       videoRef.current?.seek(0);
     }
   }, [selectedVideo]);
 
   const handleBackgroundChange = useCallback(
     (videoSrc: string) => {
-      setSelectedVideo(videoSrc);
-      onBackgroundChange(videoSrc);
+      setSelectedVideo(videoSrc); // Giữ lại selectedVideo cho mục đích khác
+      onBackgroundChange(videoSrc); // Gọi onBackgroundChange để cập nhật backgroundVideo trong ChillScreen
     },
     [onBackgroundChange]
   );
@@ -41,19 +58,23 @@ const VisualsWrapper: React.FC<VisualsWrapperProps> = ({ onBackgroundChange }) =
       )}
 
       <View style={styles.visualsList}>
-        {Backgrounds.map((background: any) => (
-          <TouchableOpacity
-            key={background.name}
-            style={styles.visualItem}
-            onPress={() => handleBackgroundChange(background.video)}
-          >
-            <Image
-              source={background.Thumbnail}
-              style={styles.visualImage}
-            />
-            <Text style={styles.visualName}>{background.name}</Text>
-          </TouchableOpacity>
-        ))}
+        {visualData.length > 0 ? (
+          visualData.map((background: any) => (
+            <TouchableOpacity
+              key={background.id}
+              style={styles.visualItem}
+              onPress={() => handleBackgroundChange(background.videoUrl)}
+            >
+              <Image
+                source={{ uri: background.imgUrl }}
+                style={styles.visualImage}
+              />
+              <Text style={styles.visualName}>{background.Title}</Text>
+            </TouchableOpacity>
+          ))
+        ) : (
+          <Text style={styles.loadingText}>Loading visuals...</Text> 
+        )}
       </View>
     </View>
   );
@@ -62,6 +83,7 @@ const VisualsWrapper: React.FC<VisualsWrapperProps> = ({ onBackgroundChange }) =
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 10,
   },
   video: {
     position: 'absolute',
@@ -73,21 +95,36 @@ const styles = StyleSheet.create({
   visualsList: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    padding: 10,
+    justifyContent: 'space-between',
   },
   visualItem: {
-    width: '50%',
-    aspectRatio: 1,
-    margin: 5,
+    width: '48%',
+    marginBottom: 10,
+    backgroundColor: 'white',
+    borderRadius: 10,
   },
   visualImage: {
     width: '100%',
-    height: '100%',
+    height: 180,
+    borderRadius: 10,
     resizeMode: 'cover',
   },
   visualName: {
+    position: 'absolute',
+    bottom: 8,
+    left: 0,
+    right: 0,
+    borderRadius: 10,
+    alignItems: 'center',
+    fontSize: 14,
+    color: 'white',
+    fontFamily: 'Poppins-Bold',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    padding: 6,
+  },
+  loadingText: {
     textAlign: 'center',
-    marginTop: 5,
+    marginTop: 20,
   },
 });
 
