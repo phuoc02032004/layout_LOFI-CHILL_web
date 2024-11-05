@@ -41,14 +41,14 @@ export const Songs: Song[] = [
         id: 5,
         name: 'Good Morning',
         image: require('@/assets/images/goodmorning.jpg'),
-        artistId: 5,
+        artistId: 2,
         description: "Một bản nhạc tươi vui và sảng khoái để bắt đầu ngày mới của bạn. Với giai điệu ukulele vui nhộn, tiếng chuông tinh nghịch và năng lượng tươi sáng, hoàn hảo để đánh thức, chuẩn bị hoặc đơn giản là nâng cao tinh thần."
     },
     {
         id: 6,
         name: 'Good Morning1',
         image: require('@/assets/images/goodmorning.jpg'),
-        artistId: 5,
+        artistId: 2,
         description: "Một bản nhạc tươi vui và sảng khoái để bắt đầu ngày mới của bạn. Với giai điệu ukulele vui nhộn, tiếng chuông tinh nghịch và năng lượng tươi sáng, hoàn hảo để đánh thức, chuẩn bị hoặc đơn giản là nâng cao tinh thần."
     },
     {
