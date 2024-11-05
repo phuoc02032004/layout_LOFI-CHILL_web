@@ -32,35 +32,37 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   grid: {
-    flexDirection: 'row', // Arrange elements in a row
-    flexWrap: 'wrap', // Allow elements to wrap onto the next line if needed
-    justifyContent: 'space-between', // Distribute elements evenly with space between them
+    flexDirection: 'row', 
+    flexWrap: 'wrap', 
+    justifyContent: 'space-between', 
   },
   presetBox: {
-    width: '48%', // Each box takes up 48% of the available width
+    width: '48%', 
     marginBottom: 10,
     backgroundColor: 'white',
     borderRadius: 10,
-    padding: 5,
   },
   presetImage: {
     width: '100%',
     height: 180,
     borderRadius: 10,
-    marginBottom: 10,
+    resizeMode: 'cover',
   },
   titleContainer: {
     position: 'absolute',
-    bottom: 20,
+    bottom: 8,
     left: 0,
     right: 0,
     borderRadius: 10,
     alignItems: 'center',
   },
   presetName: {
-    fontSize: 15,
-    fontWeight: 'bold',
+    fontSize: 14,
     color: 'white',
+    fontFamily: 'Poppins-Bold',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    padding:6,
+    borderRadius: 10,
   },
 });
 

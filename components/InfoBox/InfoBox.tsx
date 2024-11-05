@@ -19,7 +19,7 @@ const InfoBox: React.FC<InfoBoxProps> = ({ title, content, onClose, isVisible })
           <Text style={styles.title}>{title}</Text>
           <ScrollView style={styles.content}>{content}</ScrollView> 
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <MaterialIcons name="close" size={40} color="black" />
+            <MaterialIcons name="close" size={40} color="white" />
           </TouchableOpacity>
         </View>
       </View>
@@ -37,19 +37,20 @@ const styles = StyleSheet.create({
   container: {
     width: '90%',
     height: 400,
-    backgroundColor: 'white',
+    backgroundColor: 'rgba(28, 39, 48, 0.99)',
     borderRadius: 10,
     padding: 20,
     elevation: 5,
     overflow: 'hidden',
   },
   title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
+    fontSize: 30,
+    marginBottom: 5,
+    fontFamily: 'Poppins-Bold',
+    color: 'white',
   },
   content: {
-    marginBottom: 20, // Giữ khoảng cách dưới cùng của content
+    marginBottom: 10,
   },
   closeButton: {
     position: 'absolute',

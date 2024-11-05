@@ -3,7 +3,7 @@ import { View, Dimensions, Text, StyleSheet } from 'react-native';
 import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av';
 import Loading from '../Loading/Loading';
 import Header from '../Header/Header';
-import ControlChill from '../navigation/ControlChill';
+import ControlChill from '../navigation/ControlChill'; 
 
 const ChillScreen = () => {
   const { height, width } = Dimensions.get('window');
@@ -29,6 +29,9 @@ const ChillScreen = () => {
     loadVideo();
   }, [backgroundVideo]);
 
+  const handleBackgroundChange = (newBackground: string) => {
+    setBackgroundVideo(newBackground);
+  };
 
   return (
     <View style={styles.container}>
@@ -49,9 +52,7 @@ const ChillScreen = () => {
     
       <ControlChill 
         showInitially={true}
-        onBackgroundChange={(newBackground) => {
-          setBackgroundVideo(newBackground);
-        }}
+        onBackgroundChange={handleBackgroundChange} 
       />
     </View>
   );

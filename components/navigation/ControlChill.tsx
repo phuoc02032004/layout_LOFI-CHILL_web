@@ -5,7 +5,7 @@ import { FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import InfoBox from '../InfoBox/InfoBox';
 import Preset from '../InfoBox/Presets/Preset';
 import Music from '../InfoBox/Music/Music';
-import Visuals from '../InfoBox/Visuals/VisualsWrapper';
+import Visuals from '../InfoBox/Visuals/VisualsWrapper'; 
 import Sounds from '../InfoBox/Sounds/Sounds';
 
 interface ControlChillProps {
@@ -36,7 +36,7 @@ const ControlChill: React.FC<ControlChillProps> = ({ showInitially, onBackground
       case 'Music':
         return <Music onTabPress={() => {}} />;
       case 'Visuals':
-        return <Visuals onBackgroundChange={onBackgroundChange} />;
+        return <Visuals onBackgroundChange={onBackgroundChange} />; 
       case 'Sounds':
         return <Sounds onTabPress={() => {}} />;
       default:
@@ -60,7 +60,6 @@ const ControlChill: React.FC<ControlChillProps> = ({ showInitially, onBackground
 
   return (
     <View style={styles.container}>
-      {/* Button hình dấu + */}
       <TouchableOpacity 
         style={styles.addButton} 
         onPress={toggleControls}
@@ -68,7 +67,6 @@ const ControlChill: React.FC<ControlChillProps> = ({ showInitially, onBackground
         <MaterialIcons name="add" size={40} color="white" />
       </TouchableOpacity>
 
-      {/* Các button điều khiển */}
       <Animated.View style={[styles.controls, { transform: [{ translateY: controlHeight }] }]}>
         {showControls && ( 
           <View style={styles.navigationItems}>
