@@ -61,7 +61,7 @@ const Songscreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#213E50',
+        backgroundColor: '#FFF4B7',
     },
     buttonContainer: {
         flexDirection: 'row',

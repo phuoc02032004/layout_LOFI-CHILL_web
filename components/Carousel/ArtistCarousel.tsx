@@ -9,11 +9,21 @@ import {
   import React, { useState } from "react";
   import { ImageSliderType } from "@/data/SliderData";
   import Animated, { useSharedValue, useAnimatedStyle, useAnimatedScrollHandler, interpolate } from "react-native-reanimated";
-  
+  import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useNavigation } from "expo-router";
+import { TouchableOpacity } from "react-native-gesture-handler";
+
   type Props = {
     itemArtist: ImageSliderType[];
   };
-  
+
+  type RootStackParamList = {
+    ArtistDetailscreen: { artistId: number };
+    Artscreen: undefined; // thêm dòng này nếu màn hình này cũng thuộc stack
+};
+
+type SongscreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Artscreen'>;
+
   const ArtistCarousel = ({ itemArtist }: Props) => {
     const [newData] = useState([{ key: "spacer-left" }, ...itemArtist, { key: "spacer-right" }]);
     const { width } = useWindowDimensions();
@@ -25,6 +35,8 @@ import {
         x.value = event.contentOffset.x;
       }
     });
+
+    const navigation = useNavigation<SongscreenNavigationProp>();
   
     return (
       <Animated.ScrollView
@@ -51,6 +63,7 @@ import {
             });
   
             return (
+              <TouchableOpacity onPress={() => navigation.navigate('ArtistDetailscreen', { artistId: item.id })}>
               <View style={{ width: SIZE }} key={index}>
                 <Animated.View style={[styles.imageContainer, style]}>
                   <Image source={item.image} style={styles.image} />
@@ -59,6 +72,7 @@ import {
                 <Text style={styles.title}>{item.name}</Text> 
               </View> 
               </View>
+              </TouchableOpacity>
             );
           } else {
             // Trường hợp item là { key: string }

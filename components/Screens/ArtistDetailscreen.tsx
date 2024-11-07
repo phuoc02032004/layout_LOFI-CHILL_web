@@ -17,8 +17,10 @@ const ArtistDetailscreen = () => {
   const { artistId } = route.params;
 
   const artist = ImageSlider.find(a => a.id === artistId); // Tìm nghệ sĩ dựa trên ID
-  const artistSongs = Songs.filter(song => song.artistId === artistId); // Tìm các bài hát của nghệ sĩ
+  const artistSongs = Songs.filter(song => song.artistIds.includes(artistId)); 
 
+
+  
   const renderSongItem = ({ item }: { item: Song }) => (
     <TouchableOpacity style={styles.songContainer} onPress={() => {/* handle song press */ }}>
       <ImageBackground source={item.image} style={styles.songBackground} imageStyle={styles.songBackgroundImage}>
@@ -69,7 +71,6 @@ const ArtistDetailscreen = () => {
   );
 };
 
-// Đoạn mã đầy đủ của ArtistDetailscreen và phong cách đã chỉnh sửa
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -100,11 +101,10 @@ const styles = StyleSheet.create({
   overlay: {
     flexDirection: 'row',
     alignItems: 'center',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.7,
+    
     shadowRadius: 10,
     shadowColor: '#000',
-    elevation: 5,
+    
     padding:8,
     borderRadius: 15,
 
@@ -145,13 +145,13 @@ const styles = StyleSheet.create({
     width: 200,
     height: 160,
     paddingRight: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+    backgroundColor: '#fff',
     borderRadius: 10,
     paddingVertical: 8,
     paddingHorizontal: 12,
     marginRight: 10,
     fontFamily: 'Poppins-Bold',
-    opacity: 0.5,
+    opacity: 0.85,
 
   },
   artistName: {
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: 'bold',
     fontFamily: 'Poppins-Bold',
-    color: '#ffffff',
+    color: '#333',
     marginBottom: 2,
     textShadowColor: 'rgba(0, 0, 0, 1)', // Thêm bóng cho chữ
     textShadowOffset: { width: 1, height: 1 },
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
   artistDescription: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: '#555',
     fontFamily: 'Poppins-Bold',
     textShadowColor: 'rgba(0, 0, 0, 0.5)', // Thêm bóng cho chữ
     textShadowOffset: { width: 1, height: 1 },
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
   songsHeader: {
     color: '#fffff',
     fontFamily: 'Poppins-Bold',
-    fontSize: 25,
+    fontSize: 30,
     fontWeight: 'bold',
     marginBottom: 10,
   },
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     textShadowRadius: 1,
   },
   flatListContent: {
-    paddingHorizontal: 15,
+    paddingHorizontal: 20,
   },
   carouselContainer: {
     marginTop: 20,
@@ -224,12 +224,12 @@ const styles = StyleSheet.create({
   },
   newsong: {
     fontFamily: 'Poppins-Bold',
-    fontSize: 30,
-    color: '#fff',
-    paddingLeft: 30,
-    paddingTop: 30,
-    paddingBottom: 5,
-  },
+    fontSize: 26,
+    color: '#333',
+    marginTop: 30,
+    marginBottom: 10,
+    paddingLeft: 25,
+},
 });
 
 export default ArtistDetailscreen;
