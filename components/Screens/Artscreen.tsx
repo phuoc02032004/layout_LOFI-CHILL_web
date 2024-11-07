@@ -65,18 +65,18 @@ const Artscreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#5C8FAE', // Màu nền trang
+        backgroundColor: '#FFF4B7', 
         padding: 10,
     },
     card: {
-        backgroundColor: '#e0f2f1',
-        borderRadius: 12,
+        backgroundColor: '#FFF6E3',
+        borderRadius: 15,
         padding: 16,
-        marginBottom: 16,
+        marginBottom: 30,
         alignItems: 'center',
         borderWidth: 1,
         borderColor: 'rgba(0, 0, 0, 0.1)', // Viền mềm mại
-        shadowColor: '#000',
+        shadowColor: '#FFEEAD',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.15, // Hiệu ứng bóng mờ
         shadowRadius: 10,
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
         height: 100,
         borderRadius: 50,
         borderWidth: 2,
-        borderColor: '#d1d8e0', // Viền ảnh nhẹ nhàng
+        borderColor: '#BC7C7C', 
         marginBottom: 10,
     },
     name: {
