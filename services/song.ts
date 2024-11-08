@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const apiUrl = 'http://10.50.1.107:3002/api/v1/song';
+const apiUrl = 'http://192.168.2.177:3002/api/v1/song';
 
 interface Song {
     id: string;

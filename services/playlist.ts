@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 
-const apiUrl = 'http://10.50.1.107:3002/api/v1/playlist';
+const apiUrl = 'http://192.168.2.177:3002/api/v1/playlist';
 
 interface Playlist {
   id: string;

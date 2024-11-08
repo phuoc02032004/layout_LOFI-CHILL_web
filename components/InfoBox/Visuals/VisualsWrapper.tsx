@@ -69,7 +69,9 @@ const VisualsWrapper: React.FC<VisualsWrapperProps> = ({ onBackgroundChange }) =
                 source={{ uri: background.imgUrl }}
                 style={styles.visualImage}
               />
+              <View style={styles.titleContainer}>
               <Text style={styles.visualName}>{background.Title}</Text>
+              </View>
             </TouchableOpacity>
           ))
         ) : (
@@ -102,6 +104,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     backgroundColor: 'white',
     borderRadius: 10,
+    alignItems: 'center',
   },
   visualImage: {
     width: '100%',
@@ -109,18 +112,21 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     resizeMode: 'cover',
   },
-  visualName: {
+  titleContainer:{
     position: 'absolute',
     bottom: 8,
     left: 0,
     right: 0,
     borderRadius: 10,
     alignItems: 'center',
+  },
+  visualName: {
     fontSize: 14,
     color: 'white',
     fontFamily: 'Poppins-Bold',
     backgroundColor: 'rgba(0,0,0,0.5)',
-    padding: 6,
+    padding:6,
+    borderRadius: 10,
   },
   loadingText: {
     textAlign: 'center',

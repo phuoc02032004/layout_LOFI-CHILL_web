@@ -4,6 +4,7 @@ import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av';
 import Loading from '../Loading/Loading';
 import Header from '../Header/Header';
 import ControlChill from '../navigation/ControlChill'; 
+import PlayingBar from '../PlayingBar/PlayingBar';
 
 const ChillScreen = () => {
   const { height, width } = Dimensions.get('window');
@@ -49,7 +50,8 @@ const ChillScreen = () => {
         onPlaybackStatusUpdate={(status) => setStatus(status as AVPlaybackStatus)}
         onError={(error) => console.error('Video Error:', error)}
       />
-    
+
+      <PlayingBar/>
       <ControlChill 
         showInitially={true}
         onBackgroundChange={handleBackgroundChange} 

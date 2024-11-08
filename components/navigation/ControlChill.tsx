@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Animated } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, Animated, TouchableWithoutFeedback } from 'react-native';
 import { FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 import InfoBox from '../InfoBox/InfoBox';
@@ -17,11 +17,16 @@ const ControlChill: React.FC<ControlChillProps> = ({ showInitially, onBackground
   const [activeButton, setActiveButton] = useState<string | null>(null);
   const [isInfoBoxVisible, setInfoBoxVisible] = useState(false);
   const [showControls, setShowControls] = useState(false); 
-  const animatedValue = new Animated.Value(0); 
+  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
+
+  // Animated values cho thanh điều khiển và icon
+  const animatedValue = new Animated.Value(0); // Dùng cho thanh điều khiển
+  const iconAnimatedValue = new Animated.Value(0); // Dùng cho icon add button
 
   const handleClick = (buttonName: string) => {
     setActiveButton(buttonName);
     setInfoBoxVisible(true);
+    resetAutoHideTimer();
   };
 
   const handleClose = () => {
@@ -38,7 +43,7 @@ const ControlChill: React.FC<ControlChillProps> = ({ showInitially, onBackground
       case 'Visuals':
         return <Visuals onBackgroundChange={onBackgroundChange} />; 
       case 'Sounds':
-        return <Sounds onTabPress={() => {}} />;
+        return <Sounds/>; 
       default:
         return null;
     }
@@ -51,73 +56,108 @@ const ControlChill: React.FC<ControlChillProps> = ({ showInitially, onBackground
       duration: 200,
       useNativeDriver: true,
     }).start();
+    resetAutoHideTimer(); 
   };
 
-  const controlHeight = animatedValue.interpolate({
+  const controlTranslateX = animatedValue.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, -200], 
+    outputRange: [0, 200], 
   });
 
+  const iconTranslateX = iconAnimatedValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 100], 
+  });
+
+  const resetAutoHideTimer = () => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+
+    const newTimeoutId = setTimeout(() => {
+      setShowControls(false); 
+      Animated.timing(animatedValue, {
+        toValue: 1, 
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+      Animated.timing(iconAnimatedValue, {
+        toValue: 1, 
+        duration: 300, 
+        useNativeDriver: true,
+      }).start();
+    }, 10000);
+
+    setTimeoutId(newTimeoutId);
+  };
+
+  const handlePressIn = () => {
+    resetAutoHideTimer();
+  };
+
+  const handlePressOut = () => {
+    resetAutoHideTimer();
+  };
+
   return (
-    <View style={styles.container}>
-      <TouchableOpacity 
-        style={styles.addButton} 
-        onPress={toggleControls}
-      >
-        <MaterialIcons name="add" size={40} color="white" />
-      </TouchableOpacity>
+    <TouchableWithoutFeedback onPressIn={handlePressIn} onPressOut={handlePressOut}>
+      <View style={styles.container}>
+        <TouchableOpacity 
+          style={styles.addButton} 
+          onPress={toggleControls}
+        >
+          <MaterialIcons name="add" size={40} color="white" />
+        </TouchableOpacity>
 
-      <Animated.View style={[styles.controls, { transform: [{ translateY: controlHeight }] }]}>
-        {showControls && ( 
-          <View style={styles.navigationItems}>
-            <TouchableOpacity style={styles.navItem} onPress={() => handleClick('Presets')}>
-              <MaterialIcons name="tune" size={28} color="white" />
-              <Text style={styles.navItemText}>Presets</Text>
-            </TouchableOpacity>
+        <Animated.View style={[styles.controls, { transform: [{ translateX: controlTranslateX }] }]}>
+          {showControls && ( 
+            <View style={styles.navigationItems}>
+              <TouchableOpacity style={styles.navItem} onPress={() => handleClick('Presets')}>
+                <MaterialIcons name="tune" size={28} color="white" />
+                <Text style={styles.navItemText}>Presets</Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity style={styles.navItem} onPress={() => handleClick('Music')}>
-              <Ionicons name="radio-outline" size={28} color="white" />
-              <Text style={styles.navItemText}>Music</Text>
-            </TouchableOpacity>
+              <TouchableOpacity style={styles.navItem} onPress={() => handleClick('Music')}>
+                <Ionicons name="radio-outline" size={28} color="white" />
+                <Text style={styles.navItemText}>Music</Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity style={styles.navItem} onPress={() => handleClick('Visuals')}>
-              <Ionicons name="image-outline" size={28} color="white" />
-              <Text style={styles.navItemText}>Visuals</Text>
-            </TouchableOpacity>
+              <TouchableOpacity style={styles.navItem} onPress={() => handleClick('Visuals')}>
+                <Ionicons name="image-outline" size={28} color="white" />
+                <Text style={styles.navItemText}>Visuals</Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity style={styles.navItem} onPress={() => handleClick('Sounds')}>
-              <Ionicons name="musical-notes-outline" size={28} color="white" />
-              <Text style={styles.navItemText}>Sounds</Text>
-            </TouchableOpacity>
-          </View>
+              <TouchableOpacity style={styles.navItem} onPress={() => handleClick('Sounds')}>
+                <Ionicons name="musical-notes-outline" size={28} color="white" />
+                <Text style={styles.navItemText}>Sounds</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </Animated.View>
+
+        {activeButton && (
+          <InfoBox
+            title={activeButton}
+            content={getContent()}
+            onClose={handleClose}
+            isVisible={isInfoBoxVisible}
+          />
         )}
-      </Animated.View>
-
-      {activeButton && (
-        <InfoBox
-          title={activeButton}
-          content={getContent()}
-          onClose={handleClose}
-          isVisible={isInfoBoxVisible}
-        />
-      )}
-    </View>
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    bottom: 60,
+    bottom: 50,
     left: 0,
     width: '100%',
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: 'transparent',
     zIndex: 2,
-  },
-  show: {
-    transform: [{ translateY: 0 }],
   },
   controls: {
     width: 'auto',
@@ -128,8 +168,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'column',
     position: 'absolute',
-    top: -390, 
-    right: 20, 
+    top: -390,
+    right: 20,
     overflow: 'hidden',
     zIndex: 2,
   },
@@ -141,15 +181,16 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 50,
     zIndex: 3,
+    transform: [{ translateX: 0 }],
   },
   navigationItems: {
     alignItems: 'center',
     justifyContent: 'space-between',
-    flexDirection: 'column', 
+    flexDirection: 'column',
   },
   navItem: {
     backgroundColor: 'transparent',
-    margin: 5, 
+    margin: 5,
     alignItems: 'center',
     padding: 2,
   },

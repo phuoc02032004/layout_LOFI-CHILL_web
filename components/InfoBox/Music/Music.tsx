@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
   },
   playlistImage: {
     width: '100%',
-    height: 150,
+    height: 10,
     borderRadius: 10,
     resizeMode: 'cover',
   },
@@ -242,10 +242,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: 'white',
     marginBottom: 5,
+    fontFamily: 'Poppins-Bold'
   },
   playlistDescription: {
     fontSize: 14,
     color: 'white',
+    fontFamily: 'Poppins-Regular'
   },
   loadingText: {
     textAlign: 'center',
