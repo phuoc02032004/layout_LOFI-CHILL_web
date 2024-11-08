@@ -24,38 +24,30 @@ interface Sound {
 const Sounds: React.FC = () => {
   const [soundsData, setSoundsData] = useState<Sound[]>([]);
   const [soundVolumes, setSoundVolumes] = useState<{ [key: string]: number }>({});
-  const [currentPlaying, setCurrentPlaying] = useState<string | null>(null);
+  const [playingSounds, setPlayingSounds] = useState<string[]>([]);
+  const [soundPlayers, setSoundPlayers] = useState<{ [key: string]: Audio.Sound }>({});
 
   useEffect(() => {
     const fetchSoundsData = async () => {
       try {
         const response = await getAllSound();
-        if (response.soundEffect) {
-          setSoundsData(response.soundEffect);
-        } else {
-          console.error('soundEffect is undefined. API response might be invalid.');
-        }
+        setSoundsData(response.soundEffect || []);
       } catch (error) {
-        console.error('Failed to fetch sounds data:', error);
+        console.error('Error fetching sounds data:', error);
       }
     };
 
     const loadVolumes = async () => {
       try {
         const savedVolumesString = await AsyncStorage.getItem('soundVolumes');
-        const savedVolumes = savedVolumesString ? JSON.parse(savedVolumesString) : {};
-        setSoundVolumes(savedVolumes);
+        setSoundVolumes(savedVolumesString ? JSON.parse(savedVolumesString) : {});
       } catch (error) {
-        console.error('Failed to load saved sound volumes:', error);
+        console.error('Error loading sound volumes:', error);
       }
     };
 
     fetchSoundsData();
     loadVolumes();
-
-    return () => {
-      // Dọn dẹp nếu cần
-    };
   }, []);
 
   const handleVolumeChange = (id: string, value: number) => {
@@ -65,28 +57,43 @@ const Sounds: React.FC = () => {
       return updatedVolumes;
     });
 
-    // Không cần điều chỉnh âm lượng ở đây
-    // Vì `Audio.Sound` tự động điều chỉnh âm lượng khi tải
+    soundPlayers[id]?.setVolumeAsync(value);
   };
 
   const handlePlayPause = async (url: string) => {
     try {
-      console.log('Playing sound from URL:', url);
+      const isPlaying = playingSounds.includes(url);
+      let sound: Audio.Sound = soundPlayers[url];
 
-      const sound = new Audio.Sound();
-
-      if (currentPlaying === url) {
-        // Tạm dừng âm thanh hiện tại
-        await sound.pauseAsync();
-        setCurrentPlaying(null);
+      if (isPlaying) {
+        if (sound) {
+          await sound.pauseAsync();
+          console.log('Paused sound:', url);
+          setPlayingSounds(prevSounds => prevSounds.filter(s => s !== url));
+        }
       } else {
-        // Khởi tạo và phát âm thanh
-        await sound.loadAsync({ uri: url });
+        if (!sound) {
+          sound = new Audio.Sound();
+          await sound.loadAsync({ uri: url });
+
+          sound.setOnPlaybackStatusUpdate(async (status) => {
+            if (status.isLoaded && status.didJustFinish) {
+              await sound.stopAsync();
+              await sound.setPositionAsync(0);
+              setPlayingSounds(prevSounds => prevSounds.filter(s => s !== url));
+              console.log('Sound finished and reset:', url);
+            }
+          });
+
+          setSoundPlayers(prevPlayers => ({ ...prevPlayers, [url]: sound }));
+        }
+
         await sound.playAsync();
-        setCurrentPlaying(url);
+        console.log('Playing sound:', url);
+        setPlayingSounds(prevSounds => [...prevSounds, url]);
       }
     } catch (error) {
-      console.error('Error playing sound:', error);
+      console.error('Error playing or pausing sound:', error);
     }
   };
 
@@ -98,13 +105,16 @@ const Sounds: React.FC = () => {
             <Text style={styles.soundName}>{sound.Title}</Text>
             <TouchableOpacity onPress={() => handlePlayPause(sound.url)}>
               <Text style={styles.playPauseButton}>
-                {currentPlaying === sound.url ? 'Pause' : 'Play'}
+                {playingSounds.includes(sound.url) ? 'Pause' : 'Play'}
               </Text>
             </TouchableOpacity>
             <Slider
               style={styles.sliderContainer}
               minimumValue={0}
               maximumValue={1}
+              thumbTintColor='#000'
+              minimumTrackTintColor="#FFFFFF"
+              maximumTrackTintColor="#000000"
               step={0.01}
               value={soundVolumes[sound.id] || 0}
               onValueChange={value => handleVolumeChange(sound.id, value)}
@@ -121,7 +131,7 @@ const Sounds: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: 15,
   },
   soundItem: {
     flexDirection: 'row',
@@ -131,6 +141,8 @@ const styles = StyleSheet.create({
   soundName: {
     flex: 1,
     fontSize: 16,
+    color: 'white',
+    fontFamily: 'Poppins-Bold',
   },
   playPauseButton: {
     padding: 5,
@@ -138,9 +150,13 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     borderRadius: 5,
     marginRight: 10,
+    color: 'white',
+    fontFamily: 'Poppins-Bold',
   },
   sliderContainer: {
     flex: 1,
+    backgroundColor: '#1DB954',
+    borderRadius: 10,
   },
 });
 

@@ -17,7 +17,7 @@ const InfoBox: React.FC<InfoBoxProps> = ({ title, content, onClose, isVisible })
       <View style={styles.overlay}>
         <View style={styles.container}>
           <Text style={styles.title}>{title}</Text>
-          <ScrollView style={styles.content}>{content}</ScrollView> 
+          <ScrollView showsVerticalScrollIndicator={false} style={styles.content}>{content}</ScrollView> 
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
             <MaterialIcons name="close" size={40} color="white" />
           </TouchableOpacity>

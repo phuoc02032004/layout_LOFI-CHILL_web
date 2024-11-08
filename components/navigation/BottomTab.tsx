@@ -6,7 +6,7 @@ import HomeScreen from '../Screens/HomeScreen';
 import LofiScreen from '../Screens/LofiScreen';
 import ChillScreen from '../Screens/ChillScreen';
 
-const Tab = createBottomTabNavigator(); // Chuyển sang Bottom Tab
+const Tab = createBottomTabNavigator(); 
 
 const BottomTab = () => {
   return (
