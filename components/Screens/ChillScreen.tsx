@@ -6,12 +6,13 @@ import Header from '../Header/Header';
 import ControlChill from '../navigation/ControlChill'; 
 import PlayingBar from '../PlayingBar/PlayingBar';
 
-const ChillScreen = () => {
+const ChillScreen: React.FC = () => {
   const { height, width } = Dimensions.get('window');
   const videoRef = useRef<Video>(null);
   const [status, setStatus] = useState<AVPlaybackStatus | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [backgroundVideo, setBackgroundVideo] = useState(require('../../assets/videos/bk.mp4'));
+  const [videoSource, setVideoSource] = useState<string>(require('../../assets/videos/bk.mp4')); 
+  const [backgroundImage, setBackgroundImage] = useState<string | null>(null); 
 
   useEffect(() => {
     const loadVideo = async () => {
@@ -28,10 +29,11 @@ const ChillScreen = () => {
 
     setIsLoading(true);
     loadVideo();
-  }, [backgroundVideo]);
+  }, [videoSource, backgroundImage]);
 
-  const handleBackgroundChange = (newBackground: string) => {
-    setBackgroundVideo(newBackground);
+  const handleBackgroundChange = (newVideoUrl: string, newImageUrl: string) => {
+    setVideoSource(newVideoUrl);
+    setBackgroundImage(newImageUrl);
   };
 
   return (
@@ -40,13 +42,13 @@ const ChillScreen = () => {
       {isLoading && <Loading />}
       <Video
         ref={videoRef}
-        source={backgroundVideo} 
+        source={{ uri: videoSource }} 
         style={[styles.video, { height, width }]}
         resizeMode={ResizeMode.COVER}
         shouldPlay
         isLooping
         isMuted
-        usePoster={require('../../assets/images/imgCampfire.jpg')} 
+        usePoster={backgroundImage ? { uri: backgroundImage } : require('../../assets/images/imgCampfire.jpg')} 
         onPlaybackStatusUpdate={(status) => setStatus(status as AVPlaybackStatus)}
         onError={(error) => console.error('Video Error:', error)}
       />

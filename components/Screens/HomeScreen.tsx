@@ -93,6 +93,7 @@ const HomeScreen = () => {
           <SongCarousel itemSong={Songs} />
           <Text style={styles.newsong}>ARTISTS</Text>
           <ArtistCarousel itemArtist={ImageSlider} />
+          <View style={styles.white}></View>
         </ScrollView>
       </View>
     </View>
@@ -172,6 +173,9 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
   },
+  white: {
+    height:100,
+  }
 });
 
 export default HomeScreen;

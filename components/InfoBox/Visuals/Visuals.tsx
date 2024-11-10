@@ -1,24 +1,40 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
-import Video from 'react-native-video';
-import { getAllVisual } from '@/services/visual';
+import { Video, ResizeMode } from 'expo-av'; 
+import { getAllVisual } from '@/services/visual'; 
 
-interface VisualsWrapperProps {
-  onBackgroundChange: (newBackground: string) => void;
-  onTabPress?: (title: string, content: React.ReactNode) => void;
+interface Visual {
+  id: string;
+  imgUrl: string;
+  videoUrl: string;
+  Title: string;
+  filePathVideo: string;
+  filePathImg: string;
+  createdAt: {
+    _seconds: number;
+    _nanoseconds: number;
+  };
+  updatedAt: {
+    _seconds: number;
+    _nanoseconds: number;
+  };
 }
 
-const VisualsWrapper: React.FC<VisualsWrapperProps> = ({ onBackgroundChange }) => {
+interface VisualsProps {
+  onBackgroundChange: (videoUrl: string, imageUrl: string) => void;
+}
+
+const Visuals: React.FC<VisualsProps> = ({ onBackgroundChange }) => {
   const videoRef = useRef<React.ElementRef<typeof Video> | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
-  const [visualData, setVisualData] = useState([]);
+  const [visualData, setVisualData] = useState<Visual[]>([]); 
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await getAllVisual();
         if (Array.isArray(response.visual)) { 
-          setVisualData(response.visual);
+          setVisualData(response.visual); 
         } else {
           console.error('Invalid visual data received from getAllVisual().');
         }
@@ -30,15 +46,15 @@ const VisualsWrapper: React.FC<VisualsWrapperProps> = ({ onBackgroundChange }) =
   }, []);
 
   useEffect(() => {
-    if (selectedVideo && typeof selectedVideo === 'string') { 
-      videoRef.current?.seek(0);
+    if (selectedVideo) { 
+      videoRef.current?.setPositionAsync(0); 
     }
   }, [selectedVideo]);
 
   const handleBackgroundChange = useCallback(
-    (videoSrc: string) => {
-      setSelectedVideo(videoSrc); // Giữ lại selectedVideo cho mục đích khác
-      onBackgroundChange(videoSrc); // Gọi onBackgroundChange để cập nhật backgroundVideo trong ChillScreen
+    (background: Visual) => {
+      setSelectedVideo(background.videoUrl); 
+      onBackgroundChange(background.videoUrl, background.imgUrl); 
     },
     [onBackgroundChange]
   );
@@ -50,27 +66,26 @@ const VisualsWrapper: React.FC<VisualsWrapperProps> = ({ onBackgroundChange }) =
           ref={videoRef}
           source={{ uri: selectedVideo }}
           style={styles.video}
-          repeat={true}
-          muted={true}
-          resizeMode={'cover'}
-          paused={!selectedVideo}
+          resizeMode={ResizeMode.COVER} 
+          isLooping={true} 
+          shouldPlay={true} 
         />
       )}
 
       <View style={styles.visualsList}>
         {visualData.length > 0 ? (
-          visualData.map((background: any) => (
+          visualData.map((background: Visual) => ( 
             <TouchableOpacity
               key={background.id}
               style={styles.visualItem}
-              onPress={() => handleBackgroundChange(background.videoUrl)}
+              onPress={() => handleBackgroundChange(background)} 
             >
               <Image
                 source={{ uri: background.imgUrl }}
                 style={styles.visualImage}
               />
               <View style={styles.titleContainer}>
-              <Text style={styles.visualName}>{background.Title}</Text>
+                <Text style={styles.visualName}>{background.Title}</Text>
               </View>
             </TouchableOpacity>
           ))
@@ -134,4 +149,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default VisualsWrapper;
+export default Visuals;

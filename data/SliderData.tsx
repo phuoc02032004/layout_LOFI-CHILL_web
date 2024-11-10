@@ -1,7 +1,7 @@
 import { ImageSourcePropType } from "react-native";
 
 export type ImageSliderType = {
-    id: number; // ID nghệ sĩ
+    id: number; 
     name: string;
     image: ImageSourcePropType;
     description: string;

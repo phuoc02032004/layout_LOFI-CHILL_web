@@ -5,12 +5,12 @@ import { FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import InfoBox from '../InfoBox/InfoBox';
 import Preset from '../InfoBox/Presets/Preset';
 import Music from '../InfoBox/Music/Music';
-import Visuals from '../InfoBox/Visuals/VisualsWrapper'; 
+import Visuals from '../InfoBox/Visuals/Visuals'; 
 import Sounds from '../InfoBox/Sounds/Sounds';
 
 interface ControlChillProps {
   showInitially: boolean;
-  onBackgroundChange: (background: string) => void;
+  onBackgroundChange: (videoUrl: string, imageUrl: string) => void; 
 }
 
 const ControlChill: React.FC<ControlChillProps> = ({ showInitially, onBackgroundChange }) => {
@@ -40,7 +40,7 @@ const ControlChill: React.FC<ControlChillProps> = ({ showInitially, onBackground
         return <Preset onTabPress={() => {}} />;
       case 'Music':
         return <Music onTabPress={() => {}} />;
-      case 'Visuals':
+       case 'Visuals':
         return <Visuals onBackgroundChange={onBackgroundChange} />; 
       case 'Sounds':
         return <Sounds/>; 
