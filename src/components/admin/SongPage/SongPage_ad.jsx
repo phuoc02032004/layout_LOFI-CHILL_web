@@ -1,304 +1,337 @@
-import React, { useEffect, useState } from 'react';
-import './SongPage_ad.css';
-import { getAllPlaylists } from '../../../services/playlist'
-import NavbarAD from '../NavbarAdmin/Navbar';
-import SongCarousel from '../../Carousel/SongCarousel';
-import ArtistCarousel from '../../Carousel/ArtistCarousel';
-import GenreManagement from '../GenreManager/GenreM';
+import React, { useEffect, useState } from "react";
+import "./SongPage_ad.css";
+import {
+  getAllSong,
+  deleteSong,
+  updateSong,
+  createSong,
+} from "../../../services/song";
+import { getAllArtist } from "../../../services/artist";
+import { getAllPlaylists } from "../../../services/playlist";
+import NavbarAD from "../NavbarAdmin/Navbar";
 
-import After_hours from '../../assets/images/After-hours.jpg';
-import Friends from '../../assets/images/Friends.jpg';
-import High_Beams from '../../assets/images/High-Beams.jpg';
-import Stay from '../../assets/images/Stay.jpg';
-import Tomorrow from '../../assets/images/Tomorrow.jpg';
-import winter from '../../assets/images/winter.jpg';
-import slinky from '../../assets/images/slinky.jpg';
-import night from '../../assets/images/night.jpg';
-import meadow from '../../assets/images/Meadow.jpg';
-import morning from '../../assets/images/goodmorning.jpg';
-import Aso from '../../assets/images/Aso.jpg';
-import CYGN from '../../assets/images/CYGN.jpg';
-import ivention_ from '../../assets/images/ivention_.jpg';
-import Kupla from '../../assets/images/Kupla.jpg';
-import Leavv from '../../assets/images/Leavv.jpg';
-import Makzo from '../../assets/images/Makzo.png';
-import MamaAiuto from '../../assets/images/Mama Aiuto.jpg';
-import Misha from '../../assets/images/Misha.jpg';
-import mommy from '../../assets/images/mommy.jpg';
-import PsalmTrees from '../../assets/images/Psalm Trees.jpg';
-import Sadtoi from '../../assets/images/Sadtoi.jpg';
-import SleepyFish from '../../assets/images/Sleepy  Fish.jpg';
-
-function SongPage() {
+function SongPage_ad() {
+  const [songs, setSongs] = useState([]);
+  const [artists, setArtists] = useState([]);
+  const [playlists, setPlaylists] = useState([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [songToEdit, setSongToEdit] = useState(null);
+  const [songToDelete, setSongToDelete] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [songToDeleteIndex, setSongToDeleteIndex] = useState(null);
-  const [songToEditIndex, setSongToEditIndex] = useState(null);
-  const [editingSong, setEditingSong] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [songsPerPage] = useState(5);
 
-  const [songs, setSongs] = useState([
-    { title: 'Winter Chill', artist: 'Artist 1', image: winter, description: 'Description 1' },
-    { title: 'Slinky Groove', artist: 'Artist 2', image: slinky, description: 'Description 2' },
-    { title: 'Night Vibes', artist: 'Artist 3', image: night, description: 'Description 3' },
-    { title: 'Meadow Peace', artist: 'Artist 4', image: meadow, description: 'Description 4' },
-    { title: 'Good Morning', artist: 'Artist 5', image: morning, description: 'Description 5' },
-    { title: 'After Hours', artist: 'Artist 6', image: After_hours, description: 'Description 6' },
-    { title: 'Friends', artist: 'Artist 7', image: Friends, description: 'Description 7' },
-    { title: 'High Beams', artist: 'Artist 8', image: High_Beams, description: 'Description 8' },
-    { title: 'Stay', artist: 'Artist 9', image: Stay, description: 'Description 9' },
-    { title: 'Tomorrow', artist: 'Artist 10', image: Tomorrow, description: 'Description 10' },
-  ]);
-
-  const [artists, setArtists] = useState([
-    { title: 'Aso', image: Aso, description: 'Description 1' },
-    { title: 'CYGN', image: CYGN, description: 'Description 2' },
-    { title: 'ivention_', image: ivention_, description: 'Description 3' },
-    { title: 'Kupla', image: Kupla, description: 'Description 4' },
-    { title: 'Leavv', image: Leavv, description: 'Description 5' },
-    { title: 'Makzo', image: Makzo, description: 'Description 6' },
-    { title: 'Mama Aiuto', image: MamaAiuto, description: 'Description 7' },
-    { title: 'Misha', image: Misha, description: 'Description 8' },
-    { title: 'mommy', image: mommy, description: 'Description 9' },
-    { title: 'Psalm Trees', image: PsalmTrees, description: 'Description 10' },
-    { title: 'Sadtoi', image: Sadtoi, description: 'Description 11' },
-    { title: 'Sleepy Fish', image: SleepyFish, description: 'Description 12' },
-  ]);
-
-  const [stations, setStations] = useState([
-  ]);
-
-  useEffect(() => {
-    fetchPlaylists();
-  }, []);
-
-  const fetchPlaylists = async () => {
+  const fetchSongs = async () => {
     try {
-      const data = await getAllPlaylists();
-      setStations(data);
+      const data = await getAllSong();
+      setSongs(data);
     } catch (error) {
-      console.error('Error fetching Playlist:', error);
+      console.error("Error fetching songs:", error);
     }
   };
 
-  const handleAddClick = () => {
-    setIsAddModalOpen(true);
+  const fetchArtistsAndPlaylists = async () => {
+    try {
+      const artistData = await getAllArtist();
+      setArtists(artistData);
+
+      const playlistData = await getAllPlaylists();
+      setPlaylists(playlistData);
+    } catch (error) {
+      console.error("Error fetching artists or playlists:", error);
+    }
   };
 
+  useEffect(() => {
+    fetchSongs();
+    fetchArtistsAndPlaylists();
+  }, []);
+
+  const handleAddClick = () => setIsAddModalOpen(true);
+
   const handleEditClick = (index) => {
-    setSongToEditIndex(index);
-    setEditingSong({ ...songs[index] });
+    setSongToEdit(songs[index]);
     setIsEditModalOpen(true);
+  };
+
+  const handleDeleteClick = (index) => {
+    setSongToDelete(songs[index]);
+    setIsDeleteModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setIsAddModalOpen(false);
     setIsEditModalOpen(false);
     setIsDeleteModalOpen(false);
-    setEditingSong(null);
   };
 
-  const handleDeleteClick = (index) => {
-    setSongToDeleteIndex(index);
-    setIsDeleteModalOpen(true);
+  const handleConfirmDelete = async () => {
+    try {
+      console.log(
+        "Deleting song with id:",
+        songToDelete._id,
+        "from playlist:",
+        songToDelete.idPlaylist
+      );
+      await deleteSong(songToDelete.idPlaylist, songToDelete._id);
+      setSongs(songs.filter((song) => song._id !== songToDelete._id));
+      handleCloseModal();
+    } catch (error) {
+      console.error("Error deleting song:", error);
+    }
   };
 
-  const handleConfirmDelete = () => {
-    const updatedSongs = [...songs];
-    updatedSongs.splice(songToDeleteIndex, 1);
-    setSongs(updatedSongs);
-    setSongToDeleteIndex(null);
-    setIsDeleteModalOpen(false);
-  };
-
-  const handleSaveEdit = (event) => {
+  const handleSaveEdit = async (event) => {
     event.preventDefault();
-    const updatedTitle = document.getElementById('editSongName').value;
-    const updatedArtist = document.getElementById('editArtist').value;
-    const updatedDescription = document.getElementById('editDescribe').value;
-
-    const updatedImage = editingSong.image;
-    const updatedSongFile = editingSong.songFile;
-
-    setEditingSong({
-      title: updatedTitle,
-      artist: updatedArtist,
-      image: updatedImage,
-      description: updatedDescription,
-      songFile: updatedSongFile,
-    });
-
-    const updatedSongs = [...songs];
-    updatedSongs[songToEditIndex] = editingSong;
-    setSongs(updatedSongs);
-
-    setIsEditModalOpen(false);
-    setEditingSong(null);
+    if (!songToEdit) {
+      console.error("Song data is undefined");
+      return;
+    }
+    const title = event.target.editSongTitle.value;
+    const description = event.target.editSongDescription.value;
+    const genre = event.target.station.value;
+    const imgFile = event.target.editSongImage.files[0];
+    const musicFile = event.target.editMusicFile.files[0];
+    const artist = event.target.artist.value;
+    try {
+      await updateSong(
+        artist, 
+        genre, 
+        songToEdit.id, 
+        title,
+        description,
+        imgFile,
+        musicFile
+      );
+      alert("Song updated successfully!");
+      fetchSongs();
+      handleCloseModal();
+    } catch (error) {
+      console.error("Failed to update song:", error);
+      alert("Failed to update song.");
+    }
   };
 
-  const songsPerPage = 5;
-  const [currentPage, setCurrentPage] = useState(1);
+  const handleSaveAdd = async (event) => {
+    event.preventDefault();
+    const title = document.getElementById("songName").value;
+    const description = document.getElementById("Describe").value;
+    const imgFile = document.getElementById("songImage").files[0];
+    const musicFile = document.getElementById("songFile").files[0];
+    const idPlaylist = document.getElementById("station").value;
+    const artist = document.getElementById("artist").value;
+
+    if (!title || !imgFile || !musicFile || !idPlaylist || !artist) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
+    try {
+      await createSong(
+        artist,
+        idPlaylist,
+        title,
+        description,
+        imgFile,
+        musicFile
+      );
+      await fetchSongs();
+      setIsAddModalOpen(false);
+    } catch (error) {
+      console.error("Error creating song:", error);
+      alert("Failed to create song.");
+    }
+  };
 
   const indexOfLastSong = currentPage * songsPerPage;
   const indexOfFirstSong = indexOfLastSong - songsPerPage;
   const currentSongs = songs.slice(indexOfFirstSong, indexOfLastSong);
 
+  const totalPages = Math.ceil(songs.length / songsPerPage);
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  const pageNumbers = [];
-  for (let i = 1; i <= Math.ceil(songs.length / songsPerPage); i++) {
-    pageNumbers.push(i);
-  }
 
   return (
     <div>
       <NavbarAD />
-      <button className='btn-add' onClick={handleAddClick}>ADD</button>
+      <button className="btn-add" onClick={handleAddClick}>
+        ADD
+      </button>
 
       {isAddModalOpen && (
         <div className="add-modal">
           <div className="modal-content">
-            <span className="close-modal" onClick={handleCloseModal}>×</span>
+            <span className="close-modal" onClick={handleCloseModal}>
+              ×
+            </span>
             <h2>ADD SONG</h2>
-            <form className='form-box'>
+            <form onSubmit={handleSaveAdd}>
               <label htmlFor="songName">Song name:</label>
-              <input type="text" id="songName" name="songName" />
-
-              <label htmlFor="artist">Artist:</label>
-              <select className="choose" id="artist">
-                {artists.map((artist) => (
-                  <option key={artist.title} value={artist.title}>
-                    {artist.title}
-                  </option>
-                ))}
-              </select>
-
-              <label htmlFor="genre">Genre:</label>
-              <select className="choose" id="station">
-                {stations.map((station) => (
-                  <option key={station.id} value={station.id}>
-                    {station.name}
-                  </option>
-                ))}
-              </select>
-
-              <label htmlFor="songImage">Song image:</label>
-              <input type="file" id="songImage" name="songImage" />
-
-              <label htmlFor="songFile">Song file:</label>
-              <input type="file" id="songFile" name="songFile" />
+              <input type="text" id="songName" name="songName" required />
 
               <label htmlFor="Describe">Description:</label>
-              <textarea id="Describe" name="Describe" rows="5" cols="40"></textarea>
+              <textarea
+                id="Describe"
+                name="Describe"
+                rows="5"
+                cols="40"
+              ></textarea>
 
-              <button type="submit">Save</button>
-            </form>
-          </div>
-        </div>
-      )}
+              <label htmlFor="songImage">Song image:</label>
+              <input type="file" id="songImage" name="songImage" required />
 
-      {isEditModalOpen && (
-        <div className="edit-modal">
-          <div className="edit-content">
-            <span className="close-modal" onClick={handleCloseModal}>×</span>
-            <h2>EDIT SONG</h2>
-            <form className='form-box' onSubmit={handleSaveEdit}>
-              <label htmlFor="editSongName">Song name:</label>
-              <input
-                type="text"
-                id="editSongName"
-                name="editSongName"
-                value={editingSong.title}
-                onChange={(e) => setEditingSong({ ...editingSong, title: e.target.value })}
-              />
+              <label htmlFor="songFile">Song file:</label>
+              <input type="file" id="songFile" name="songFile" required />
 
-              <label htmlFor="editArtist">Artist:</label>
-              <select className="choose" id="artist">
+              <label htmlFor="genre">Genre:</label>
+              <select className="choose" id="station" required>
+                {playlists.map((playlist) => (
+                  <option key={playlist.id} value={playlist.id}>
+                    {playlist.name}
+                  </option>
+                ))}
+              </select>
+
+              <label htmlFor="artist">Artist:</label>
+              <select className="choose" id="artist" required>
                 {artists.map((artist) => (
-                  <option key={artist.title} value={artist.title}>
+                  <option key={artist.id} value={artist.id}>
                     {artist.title}
                   </option>
                 ))}
               </select>
 
-              <label htmlFor="genre">Genre:</label>
-              <select className="choose" id="station">
-                {stations.map((station) => (
-                  <option key={station.id} value={station.id}>
-                    {station.name}
-                  </option>
-                ))}
-              </select>
-
-              <label htmlFor="editSongImage">Song image:</label>
-              <input type="file" id="editSongImage" name="editSongImage" />
-
-              <label htmlFor="editSongFile">Song file:</label>
-              <input type="file" id="editSongFile" name="editSongFile" />
-
-              <label htmlFor="editDescribe">Description:</label>
-              <textarea
-                id="editDescribe"
-                name="editDescribe"
-                rows="5"
-                cols="40"
-                value={editingSong.description}
-                onChange={(e) => setEditingSong({ ...editingSong, description: e.target.value })}
-              />
-
               <button type="submit">Save</button>
             </form>
           </div>
         </div>
       )}
 
-      <div className='wrapper-all'>
+      {/* Render song list and pagination */}
+      <div className="wrapper-all">
         <div className="header-row">
           <div className="thumbnail-header">THUMBNAIL</div>
           <div className="name-song-header">NAME SONG</div>
           <div className="button-header">BUTTON</div>
         </div>
-
-        <div className='image-container-song'>
+        <div className="image-container-song">
           {currentSongs.map((song, index) => (
-            <div key={index} className='image-row-song'>
+            <div key={index} className="image-row-song">
               <img src={song.image} alt={song.title} className="image-song" />
-              <div className='image-name-song'>{song.title}</div>
+              <div className="image-name-song">{song.title}</div>
               <div className="btn">
-                <div className="btn-fix" onClick={() => handleEditClick(index)}>EDIT</div>
-                <div className="btn-del" onClick={() => handleDeleteClick(index)}>DELETE</div>
+                <div className="btn-fix" onClick={() => handleEditClick(index)}>
+                  EDIT
+                </div>
+                <div
+                  className="btn-del"
+                  onClick={() => handleDeleteClick(index)}
+                >
+                  DELETE
+                </div>
               </div>
             </div>
           ))}
         </div>
-
         <div className="pagination">
-          {pageNumbers.map((number) => (
+          {Array.from({ length: totalPages }, (_, index) => (
             <button
-              key={number}
-              onClick={() => paginate(number)}
-              className={number === currentPage ? 'active' : ''}
+              key={index + 1}
+              onClick={() => paginate(index + 1)}
+              className={currentPage === index + 1 ? "active" : ""}
             >
-              {number}
+              {index + 1}
             </button>
           ))}
         </div>
 
-        <div className="name_a">Genre</div>
-        <GenreManagement stations={stations} setStations={setStations} />
+        {/* Edit modal */}
+        {isEditModalOpen && (
+          <div className="edit-modal">
+            <div className="modal-content">
+              <span className="close-modal" onClick={handleCloseModal}>
+                ×
+              </span>
+              <h2>Edit Song</h2>
+              <form onSubmit={handleSaveEdit}>
+                <label htmlFor="editSongTitle">Song Name:</label>
+                <input
+                  type="text"
+                  id="editSongTitle"
+                  name="editSongTitle"
+                  defaultValue={songToEdit?.title}
+                  required
+                />
 
-        <div className="name_a">New Song</div>
-        <SongCarousel songs={songs} />
+                <label htmlFor="editSongDescription">Description:</label>
+                <textarea
+                  id="editSongDescription"
+                  name="editSongDescription"
+                  defaultValue={songToEdit?.description}
+                  required
+                />
 
-        <div className="name_a">Artist</div>
-        <ArtistCarousel artists={artists} />
+                <label htmlFor="genre">Genre:</label>
+                <select
+                  className="choose"
+                  id="station"
+                  defaultValue={songToEdit?.genre} // Đặt giá trị mặc định của genre
+                  required
+                >
+                  {playlists.map((playlist) => (
+                    <option key={playlist.id} value={playlist.id}>
+                      {playlist.name}
+                    </option>
+                  ))}
+                </select>
 
+                <label htmlFor="artist">Artist:</label>
+                <select
+                  className="choose"
+                  id="artist"
+                  defaultValue={songToEdit?.artist} // Đặt giá trị mặc định của artist
+                  required
+                >
+                  {artists.map((artist) => (
+                    <option key={artist.id} value={artist.id}>
+                      {artist.title}
+                    </option>
+                  ))}
+                </select>
+
+                <label htmlFor="editSongImage">Select Image:</label>
+                <input
+                  type="file"
+                  id="editSongImage"
+                  name="editSongImage"
+                  accept="image/*"
+                />
+
+                <label htmlFor="editMusicFile">Select Music File:</label>
+                <input
+                  type="file"
+                  id="editMusicFile"
+                  name="editMusicFile"
+                  accept="audio/*"
+                />
+
+                <button type="submit">Save Changes</button>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Delete modal */}
         {isDeleteModalOpen && (
           <div className="delete-modal">
             <div className="delete-content">
-              <span className="close-modal" onClick={handleCloseModal}>×</span>
-              <h2>Are you sure you want to delete this song?</h2>
-              <button className='btn-delete' onClick={handleConfirmDelete}>DELETE</button>
+              <span className="close-modal" onClick={handleCloseModal}>
+                ×
+              </span>
+              <h2>Are you sure you want to delete {songToDelete?.title}?</h2>
+              <button className="btn-delete" onClick={handleConfirmDelete}>
+                DELETE
+              </button>
             </div>
           </div>
         )}
@@ -307,4 +340,4 @@ function SongPage() {
   );
 }
 
-export default SongPage;
+export default SongPage_ad;
