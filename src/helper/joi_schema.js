@@ -8,8 +8,17 @@ export const Title = joi.string().required()
 export const Description = joi.string().required()
 export const Artist = joi.string().required()
 export const name = joi.string().required()
-export const musicUrl = joi.string().required()
-export const imageUrl = joi.string().required()
-export const visualUrl = joi.string().required()
-export const soundUrl = joi.string().required()
-export const soundVol = joi.string().required()
+
+export const playlistId = joi.string()
+    .pattern(/^(?!https?:\/\/)/) // Kiểm tra không bắt đầu bằng 'http://' hoặc 'https://'
+    .required();
+export const visualId = joi.string()
+    .pattern(/^(?!https?:\/\/)/)
+    .required();
+
+export const sounds = joi.array().items(
+    joi.object({
+        soundId: joi.string().required(),
+        volume: joi.number().min(0).max(1).required()
+    })
+).required()

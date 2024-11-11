@@ -1,13 +1,13 @@
 import * as services from '../services/index.js';
 import { internalServerError } from '../middleware/handle_error.js';
 import joi from 'joi';
-import { Title, Description, musicUrl, imageUrl, visualUrl, soundUrl, soundVol } from '../helper/joi_schema.js';
+import { Title, Description, playlistId, visualId, sounds } from '../helper/joi_schema.js';
 
 // Create a new preset
 export const createPreset = async (req, res) => {
     try {
         const { error } = joi.object({
-            Title, Description, musicUrl, imageUrl, visualUrl, soundUrl, soundVol
+            Title, Description, playlistId, visualId, sounds
         }).validate(req.body);
 
         if (error) {
@@ -61,8 +61,10 @@ export const updatePreset = async (req, res) => {
         const { id } = req.params;
         const data = req.body;
 
-        const response = await services.presets.updatePreset({ id, data });
+        // Gọi dịch vụ cập nhật preset
+        const response = await services.presets.updatePreset({ presetId: id, ...data });
 
+        // Kiểm tra nếu không tìm thấy preset
         if (response.status === 404) {
             return res.status(404).json({
                 err: 1,
@@ -70,10 +72,19 @@ export const updatePreset = async (req, res) => {
             });
         }
 
-        return res.status(200).json(response);
+        // Trả về kết quả thành công
+        return res.status(200).json({
+            err: 0,
+            mes: 'Update preset successfully',
+            preset: response.preset
+        });
     } catch (error) {
         console.error('Error in updatePreset controller:', error);
-        return internalServerError(res);
+        return res.status(500).json({
+            err: 1,
+            mes: 'Error updating preset',
+            error: error.message
+        });
     }
 };
 
