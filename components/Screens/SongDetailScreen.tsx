@@ -6,6 +6,7 @@ import SongCarousel from '../Carousel/SongCarousel';
 import ArtistCarousel from '../Carousel/ArtistCarousel';
 import { ImageSlider, ImageSliderType } from '@/data/SliderData';
 import { FlatList } from 'react-native-gesture-handler';
+import SongTracks from '../SongTracks/SongTracks';
 
 type RootStackParamList = {
     SongDetailScreen: { song: Song };
@@ -39,7 +40,7 @@ const SongDetailScreen = () => {
             </ImageBackground>
 
             <View style={styles.container}>
-                <Text style ={styles.textartist}>Name of Artist</Text>
+                <Text style={styles.textartist}>Name of Artist</Text>
                 <FlatList
                     data={song.artistIds}
                     keyExtractor={(item) => item.toString()}
@@ -56,7 +57,8 @@ const SongDetailScreen = () => {
                     contentContainerStyle={styles.artistList}
                     showsHorizontalScrollIndicator={false}
                 />
-
+                <Text style={styles.newsong}>Song Tracks</Text>
+                <SongTracks />
                 <Text style={styles.newsong}>NEW SONG</Text>
                 <SongCarousel itemSong={Songs} />
                 <Text style={styles.newsong}>ARTISTS</Text>
@@ -86,7 +88,7 @@ const styles = StyleSheet.create({
         elevation: 7,
         opacity: 0.5,
     },
-        artistList: {
+    artistList: {
         marginVertical: 10,
     },
     textartist: {
@@ -95,7 +97,7 @@ const styles = StyleSheet.create({
         fontSize: 30,
         fontWeight: 'bold',
         marginBottom: 10,
-        paddingLeft:5,
+        paddingLeft: 5,
     },
 
     container: {

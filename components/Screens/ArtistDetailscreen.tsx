@@ -5,6 +5,9 @@ import { Songs, Song } from '@/data/SongData';
 import { ImageSlider, ImageSliderType } from '@/data/SliderData';
 import ArtistCarousel from '../Carousel/ArtistCarousel';
 import SongCarousel from '../Carousel/SongCarousel';
+import { Tracks } from '@/data/tracks'; 
+import SongTracks from '../SongTracks/SongTracks';
+
 
 type RootStackParamList = {
   ArtistDetailscreen: { artistId: number };
@@ -59,6 +62,8 @@ const ArtistDetailscreen = () => {
               contentContainerStyle={styles.flatListContent}
             />
           </View>
+          <Text style={styles.newsong}>Song Tracks</Text>
+          <SongTracks />
           <Text style={styles.newsong}>NEW SONG</Text>
           <SongCarousel itemSong={Songs} />
           <Text style={styles.newsong}>ARTISTS</Text>
