@@ -3,7 +3,11 @@ import Slider from '@react-native-community/slider';
 import React, { useState, useRef, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-const PlayingBar = () => {
+interface PlayingBarProps {
+  currentSongUrl: string;
+}
+
+const PlayingBar: React.FC<PlayingBarProps> = ({ currentSongUrl }) => {
   const [isPlaying, setIsPlaying] = useState(false); 
   const [volume, setVolume] = useState(0.5); 
   const [showSlider, setShowSlider] = useState(false);

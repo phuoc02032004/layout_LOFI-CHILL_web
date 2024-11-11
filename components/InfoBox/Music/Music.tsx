@@ -1,11 +1,12 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, ActivityIndicator } from 'react-native';
 import { getAllPlaylists } from '@/services/playlist';
 import { playSong } from '@/services/song';
-import { Audio, AVPlaybackStatus } from 'expo-av';
+import { Audio } from 'expo-av';
 
 interface MusicProps {
   onTabPress: (title: string, content: React.ReactNode) => void;
+  onCurrentSongUrlChange: (url: string) => void; 
 }
 
 interface Playlist {
@@ -23,18 +24,14 @@ interface Song {
   urlImg: string;
 }
 
-const Music: React.FC<MusicProps> = ({ onTabPress }) => {
+const Music: React.FC<MusicProps> = ({ onTabPress, onCurrentSongUrlChange }) => {
   const [playlistData, setPlaylistData] = useState<Playlist[]>([]);
+  const [currentPlaylist, setCurrentPlaylist] = useState<Song[]>([]);
   const [currentSongIndex, setCurrentSongIndex] = useState(0);
-  const [currentSongUrl, setCurrentSongUrl] = useState('');
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>('');
-  const [currentTime, setCurrentTime] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [sound, setSound] = useState<Audio.Sound | null>(null);
-  const [currentPlaylist, setCurrentPlaylist] = useState<Song[]>([]);
-  
-  const audioRef = useRef<Audio.Sound | null>(null);
 
   useEffect(() => {
     const fetchPlaylists = async () => {
@@ -43,10 +40,10 @@ const Music: React.FC<MusicProps> = ({ onTabPress }) => {
         if (response.err === 0) {
           setPlaylistData(response.playlist);
         } else {
-          setError('Error fetching playlists: ' + response.mes);
+          setError('Lỗi khi lấy danh sách playlist: ' + response.mes);
         }
       } catch (error) {
-        setError('Error fetching playlists.');
+        setError('Lỗi khi lấy danh sách playlist.');
       } finally {
         setLoading(false);
       }
@@ -57,117 +54,71 @@ const Music: React.FC<MusicProps> = ({ onTabPress }) => {
 
   useEffect(() => {
     return () => {
-      if (sound) {
-        sound.unloadAsync();
-      }
+      if (sound) sound.unloadAsync();
     };
   }, [sound]);
 
-  const handlePlaylistClick = async (playlistId: string) => {
+  const loadAndPlaySong = async (url: string) => {
+    if (sound) await sound.unloadAsync();
+
+    const newSound = new Audio.Sound();
+    setSound(newSound);
     try {
-      const songs: Song[] = await playSong(playlistId);
+      await newSound.loadAsync({ uri: url }); 
+      await newSound.playAsync();
+      setIsPlaying(true);
+      onCurrentSongUrlChange(url);
+    } catch (error) {
+      console.error('Lỗi khi phát nhạc:', error);
+      // Xử lý lỗi, ví dụ: hiện thông báo cho người dùng
+      setError("Không thể phát nhạc"); 
+    }
+  };
+
+  const handlePlaylistClick = async (playlistId: string) => {
+    console.log('Playlist được chọn có ID:', playlistId);
   
-      console.log('Response from playSong API:', songs);
+    try {
+      const songs = await playSong(playlistId);
+      console.log('Danh sách bài hát trong playlist:', songs);
   
       if (songs.length > 0) {
         setCurrentPlaylist(songs);
         setCurrentSongIndex(0);
-        setCurrentSongUrl(songs[0].Url);
-        setCurrentTime(0);
-        setIsPlaying(false);
-  
-        console.log('Loading first song URL:', songs[0].Url);
-  
-        if (sound) {
-          await sound.unloadAsync();
-        }
-  
-        // Create the Audio.Sound instance
-        const newSound = new Audio.Sound();
-  
-        try {
-          // Load the sound asynchronously
-          await newSound.loadAsync({ uri: songs[0].Url }); 
-          console.log('Sound loaded successfully:', songs[0].Url);
-          // Set the sound AFTER it's loaded
-          setSound(newSound); 
-  
-          // Play the sound
-          if (sound) { 
-            audioRef.current = sound;
-            await sound.playAsync(); // Play after loading
-            setIsPlaying(true); 
-          } else {
-            console.error('Sound object is null.');
-          }
-        } catch (error) {
-          console.error('Error loading sound:', error);
-        }
+        console.log('Bài hát đầu tiên trong playlist:', songs[0]);
+        
+        // Đảm bảo `url` được truyền đúng
+        loadAndPlaySong(songs[0].Url); 
       } else {
-        console.error('No songs available in this playlist.');
+        console.error('Playlist này không có bài hát nào.');
       }
     } catch (error) {
-      console.error('Error playing playlist:', error);
+      console.error('Lỗi khi phát playlist:', error);
     }
   };
   
-
   const handlePlayPause = async () => {
-    if (sound) {
+    if (sound) { 
       if (isPlaying) {
         await sound.pauseAsync();
-        console.log('Audio paused.');
       } else {
         await sound.playAsync();
-        console.log('Audio playing.');
       }
       setIsPlaying(!isPlaying);
     } else {
-      console.warn('Sound object is null, cannot play/pause.');
+      console.warn("Âm thanh chưa được tải");
     }
   };
 
-  const handleSongEnd = async (status: AVPlaybackStatus) => {
-    if (!status.isLoaded) return;
-
-    if (status.didJustFinish && currentSongIndex < currentPlaylist.length - 1) {
+  const handleNextSong = () => {
+    if (currentSongIndex < currentPlaylist.length - 1) {
       const nextIndex = currentSongIndex + 1;
       setCurrentSongIndex(nextIndex);
-      setCurrentSongUrl(currentPlaylist[nextIndex].Url);
-      setCurrentTime(0);
-
-      console.log('Song ended, loading next song:', currentPlaylist[nextIndex].Url);
-
-      if (sound) {
-        await sound.unloadAsync();
-        try {
-          await sound.loadAsync({ uri: currentPlaylist[nextIndex].Url });
-          await sound.playAsync();
-          console.log('Next song loaded and playing:', currentPlaylist[nextIndex].Url);
-        } catch (error) {
-          console.error('Error loading next sound:', error);
-        }
-      }
+      loadAndPlaySong(currentPlaylist[nextIndex].Url);
     } else {
       setIsPlaying(false);
-      console.log('No more songs in the playlist.');
     }
   };
-
-  const handleTimeUpdate = (status: AVPlaybackStatus) => {
-    if (status.isLoaded && !status.isBuffering) {
-      setCurrentTime(status.positionMillis / 1000);
-    }
-  };
-
-  useEffect(() => {
-    if (sound) {
-      sound.setOnPlaybackStatusUpdate((status) => {
-        handleTimeUpdate(status);
-        handleSongEnd(status);
-      });
-    }
-  }, [sound, currentSongUrl]);
 
   return (
     <View style={styles.container}>
@@ -177,33 +128,29 @@ const Music: React.FC<MusicProps> = ({ onTabPress }) => {
         <Text style={styles.errorText}>{error}</Text>
       ) : (
         <View style={styles.playlistsList}>
-          {playlistData.length > 0 ? (
-            playlistData.map((playlist) => (
-              <TouchableOpacity
-                key={playlist.id}
-                style={styles.playlistItem}
-                onPress={() => handlePlaylistClick(playlist.id)}
-              >
-                <Image
-                  source={{ uri: playlist.filePathPlaylist }}
-                  style={styles.playlistImage}
-                />
-                <View style={styles.playlistInfo}>
-                  <Text style={styles.playlistName}>{playlist.Title}</Text>
-                  <Text style={styles.playlistDescription}>{playlist.Description}</Text>
-                </View>
-              </TouchableOpacity>
-            ))
-          ) : (
-            <Text style={styles.loadingText}>No playlists available.</Text>
-          )}
+          {playlistData.map((playlist) => (
+            <TouchableOpacity
+              key={playlist.id}
+              style={styles.playlistItem}
+              onPress={() => handlePlaylistClick(playlist.id)}
+            >
+              <Image source={{ uri: playlist.filePathPlaylist }} style={styles.playlistImage} />
+              <View style={styles.playlistInfo}>
+                <Text style={styles.playlistName}>{playlist.Title}</Text>
+                <Text style={styles.playlistDescription}>{playlist.Description}</Text>
+              </View>
+            </TouchableOpacity>
+          ))}
         </View>
       )}
 
-      {currentSongUrl && (
+      {currentPlaylist.length > 0 && (
         <View style={styles.musicPlayer}>
           <TouchableOpacity onPress={handlePlayPause} style={styles.playPauseButton}>
             <Text style={styles.playPauseText}>{isPlaying ? 'Pause' : 'Play'}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleNextSong} style={styles.nextButton}>
+            <Text style={styles.nextText}>Next</Text>
           </TouchableOpacity>
           <Text style={styles.songTitle}>{currentPlaylist[currentSongIndex]?.Title}</Text>
           <Text style={styles.songArtist}>{currentPlaylist[currentSongIndex]?.Artist}</Text>
@@ -231,7 +178,7 @@ const styles = StyleSheet.create({
   },
   playlistImage: {
     width: '100%',
-    height: 10,
+    height: 150,
     borderRadius: 10,
     resizeMode: 'cover',
   },
@@ -242,17 +189,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: 'white',
     marginBottom: 5,
-    fontFamily: 'Poppins-Bold'
   },
   playlistDescription: {
     fontSize: 14,
     color: 'white',
-    fontFamily: 'Poppins-Regular'
-  },
-  loadingText: {
-    textAlign: 'center',
-    color: 'white',
-    marginTop: 20,
   },
   loadingIndicator: {
     flex: 1,
@@ -276,6 +216,16 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   playPauseText: {
+    color: 'white',
+    fontSize: 16,
+  },
+  nextButton: {
+    backgroundColor: 'green',
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 10,
+  },
+  nextText: {
     color: 'white',
     fontSize: 16,
   },

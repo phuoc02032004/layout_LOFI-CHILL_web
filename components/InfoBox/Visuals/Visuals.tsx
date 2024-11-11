@@ -45,15 +45,8 @@ const Visuals: React.FC<VisualsProps> = ({ onBackgroundChange }) => {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    if (selectedVideo) { 
-      videoRef.current?.setPositionAsync(0); 
-    }
-  }, [selectedVideo]);
-
-  const handleBackgroundChange = useCallback(
+  const handleVisualSelect = useCallback(
     (background: Visual) => {
-      setSelectedVideo(background.videoUrl); 
       onBackgroundChange(background.videoUrl, background.imgUrl); 
     },
     [onBackgroundChange]
@@ -61,24 +54,13 @@ const Visuals: React.FC<VisualsProps> = ({ onBackgroundChange }) => {
 
   return (
     <View style={styles.container}>
-      {selectedVideo && (
-        <Video
-          ref={videoRef}
-          source={{ uri: selectedVideo }}
-          style={styles.video}
-          resizeMode={ResizeMode.COVER} 
-          isLooping={true} 
-          shouldPlay={true} 
-        />
-      )}
-
       <View style={styles.visualsList}>
         {visualData.length > 0 ? (
           visualData.map((background: Visual) => ( 
             <TouchableOpacity
               key={background.id}
               style={styles.visualItem}
-              onPress={() => handleBackgroundChange(background)} 
+              onPress={() => handleVisualSelect(background)} 
             >
               <Image
                 source={{ uri: background.imgUrl }}

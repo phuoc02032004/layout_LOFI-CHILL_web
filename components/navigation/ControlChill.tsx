@@ -11,17 +11,17 @@ import Sounds from '../InfoBox/Sounds/Sounds';
 interface ControlChillProps {
   showInitially: boolean;
   onBackgroundChange: (videoUrl: string, imageUrl: string) => void; 
+  onCurrentSongUrlChange: (url: string) => void;
 }
 
-const ControlChill: React.FC<ControlChillProps> = ({ showInitially, onBackgroundChange }) => {
+const ControlChill: React.FC<ControlChillProps> = ({ showInitially, onBackgroundChange, onCurrentSongUrlChange }) => {
   const [activeButton, setActiveButton] = useState<string | null>(null);
   const [isInfoBoxVisible, setInfoBoxVisible] = useState(false);
   const [showControls, setShowControls] = useState(false); 
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
 
-  // Animated values cho thanh điều khiển và icon
-  const animatedValue = new Animated.Value(0); // Dùng cho thanh điều khiển
-  const iconAnimatedValue = new Animated.Value(0); // Dùng cho icon add button
+  const animatedValue = new Animated.Value(0); 
+  const iconAnimatedValue = new Animated.Value(0); 
 
   const handleClick = (buttonName: string) => {
     setActiveButton(buttonName);
@@ -39,8 +39,13 @@ const ControlChill: React.FC<ControlChillProps> = ({ showInitially, onBackground
       case 'Presets':
         return <Preset onTabPress={() => {}} />;
       case 'Music':
-        return <Music onTabPress={() => {}} />;
-       case 'Visuals':
+        return (
+          <Music 
+            onTabPress={() => {}} 
+            onCurrentSongUrlChange={onCurrentSongUrlChange}
+          /> 
+        );
+      case 'Visuals':
         return <Visuals onBackgroundChange={onBackgroundChange} />; 
       case 'Sounds':
         return <Sounds/>; 
