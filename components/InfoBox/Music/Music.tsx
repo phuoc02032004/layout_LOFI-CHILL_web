@@ -14,18 +14,20 @@ interface Playlist {
   Title: string;
   Description: string;
   filePathPlaylist?: string;
+  createdAt?: { _seconds: number; _nanoseconds: number };
+  updatedAt?: { _seconds: number; _nanoseconds: number };
 }
 
 interface Song {
   id: string;
-  Title: string;
-  Artist: string;
-  Url: string;
-  urlImg: string;
+  title: string; 
+  artist: string; 
+  url: string; 
+  urlImg: string; 
 }
 
 const Music: React.FC<MusicProps> = ({ onTabPress, onCurrentSongUrlChange }) => {
-  const [playlistData, setPlaylistData] = useState<Playlist[]>([]);
+  const [playlistsData, setPlaylistsData] = useState<Playlist[]>([]);
   const [currentPlaylist, setCurrentPlaylist] = useState<Song[]>([]);
   const [currentSongIndex, setCurrentSongIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -34,11 +36,22 @@ const Music: React.FC<MusicProps> = ({ onTabPress, onCurrentSongUrlChange }) => 
   const [sound, setSound] = useState<Audio.Sound | null>(null);
 
   useEffect(() => {
+    // Tạo đối tượng Audio.Sound khi component được mount
+    const newSound = new Audio.Sound();
+    setSound(newSound);
+    return () => {
+      // Giải phóng âm thanh khi component bị unmount
+      if (sound) sound.unloadAsync();
+    };
+  }, []);
+
+  useEffect(() => {
     const fetchPlaylists = async () => {
       try {
-        const response = await getAllPlaylists();
+        const response = await getAllPlaylists(); // Kiểm tra kiểu dữ liệu
+
         if (response.err === 0) {
-          setPlaylistData(response.playlist);
+          setPlaylistsData(response.playlist);
         } else {
           setError('Lỗi khi lấy danh sách playlist: ' + response.mes);
         }
@@ -52,26 +65,22 @@ const Music: React.FC<MusicProps> = ({ onTabPress, onCurrentSongUrlChange }) => 
     fetchPlaylists();
   }, []);
 
-  useEffect(() => {
-    return () => {
-      if (sound) sound.unloadAsync();
-    };
-  }, [sound]);
-
   const loadAndPlaySong = async (url: string) => {
-    if (sound) await sound.unloadAsync();
-
-    const newSound = new Audio.Sound();
-    setSound(newSound);
-    try {
-      await newSound.loadAsync({ uri: url }); 
-      await newSound.playAsync();
-      setIsPlaying(true);
-      onCurrentSongUrlChange(url);
-    } catch (error) {
-      console.error('Lỗi khi phát nhạc:', error);
-      // Xử lý lỗi, ví dụ: hiện thông báo cho người dùng
-      setError("Không thể phát nhạc"); 
+    if (sound) {
+      try {
+        // Giải phóng âm thanh trước nếu cần
+        await sound.unloadAsync(); 
+        // Tải và phát bài hát mới
+        await sound.loadAsync({ uri: url }); 
+        await sound.playAsync();
+        setIsPlaying(true);
+        onCurrentSongUrlChange(url);
+      } catch (error) {
+        console.error('Lỗi khi phát nhạc:', error);
+        setError("Không thể phát nhạc");
+      }
+    } else {
+      console.warn("Âm thanh chưa được tải");
     }
   };
 
@@ -88,7 +97,7 @@ const Music: React.FC<MusicProps> = ({ onTabPress, onCurrentSongUrlChange }) => 
         console.log('Bài hát đầu tiên trong playlist:', songs[0]);
         
         // Đảm bảo `url` được truyền đúng
-        loadAndPlaySong(songs[0].Url); 
+        loadAndPlaySong(songs[0].url); 
       } else {
         console.error('Playlist này không có bài hát nào.');
       }
@@ -114,7 +123,7 @@ const Music: React.FC<MusicProps> = ({ onTabPress, onCurrentSongUrlChange }) => 
     if (currentSongIndex < currentPlaylist.length - 1) {
       const nextIndex = currentSongIndex + 1;
       setCurrentSongIndex(nextIndex);
-      loadAndPlaySong(currentPlaylist[nextIndex].Url);
+      loadAndPlaySong(currentPlaylist[nextIndex].url);
     } else {
       setIsPlaying(false);
     }
@@ -128,7 +137,7 @@ const Music: React.FC<MusicProps> = ({ onTabPress, onCurrentSongUrlChange }) => 
         <Text style={styles.errorText}>{error}</Text>
       ) : (
         <View style={styles.playlistsList}>
-          {playlistData.map((playlist) => (
+          {playlistsData.map((playlist) => (
             <TouchableOpacity
               key={playlist.id}
               style={styles.playlistItem}
@@ -152,8 +161,8 @@ const Music: React.FC<MusicProps> = ({ onTabPress, onCurrentSongUrlChange }) => 
           <TouchableOpacity onPress={handleNextSong} style={styles.nextButton}>
             <Text style={styles.nextText}>Next</Text>
           </TouchableOpacity>
-          <Text style={styles.songTitle}>{currentPlaylist[currentSongIndex]?.Title}</Text>
-          <Text style={styles.songArtist}>{currentPlaylist[currentSongIndex]?.Artist}</Text>
+          <Text style={styles.songTitle}>{currentPlaylist[currentSongIndex]?.title}</Text>
+          <Text style={styles.songArtist}>{currentPlaylist[currentSongIndex]?.artist}</Text>
         </View>
       )}
     </View>
