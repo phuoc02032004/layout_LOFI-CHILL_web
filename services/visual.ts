@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const apiUrl = 'http://192.168.2.177:3002/api';
+const apiUrl = 'http://10.50.2.157:3002/api';
 
 interface Visual {
   id: string;

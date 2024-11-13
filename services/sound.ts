@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const apiUrl = 'http://192.168.2.177:3002/api/v1/soundEffect';
+const apiUrl = 'http://10.50.2.157:3002/api/v1/soundEffect';
 
 interface Sound {
   id: string;

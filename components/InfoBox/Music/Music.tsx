@@ -21,7 +21,7 @@ interface Playlist {
 interface Song {
   id: string;
   title: string; 
-  artist: string; 
+  ArtistId: string; 
   url: string; 
   urlImg: string; 
 }
@@ -36,11 +36,9 @@ const Music: React.FC<MusicProps> = ({ onTabPress, onCurrentSongUrlChange }) => 
   const [sound, setSound] = useState<Audio.Sound | null>(null);
 
   useEffect(() => {
-    // Tạo đối tượng Audio.Sound khi component được mount
     const newSound = new Audio.Sound();
     setSound(newSound);
     return () => {
-      // Giải phóng âm thanh khi component bị unmount
       if (sound) sound.unloadAsync();
     };
   }, []);
@@ -48,7 +46,7 @@ const Music: React.FC<MusicProps> = ({ onTabPress, onCurrentSongUrlChange }) => 
   useEffect(() => {
     const fetchPlaylists = async () => {
       try {
-        const response = await getAllPlaylists(); // Kiểm tra kiểu dữ liệu
+        const response = await getAllPlaylists(); 
 
         if (response.err === 0) {
           setPlaylistsData(response.playlist);
@@ -68,9 +66,7 @@ const Music: React.FC<MusicProps> = ({ onTabPress, onCurrentSongUrlChange }) => 
   const loadAndPlaySong = async (url: string) => {
     if (sound) {
       try {
-        // Giải phóng âm thanh trước nếu cần
         await sound.unloadAsync(); 
-        // Tải và phát bài hát mới
         await sound.loadAsync({ uri: url }); 
         await sound.playAsync();
         setIsPlaying(true);
@@ -96,7 +92,6 @@ const Music: React.FC<MusicProps> = ({ onTabPress, onCurrentSongUrlChange }) => 
         setCurrentSongIndex(0);
         console.log('Bài hát đầu tiên trong playlist:', songs[0]);
         
-        // Đảm bảo `url` được truyền đúng
         loadAndPlaySong(songs[0].url); 
       } else {
         console.error('Playlist này không có bài hát nào.');
@@ -162,7 +157,7 @@ const Music: React.FC<MusicProps> = ({ onTabPress, onCurrentSongUrlChange }) => 
             <Text style={styles.nextText}>Next</Text>
           </TouchableOpacity>
           <Text style={styles.songTitle}>{currentPlaylist[currentSongIndex]?.title}</Text>
-          <Text style={styles.songArtist}>{currentPlaylist[currentSongIndex]?.artist}</Text>
+          <Text style={styles.songArtist}>{currentPlaylist[currentSongIndex]?.ArtistId}</Text>
         </View>
       )}
     </View>
