@@ -1,12 +1,12 @@
 import axios from 'axios';
 
-const apiUrl = 'http://10.50.2.157:3002/api/v1/soundEffect';
+const apiUrl = 'http://192.168.2.177:3002/api/v1/soundEffect';
 
 interface Sound {
   id: string;
   Description: string;
   filePath: string;
-  Title: string;
+  title: string;
   url: string;
   createdAt: {
     _seconds: number;
@@ -27,7 +27,7 @@ interface SoundEffectResponse {
 const createSound = async (title: string, description: string, soundFile: { uri: string; type: string; name: string }) => {
   try {
     const formData = new FormData();
-    formData.append('Title', title);
+    formData.append('title', title);
     formData.append('Description', description);
 
     const response = await fetch(soundFile.uri);
@@ -60,7 +60,7 @@ const updateSound = async (id: string, title?: string, description?: string, sou
   try {
     const formData = new FormData();
     if (title) {
-      formData.append('Title', title);
+      formData.append('title', title);
     }
     if (description) {
       formData.append('Description', description);

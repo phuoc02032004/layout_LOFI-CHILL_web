@@ -6,7 +6,6 @@ import { Audio } from 'expo-av';
 
 interface MusicProps {
   onTabPress: (title: string, content: React.ReactNode) => void;
-  onCurrentSongUrlChange: (url: string) => void; 
 }
 
 interface Playlist {
@@ -20,13 +19,13 @@ interface Playlist {
 
 interface Song {
   id: string;
-  title: string; 
-  ArtistId: string; 
-  url: string; 
-  urlImg: string; 
+  title: string;
+  artist: string;
+  url: string;
+  img: string;
 }
 
-const Music: React.FC<MusicProps> = ({ onTabPress, onCurrentSongUrlChange }) => {
+const Music: React.FC<MusicProps> = ({ onTabPress }) => {
   const [playlistsData, setPlaylistsData] = useState<Playlist[]>([]);
   const [currentPlaylist, setCurrentPlaylist] = useState<Song[]>([]);
   const [currentSongIndex, setCurrentSongIndex] = useState(0);
@@ -66,13 +65,15 @@ const Music: React.FC<MusicProps> = ({ onTabPress, onCurrentSongUrlChange }) => 
   const loadAndPlaySong = async (url: string) => {
     if (sound) {
       try {
+        console.log("URL:", url); // Log URL
+        console.log("Sound:", sound); // Log sound
+  
         await sound.unloadAsync(); 
-        await sound.loadAsync({ uri: url }); 
+        await sound.loadAsync({ uri: url });
         await sound.playAsync();
         setIsPlaying(true);
-        onCurrentSongUrlChange(url);
       } catch (error) {
-        console.error('Lỗi khi phát nhạc:', error);
+        console.error('Lỗi khi phát nhạc:', error); 
         setError("Không thể phát nhạc");
       }
     } else {
@@ -84,15 +85,26 @@ const Music: React.FC<MusicProps> = ({ onTabPress, onCurrentSongUrlChange }) => 
     console.log('Playlist được chọn có ID:', playlistId);
   
     try {
-      const songs = await playSong(playlistId);
-      console.log('Danh sách bài hát trong playlist:', songs);
+      let songs = await playSong(playlistId);
+      console.log('Danh sách bài hát trong playlist trước khi chuẩn hóa:', songs);
+  
+      songs = songs.map((song: any) => ({
+        ...song,
+        url: song.Url, 
+      }));
+  
+      console.log('Danh sách bài hát sau khi chuẩn hóa:', songs);
   
       if (songs.length > 0) {
         setCurrentPlaylist(songs);
         setCurrentSongIndex(0);
         console.log('Bài hát đầu tiên trong playlist:', songs[0]);
-        
-        loadAndPlaySong(songs[0].url); 
+        console.log('url', songs[0].url); 
+        if (songs[0] && songs[0].url) { 
+          loadAndPlaySong(songs[0].url); 
+        } else {
+          console.error('Bài hát đầu tiên không có URL.');
+        }
       } else {
         console.error('Playlist này không có bài hát nào.');
       }
@@ -101,6 +113,7 @@ const Music: React.FC<MusicProps> = ({ onTabPress, onCurrentSongUrlChange }) => 
     }
   };
   
+
   const handlePlayPause = async () => {
     if (sound) { 
       if (isPlaying) {
@@ -157,7 +170,7 @@ const Music: React.FC<MusicProps> = ({ onTabPress, onCurrentSongUrlChange }) => 
             <Text style={styles.nextText}>Next</Text>
           </TouchableOpacity>
           <Text style={styles.songTitle}>{currentPlaylist[currentSongIndex]?.title}</Text>
-          <Text style={styles.songArtist}>{currentPlaylist[currentSongIndex]?.ArtistId}</Text>
+          <Text style={styles.songArtist}>{currentPlaylist[currentSongIndex]?.artist}</Text>
         </View>
       )}
     </View>

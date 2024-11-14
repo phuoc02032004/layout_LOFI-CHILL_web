@@ -5,11 +5,12 @@ import { getAllSound } from '@/services/sound';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Audio } from 'expo-av';
 
+// Interface for sound data
 interface Sound {
   id: string;
   Description: string;
   filePath: string;
-  Title: string;
+  title: string;
   url: string;
   createdAt: {
     _seconds: number;
@@ -22,11 +23,13 @@ interface Sound {
 }
 
 const Sounds: React.FC = () => {
+  // State variables
   const [soundsData, setSoundsData] = useState<Sound[]>([]);
   const [soundVolumes, setSoundVolumes] = useState<{ [key: string]: number }>({});
   const [playingSounds, setPlayingSounds] = useState<string[]>([]);
   const [soundPlayers, setSoundPlayers] = useState<{ [key: string]: Audio.Sound }>({});
 
+  // Fetch sounds data and load saved volumes on component mount
   useEffect(() => {
     const fetchSoundsData = async () => {
       try {
@@ -50,6 +53,7 @@ const Sounds: React.FC = () => {
     loadVolumes();
   }, []);
 
+  // Handle volume change for a sound
   const handleVolumeChange = (id: string, value: number) => {
     setSoundVolumes(prevVolumes => {
       const updatedVolumes = { ...prevVolumes, [id]: value };
@@ -57,38 +61,35 @@ const Sounds: React.FC = () => {
       return updatedVolumes;
     });
 
+    // Update the sound player's volume
     soundPlayers[id]?.setVolumeAsync(value);
   };
 
+  // Handle play/pause functionality for a sound
   const handlePlayPause = async (url: string) => {
     try {
       const isPlaying = playingSounds.includes(url);
       let sound: Audio.Sound = soundPlayers[url];
 
       if (isPlaying) {
+        // Pause the sound if it's playing
         if (sound) {
           await sound.pauseAsync();
           console.log('Paused sound:', url);
           setPlayingSounds(prevSounds => prevSounds.filter(s => s !== url));
         }
       } else {
+        // Create a new sound player or use the existing one
         if (!sound) {
           sound = new Audio.Sound();
           await sound.loadAsync({ uri: url });
-
-          sound.setOnPlaybackStatusUpdate(async (status) => {
-            if (status.isLoaded && status.didJustFinish) {
-              await sound.stopAsync();
-              await sound.setPositionAsync(0);
-              setPlayingSounds(prevSounds => prevSounds.filter(s => s !== url));
-              console.log('Sound finished and reset:', url);
-            }
-          });
-
+          await sound.playAsync(); // Start playing immediately
           setSoundPlayers(prevPlayers => ({ ...prevPlayers, [url]: sound }));
+        } else {
+          // If sound player exists, just play it
+          await sound.playAsync();
         }
 
-        await sound.playAsync();
         console.log('Playing sound:', url);
         setPlayingSounds(prevSounds => [...prevSounds, url]);
       }
@@ -97,12 +98,13 @@ const Sounds: React.FC = () => {
     }
   };
 
+  // Render the sounds list
   return (
     <View style={styles.container}>
       {soundsData.length > 0 ? (
         soundsData.map(sound => (
           <View key={sound.id} style={styles.soundItem}>
-            <Text style={styles.soundName}>{sound.Title}</Text>
+            <Text style={styles.soundName}>{sound.title}</Text>
             <TouchableOpacity onPress={() => handlePlayPause(sound.url)}>
               <Text style={styles.playPauseButton}>
                 {playingSounds.includes(sound.url) ? 'Pause' : 'Play'}
