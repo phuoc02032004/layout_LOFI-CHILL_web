@@ -18,6 +18,7 @@ import { GiSoundWaves } from "react-icons/gi";
 import { RiPlayListFill } from "react-icons/ri";
 import { IoChatboxEllipses } from "react-icons/io5";
 import { FaHeart } from "react-icons/fa";
+import History from '../InfoBox/History/History';
 
 const NavigationBar = ({ showInitially, onBackgroundChange }) => {
   const [activeButton, setActiveButton] = useState(null);
@@ -170,7 +171,14 @@ const NavigationBar = ({ showInitially, onBackgroundChange }) => {
         <button className="nav-item" onClick={() => handleClick('History')}>
           <RiPlayListFill /> History
           {activeButton === 'History' && (
-            <InfoBox title="History" content="Recently played tracks by you."
+            <InfoBox 
+            title="History" 
+            content={
+              <div>
+                <p>Select any atmosphere to make it more cozy.</p>
+                <History />
+              </div>
+            }
               onClose={handleClose} />
           )}
         </button>
