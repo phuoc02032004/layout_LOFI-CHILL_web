@@ -70,12 +70,12 @@ function SongPage_ad() {
     try {
       console.log(
         "Deleting song with id:",
-        songToDelete._id,
+        songToDelete.id,
         "from playlist:",
         songToDelete.idPlaylist
       );
-      await deleteSong(songToDelete.idPlaylist, songToDelete._id);
-      setSongs(songs.filter((song) => song._id !== songToDelete._id));
+      await deleteSong(songToDelete.idPlaylist, songToDelete.id);
+      setSongs(songs.filter((song) => song.id !== songToDelete.id));
       handleCloseModal();
     } catch (error) {
       console.error("Error deleting song:", error);
