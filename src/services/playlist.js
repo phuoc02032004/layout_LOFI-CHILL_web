@@ -21,9 +21,7 @@ export const createPlaylist = ({ Title, Description }) => new Promise(async (res
 
         // Tạo playlist mới trong Firestore
         const newPlaylistRef = playlistsRef.doc();
-
-        // Truy xuất lại dữ liệu playlist vừa tạo
-        const createdPlaylist = await newPlaylistRef.get();
+        const playlistId = newPlaylistRef.id; // Lấy ID của playlist vừa tạo
 
         // Tạo thư mục mới trong Firebase Storage dựa trên title
         const bucket = storage.bucket(process.env.BUCKET);
@@ -33,6 +31,7 @@ export const createPlaylist = ({ Title, Description }) => new Promise(async (res
         // Tạo một file trống để đảm bảo thư mục được tạo
         await file.save('');
 
+        // Lưu dữ liệu playlist vào Firestore
         await newPlaylistRef.set({
             Title,
             Description,
@@ -41,10 +40,16 @@ export const createPlaylist = ({ Title, Description }) => new Promise(async (res
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         });
 
+        // Trả về dữ liệu playlist vừa tạo
         return resolve({
             err: 0,
             mes: 'Create playlist successfully',
-            playlist: createdPlaylist.data() // Lấy dữ liệu của playlist vừa tạo
+            playlist: {
+                id: playlistId, // Bao gồm ID
+                Title,
+                Description,
+                filePathPlaylist: folderName,
+            },
         });
     } catch (error) {
         reject(error);
