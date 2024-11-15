@@ -9,6 +9,7 @@ import {
 import { getAllArtist } from "../../../services/artist";
 import { getAllPlaylists } from "../../../services/playlist";
 import NavbarAD from "../NavbarAdmin/Navbar";
+import GenreM from "../GenreManager/GenreM";
 
 function SongPage_ad() {
   const [songs, setSongs] = useState([]);
@@ -335,6 +336,7 @@ function SongPage_ad() {
             </div>
           </div>
         )}
+        <GenreM />
       </div>
     </div>
   );

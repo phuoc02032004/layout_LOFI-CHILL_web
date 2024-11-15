@@ -12,14 +12,17 @@ const createPlaylist = async (title, description) => {
         });
 
         console.log('Playlist Created:', response.data);
+        return response.data.playlist; // Trả về playlist từ API
     } catch (error) {
         if (error.response) {
-            console.error('Error creating Playlist:', error.response.data);  // Log detailed server response
+            console.error('Error creating Playlist:', error.response.data);  // Log chi tiết lỗi từ server
         } else {
             console.error('Error creating Playlist:', error.message);
         }
+        throw error; // Quăng lỗi để xử lý ở nơi gọi hàm
     }
 };
+
 
 
 const getAllPlaylists = async () => {
