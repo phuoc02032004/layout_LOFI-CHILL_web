@@ -1,8 +1,14 @@
 import axios from "axios";
 
-const getNewSong = async () => {
+const getNewSong = async (accessToken) => {
     try {
-        const response = await axios.get('http://localhost:3002/api/v1/song/getNewSong')
+        const response = await axios.get('http://localhost:3002/api/v1/song/getNewSong', {
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            },
+            withCredentials: true,
+        }
+        );
 
         console.log(response.data);
         const data = response.data.song.map(song => ({
@@ -11,7 +17,7 @@ const getNewSong = async () => {
         }));
         return data;
     } catch (error) {
-        console.error('Error fetching music:', error);
+        console.error('Error fetching music:', error.response || error.message);
         throw error;
     }
 };
@@ -41,10 +47,10 @@ const getAllSong = async () => {
             id: song.id,
             title: song.Title,
             image: song.urlImg,
-            idPlaylist: song.idPlaylist 
+            idPlaylist: song.idPlaylist
         }));
 
-        console.log('check data',data)
+        console.log('check data', data)
         return data;
     } catch (error) {
         console.error('Error fetching music:', error);
@@ -52,7 +58,7 @@ const getAllSong = async () => {
     }
 };
 
-const createSong = async (ArtistId, idPlaylist, title, Description, imgFile, musicFile ) => {
+const createSong = async (ArtistId, idPlaylist, title, Description, imgFile, musicFile) => {
     try {
         const formData = new FormData();
         formData.append('Title', title);
@@ -106,4 +112,4 @@ const updateSong = async (ArtistId, idPlaylist, id, title, Description, imgFile,
 
 
 
-export { getNewSong, playSong, getAllSong, createSong, deleteSong, updateSong};
+export { getNewSong, playSong, getAllSong, createSong, deleteSong, updateSong };

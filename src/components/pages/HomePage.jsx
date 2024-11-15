@@ -84,30 +84,30 @@ export default function HomePage() {
 
   useEffect(() => {
     const carouselElement = carouselRef.current; // Lưu giá trị của carouselRef.current vào một biến cục bộ
-    
+
     const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
         carouselElement.classList.add('show');
         introduceRef.current.classList.add('slide-out');
       }
     });
-  
+
     if (carouselElement) {
       observer.observe(carouselElement);
     }
-  
+
     return () => {
       if (carouselElement) {
         observer.unobserve(carouselElement); // Dùng biến cục bộ thay vì carouselRef.current
       }
     };
   }, []);
-  
+
 
   useEffect(() => {
     const fetchMusic = async () => {
       try {
-        const accessToken = Cookies.get('accessToken'); // Không cần await
+        const accessToken = Cookies.get('accessToken');
         if (!accessToken) {
           console.error('No access token found in cookie!');
           return;
