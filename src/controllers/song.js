@@ -1,13 +1,13 @@
 import { internalServerError } from '../middleware/handle_error.js';
 import * as services from '../services/index.js';
 import joi from 'joi'
-import { Title, Description, Artist } from '../helper/joi_schema.js';
+import { Title, Description, ArtistId } from '../helper/joi_schema.js';
 
 // Create Song
 export const createSong = async (req, res) => {
     try {
         const { idPlaylist } = req.params;
-        const { error } = joi.object({ Title, Description, Artist }).validate(req.body);
+        const { error } = joi.object({ Title, Description, ArtistId }).validate(req.body);
         if (error) return res.status(400).json({ error: error.details[0].message });
 
         if (!idPlaylist) {

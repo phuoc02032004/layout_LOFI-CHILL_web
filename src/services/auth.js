@@ -8,8 +8,8 @@ import { collection, query, where, getDocs, updateDoc, serverTimestamp, addDoc, 
 import { signInWithEmailAndPassword } from "firebase/auth";
 admin.initializeApp();
 
-function generateAccessToken(user, isVip) {
-    const userPayload = { ...user, isVip }
+function generateAccessToken(user, isVip, role) {
+    const userPayload = { ...user, isVip, role }
     return jwt.sign(userPayload, process.env.JWT_SECRET, { expiresIn: '5m' })
 }
 
@@ -94,7 +94,7 @@ export const login = ({ email, password }) => new Promise(async (resolve, reject
             return reject({ status: 401, error: 'Please verify your email address' });
         }
 
-        const userPayloadAccess = { email: userData.email, isVip: userData.isVip };
+        const userPayloadAccess = { email: userData.email, isVip: userData.isVip, role: userData.role };
         const userPayloadRefresh = { email: userData.email };
         const accessToken = generateAccessToken(userPayloadAccess);
         const refreshToken = generateRefreshToken(userPayloadRefresh);
@@ -136,7 +136,7 @@ export const refreshAccessToken = (refreshToken) => new Promise(async (resolve, 
                 return reject({ status: 403, message: 'Invalid refresh token' });
             }
 
-            const userPayload = { email: user.email };
+            const userPayload = { email: user.email, isVip: user.isVip, role: user.role };
             const newAccessToken = generateAccessToken(userPayload);
 
             return resolve({ accessToken: newAccessToken });

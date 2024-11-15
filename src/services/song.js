@@ -6,7 +6,7 @@ const db = admin.firestore();
 const bucket = admin.storage().bucket(process.env.BUCKET);
 
 // Post a Song
-export const createSong = ({ idPlaylist, ArtistID, Title, Description }, fileMusic, fileImg) => new Promise(async (resolve, reject) => {
+export const createSong = ({ idPlaylist, ArtistId, Title, Description }, fileMusic, fileImg) => new Promise(async (resolve, reject) => {
     try {
         const songRef = db.collection('Music').doc(idPlaylist).collection('Songs');
 
@@ -46,6 +46,7 @@ export const createSong = ({ idPlaylist, ArtistID, Title, Description }, fileMus
 
         // Thêm bài hát vào Firestore
         await songRef.add({
+            ArtistId: ArtistId,
             Title,
             Url: url,
             Description: Description,
@@ -120,7 +121,8 @@ export const getAllSong = () => new Promise(async (resolve, reject) => {
             if (!songsSnapshot.empty) {
                 songsSnapshot.forEach(songDoc => {
                     allSongs.push({
-                        id: playlistId,
+                        idPlaylist: playlistId,
+                        id: songDoc.id,
                         ...songDoc.data()
                     });
                 });
