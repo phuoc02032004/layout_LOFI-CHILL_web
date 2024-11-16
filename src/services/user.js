@@ -93,5 +93,3 @@ export const deleteUser = ({ id }) => new Promise(async (resolve, reject) => {
         return { status: 500, message: 'Error delete user', error };
     }
 });
-
-

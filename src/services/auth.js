@@ -4,12 +4,13 @@ import { sendVerificationEmail } from '../utils/email.js';
 import jwt from 'jsonwebtoken';
 import { auth, db } from '../config/firebaseConfig.js';
 import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
-import { collection, query, where, getDocs, updateDoc, serverTimestamp, addDoc, setDoc, doc } from "firebase/firestore";
+import { collection, query, where, getDocs, updateDoc, serverTimestamp, addDoc, setDoc, doc, getDoc } from "firebase/firestore";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { refreshToken } from 'firebase-admin/app';
 admin.initializeApp();
 
-function generateAccessToken(user, isVip, role) {
-    const userPayload = { ...user, isVip, role }
+function generateAccessToken(user) {
+    const userPayload = { ...user }
     return jwt.sign(userPayload, process.env.JWT_SECRET, { expiresIn: '5m' })
 }
 
@@ -72,6 +73,7 @@ export const login = ({ email, password }) => new Promise(async (resolve, reject
         }
 
         let userData = querySnapshot.docs[0].data();
+        const userId = querySnapshot.docs[0].id;
         const isMatch = await bcrypt.compare(password, userData.password);
 
         if (!isMatch) {
@@ -94,8 +96,8 @@ export const login = ({ email, password }) => new Promise(async (resolve, reject
             return reject({ status: 401, error: 'Please verify your email address' });
         }
 
-        const userPayloadAccess = { email: userData.email, isVip: userData.isVip, role: userData.role };
-        const userPayloadRefresh = { email: userData.email };
+        const userPayloadAccess = { id: userId, isVip: userData.isVip, role: userData.role };
+        const userPayloadRefresh = { id: user.id };
         const accessToken = generateAccessToken(userPayloadAccess);
         const refreshToken = generateRefreshToken(userPayloadRefresh);
 
@@ -118,25 +120,38 @@ export const login = ({ email, password }) => new Promise(async (resolve, reject
 });
 
 // Xử lý refresh token để cấp mới accessToken
-export const refreshAccessToken = (refreshToken) => new Promise(async (resolve, reject) => {
+export const refreshAccessToken = (id, refreshToken) => new Promise(async (resolve, reject) => {
     try {
         if (!refreshToken) return reject({ status: 401, message: 'Refresh token is required' });
 
-        // Kiểm tra refreshToken trong cơ sở dữ liệu
-        const userRef = db.collection('users');
-        const snapshot = await userRef.where('refreshToken', '==', refreshToken).get();
+        // Truy xuất tài liệu bằng ID
+        const userRef = db.collection('users').doc(id);
+        const userDoc = await userRef.get();
 
-        if (snapshot.empty) {
-            return reject({ status: 403, message: 'refresh token is empty' });
+        // Kiểm tra nếu tài liệu không tồn tại
+        if (!userDoc.exists) {
+            return reject({ status: 404, message: 'User not found' });
+        }
+
+        const userData = userDoc.data();
+
+        // Kiểm tra refreshToken
+        if (userData.refreshToken !== refreshToken) {
+            return reject({ status: 403, message: 'Invalid refresh token' });
         }
 
         // Xác minh refreshToken
-        jwt.verify(refreshToken, process.env.REFRESH_JWT_SECRET, (err, user) => {
+        jwt.verify(refreshToken, process.env.REFRESH_JWT_SECRET, (err, decoded) => {
             if (err) {
                 return reject({ status: 403, message: 'Invalid refresh token' });
             }
 
-            const userPayload = { email: user.email, isVip: user.isVip, role: user.role };
+            // Tạo payload cho AccessToken
+            const userPayload = {
+                id: id,
+                isVip: userData.isVip || false,
+                role: userData.role || 'user',
+            };
             const newAccessToken = generateAccessToken(userPayload);
 
             return resolve({ accessToken: newAccessToken });
@@ -145,4 +160,57 @@ export const refreshAccessToken = (refreshToken) => new Promise(async (resolve, 
         console.error("Error refreshing token:", error);
         reject({ status: 500, message: 'Error refreshing token', error });
     }
-}).catch(error => error);
+});
+
+export const logOut = ({ id }) => new Promise(async (resolve, reject) => {
+    try {
+        const userRef = doc(db, 'users', id); // Correctly create the document reference
+        const snapshot = await getDoc(userRef); // Use getDoc to fetch the document
+
+        if (!snapshot.exists()) {
+            return resolve({
+                status: 404,
+                message: 'User not found',
+            });
+        }
+
+        await updateDoc(userRef, {
+            refreshToken: null, // Update the refresh token to null
+        });
+
+        resolve({ status: 200, message: 'Logged out successfully' });
+    } catch (error) {
+        console.error('Error in Log Out service:', error);
+        reject({ status: 500, message: 'Server error', error });
+    }
+});
+
+// Reset password
+export const resetPassword = ({ id, password }) => new Promise(async (resolve, reject) => {
+    try {
+        const userRef = doc(db, 'users', id);
+        const userSnapshot = await getDoc(userRef);
+
+        if (!userSnapshot.exists()) {
+            return reject({ status: 404, message: 'User not found' });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        await updateDoc(userRef, {
+            password: hashedPassword,
+            updatedAt: serverTimestamp(),
+        });
+
+        //cập nhật mật khẩu trong Firebase Authentication
+        await admin.auth().updateUser(id, { password });
+
+        resolve({
+            err: 0,
+            mes: 'Password has been reset successfully',
+        });
+    } catch (error) {
+        console.error("Error resetting password:", error);
+        return reject({ status: 500, message: 'Error resetting password', error });
+    }
+});

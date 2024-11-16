@@ -48,12 +48,47 @@ export const login = async (req, res) => {
 
 export const refreshToken = async (req, res) => {
     try {
-        const refreshToken = req.body.token;
-        if (!refreshToken) res.sendStatus(401);
-        const response = await services.auth.refreshAccessToken(refreshToken);
+        const { id, token: refreshToken } = req.body;
+        if (!refreshToken || !id) {
+            return res.status(400).json({ message: 'ID and refresh token are required' });
+        }
+
+        const response = await refreshAccessToken(id, refreshToken);
         return res.status(200).json(response);
     } catch (error) {
         console.error('Error in Refresh Token controller:', error);
+        return res.status(error?.status || 500).json({
+            message: error?.message || 'Internal Server Error',
+        });
+    }
+};
+
+export const logOut = async (req, res) => {
+    try {
+        const { userId } = req.body;
+
+        if (!userId) {
+            return res.status(400).json({ message: 'User ID is required.' });
+        }
+
+        const response = await services.auth.logOut({ id: userId });
+        return res.status(200).json(response);
+    } catch (error) {
+        console.error('Error in Log Out controller:', error);
         return res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+
+export const resetPassword = async (req, res) => {
+    try {
+        const { userId, password } = req.body;
+        if (!userId || !password) {
+            return res.status(400).json({ message: 'User ID and Password is required.' });
+        }
+        const response = await services.auth.resetPassword({ id: userId, password: password });
+        return res.status(200).json(response);
+    } catch (error) {
+        console.error('Error in Log Out controller:', error);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
+}

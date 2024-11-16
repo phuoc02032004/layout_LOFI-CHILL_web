@@ -7,4 +7,3 @@ export * as soundEffect from './soundEffect.js'
 export * as admin from './admin.js'
 export * as artist from './artist.js'
 export * as presets from './presets.js'
-// export { auth };
