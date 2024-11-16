@@ -33,6 +33,26 @@ const getAllArtist = async () => {
     }
 };
 
+const getSpecificArtist = async (artistId) => {
+    try {
+        const response = await axios.get(`http://localhost:3002/api/v1/artist/getSpecificArtist/${artistId}`);
+        if (response.data.err === 0) {
+            const artist = response.data.artist;
+            return {
+                id: artist.id,
+                name: artist.name,
+                description: artist.Description,
+                image: artist.urlImg,
+            };
+        } else {
+            throw new Error(response.data.mes || "Artist not found");
+        }
+    } catch (error) {
+        console.error('Error fetching specific artist:', error.response ? error.response.data : error.message);
+        throw error;
+    }
+};
+
 const updateArtist = async (id, name, Description, imgFile) => {
     try {
         const formData = new FormData();
@@ -71,4 +91,4 @@ const deleteArtist = async (artistId) => {
     }
 };
 
-export { createArtist, getAllArtist, updateArtist, deleteArtist };
+export { createArtist, getAllArtist, getSpecificArtist, updateArtist, deleteArtist };

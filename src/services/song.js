@@ -42,12 +42,15 @@ const playSong = async (playlistId) => {
 const getAllSong = async () => {
     try {
         const response = await axios.get('http://localhost:3002/api/v1/song/getAllSong')
-
+        console.log('Response data:', response.data);
         const data = response.data.map(song => ({
             id: song.id,
             title: song.Title,
             image: song.urlImg,
-            idPlaylist: song.idPlaylist
+            idPlaylist: song.idPlaylist,
+            description: song.Description,
+            ArtistId: song.ArtistId,
+            url: song.Url,
         }));
 
         console.log('check data', data)

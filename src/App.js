@@ -45,7 +45,7 @@ function App() {
           <Route path='/ArtistPage' element={<ArtistPage />} />
           <Route path='/ArtistPage/:id' element={<ArtistDetail  />} element={<ArtistDetailWrapper />} />
           <Route path='/SongPage' element={<SongPage />} />
-          <Route path='/SongPage/:id' element={<SongPage />} element={<SongDetailWrapper />} />
+          <Route path='/SongPage/:id' element={<SongDetail />} element={<SongDetailWrapper />} />
           <Route path='/ArtistPage_ad' element={<ArtistPage_ad />} />
         </Routes>
       </div>
