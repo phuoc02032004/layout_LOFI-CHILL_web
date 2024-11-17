@@ -81,14 +81,28 @@ export const logOut = async (req, res) => {
 
 export const resetPassword = async (req, res) => {
     try {
-        const { userId, password } = req.body;
-        if (!userId || !password) {
-            return res.status(400).json({ message: 'User ID and Password is required.' });
+        const { userId, password, passwordnew } = req.body;
+
+        // Kiểm tra đầu vào
+        if (!userId || !password || !passwordnew) {
+            return res.status(400).json({
+                message: 'User ID, current password, and new password are required.',
+            });
         }
-        const response = await services.auth.resetPassword({ id: userId, password: password });
+
+        // Gọi service để xử lý
+        const response = await services.auth.resetPassword({
+            id: userId,
+            password,
+            passwordnew,
+        });
+
         return res.status(200).json(response);
     } catch (error) {
-        console.error('Error in Log Out controller:', error);
-        return res.status(500).json({ error: 'Internal Server Error' });
+        console.error('Error in Reset Password controller:', error);
+        return res.status(500).json({
+            message: 'Internal Server Error',
+            error,
+        });
     }
-}
+};

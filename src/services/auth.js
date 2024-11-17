@@ -109,8 +109,9 @@ export const login = ({ email, password }) => new Promise(async (resolve, reject
         resolve({
             err: 0,
             mes: 'Log in successfully',
+            userId: userId,
             accessToken: accessToken,
-            refreshToken: refreshToken
+            refreshToken: refreshToken,
         });
 
     } catch (error) {
@@ -186,31 +187,37 @@ export const logOut = ({ id }) => new Promise(async (resolve, reject) => {
 });
 
 // Reset password
-export const resetPassword = ({ id, password }) => new Promise(async (resolve, reject) => {
+export const resetPassword = async ({ id, password, passwordnew }) => {
     try {
         const userRef = doc(db, 'users', id);
         const userSnapshot = await getDoc(userRef);
 
         if (!userSnapshot.exists()) {
-            return reject({ status: 404, message: 'User not found' });
+            throw { status: 404, message: 'User not found' };
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const userData = userSnapshot.data();
+        const isMatch = await bcrypt.compare(password, userData.password);
+
+        if (!isMatch) {
+            throw { status: 400, message: 'Mật khẩu hiện tại không đúng!' };
+        }
+
+        const hashedPassword = await bcrypt.hash(passwordnew, 10);
 
         await updateDoc(userRef, {
             password: hashedPassword,
             updatedAt: serverTimestamp(),
         });
 
-        //cập nhật mật khẩu trong Firebase Authentication
-        await admin.auth().updateUser(id, { password });
+        await admin.auth().updateUser(id, { password: passwordnew });
 
-        resolve({
-            err: 0,
-            mes: 'Password has been reset successfully',
-        });
+        return { err: 0, mes: 'Password has been reset successfully' };
     } catch (error) {
-        console.error("Error resetting password:", error);
-        return reject({ status: 500, message: 'Error resetting password', error });
+        console.error('Error resetting password:', error);
+        throw error.status
+            ? error
+            : { status: 500, message: 'Internal Server Error' };
     }
-});
+};
+

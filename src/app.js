@@ -33,6 +33,7 @@ morgan.token('sanitized-body', (req, res) => {
   const body = { ...req.body };
   if (body.password) {
     body.password = '******'; // Mask the password
+    body.passwordnew = '******';
   }
   return JSON.stringify(body);
 });
