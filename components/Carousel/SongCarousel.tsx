@@ -2,114 +2,146 @@ import {
   StyleSheet,
   Text,
   View,
-  ScrollView,
   Image,
   useWindowDimensions,
   TouchableOpacity,
+  FlatList,
+  ActivityIndicator,
 } from "react-native";
-import React, { useState } from "react";
-import Animated, { useSharedValue, useAnimatedStyle, useAnimatedScrollHandler, interpolate } from "react-native-reanimated";
+import React, { useState, useEffect } from "react";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { Song } from '@/data/SongData';
 import { useNavigation } from "expo-router";
+import { getNewSong } from '@/services/song';
+import { Provider as PaperProvider } from 'react-native-paper';
 
-type Props = {
-  itemSong: Song[];
-};
+
+interface Song {
+  id: string;
+  ArtistId: string;
+  Title: string;
+  Url: string;
+  Description: string;
+  urlImg: string;
+}
+
+interface Props {
+  accessToken: string;
+}
 
 type RootStackParamList = {
   SongDetailScreen: { song: Song };
   Songscreen: undefined;
 };
 
-type SongscreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Songscreen'>;
+type SongscreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  "Songscreen"
+>;
 
-const SongCarousel = ({ itemSong }: Props) => {
-  const [newData] = useState([{ key: "spacer-left" }, ...itemSong, { key: "spacer-right" }]);
+const SongCarousel = ({ accessToken }: Props) => {
   const { width } = useWindowDimensions();
   const SIZE = width * 0.7;
   const SPACER = (width - SIZE) / 2;
-  const x = useSharedValue(0);
-  const onScroll = useAnimatedScrollHandler({
-    onScroll: event => {
-      x.value = event.contentOffset.x;
-    }
-  });
-
   const navigation = useNavigation<SongscreenNavigationProp>();
+  const [songData, setSongData] = useState<Song[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [showDebugButton, setShowDebugButton] = useState(true);
+
+  useEffect(() => {
+    const fetchSongs = async () => {
+      try {
+        setIsLoading(true);
+        console.log("Fetching songs with accessToken:", accessToken);
+        const data = await getNewSong(accessToken);
+        console.log("Received data from getNewSong:", data);
+        if (data !== null) {
+          setSongData(data); // Only set data if it's not null
+        } else {
+          setError("Failed to fetch songs."); // Set an error if data is null
+        }
+      } catch (err: any) {
+        setError(err.message);
+        console.error("Error fetching songs:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    console.log("accessToken in useEffect:", accessToken);
+    if (accessToken) {
+      fetchSongs();
+    }
+  }, [accessToken]);
+
+  const renderItem = ({ item }: { item: Song }) => {
+    console.log("Rendering item:", item);
+    return (
+      <TouchableOpacity
+        onPress={() => navigation.navigate("SongDetailScreen", { song: item })}
+        style={{ width: SIZE, marginHorizontal: SPACER - 40 }}
+      >
+        <Image source={{ uri: item.urlImg }} style={styles.image} />
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>{item.Title}</Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  if (isLoading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
+
+  if (error) {
+    return <Text style={{ color: 'red' }}>{error}: {error}</Text>;
+  }
+
+  if (songData.length === 0) {
+    return <Text>No songs found</Text>;
+  }
+
 
   return (
-    <Animated.ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      bounces={false}
-      scrollEventThrottle={16}
-      snapToInterval={SIZE}
-      decelerationRate="fast"
-      onScroll={onScroll}
-    >
-      {newData.map((item, index) => {
-        if ('image' in item) {
-          const imageStyle = useAnimatedStyle(() => {
-            const scale = interpolate(
-              x.value,
-              [(index - 2) * SIZE, (index - 1) * SIZE, index * SIZE],
-              [0.8, 1, 0.8],
-            );
-            return {
-              transform: [{ scale }],
-            };
-          });
-
-          return (
-            <TouchableOpacity key={item.key} onPress={() => navigation.navigate('SongDetailScreen', { song: item })}>
-              <View style={{ width: SIZE }}>
-                <Animated.View style={[styles.imageContainer, imageStyle]}>
-                  <Image source={item.image} style={styles.image} />
-                </Animated.View>
-                <View style={styles.titleContainer}> 
-                  <Text style={styles.title}>{item.name}</Text> 
-                </View> 
-              </View>
-            </TouchableOpacity>
-          );
-        } else {
-          return <View style={{ width: SPACER }} key={index} />;
-        }
-      })}
-    </Animated.ScrollView>
+    <PaperProvider>
+      <FlatList
+        data={songData}
+        renderItem={renderItem}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        snapToAlignment="center"
+        snapToInterval={SPACER}
+        decelerationRate="normal"
+        contentContainerStyle={{ paddingHorizontal: 40 }}
+        keyExtractor={(item) => item.id}
+      />
+    </PaperProvider>
   );
 };
 
 export default SongCarousel;
 
 const styles = StyleSheet.create({
-  imageContainer: {
-    borderRadius: 34,
+  image: {
+    width: "100%",
+    height: 280,
+    aspectRatio: 1,
+    borderRadius: 20,
     overflow: "hidden",
-    position: 'relative', 
     borderWidth: 2,
     borderColor: 'rgba(225, 255, 255, 0.5)',
   },
-  image: {
-    width: "100%",
-    height: undefined,
-    aspectRatio: 1,
-  },
-  titleContainer: { 
-    position: 'absolute', 
-    bottom: 10, 
-    left: 70, 
-    right: 70, 
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
-    padding: 5, 
-    borderRadius: 10, 
-    alignItems: 'center', 
+  titleContainer: {
+    position: "absolute",
+    bottom: 10,
+    left: 20,
+    right: 20,
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    padding: 5,
+    borderRadius: 10,
   },
   title: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontFamily: 'Poppins-Bold',
-    textAlign: 'center', 
+    textAlign: "center",
   },
 });

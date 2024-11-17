@@ -1,12 +1,14 @@
-import React from 'react';
-import { View, Text, Image, ImageBackground, StyleSheet, ScrollView } from 'react-native';
+import React, { useRef, useState, useEffect } from 'react';
+import { View, Text, Image, ImageBackground, StyleSheet, ScrollView, Platform } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { Song, Songs } from '@/data/SongData';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import SongCarousel from '../Carousel/SongCarousel';
 import ArtistCarousel from '../Carousel/ArtistCarousel';
 import { ImageSlider, ImageSliderType } from '@/data/SliderData';
 import { FlatList } from 'react-native-gesture-handler';
 import SongTracks from '../SongTracks/SongTracks';
+import { BlurView } from 'expo-blur';
+
 
 type RootStackParamList = {
     SongDetailScreen: { song: Song };
@@ -14,42 +16,73 @@ type RootStackParamList = {
 
 type SongDetailScreenRouteProp = RouteProp<RootStackParamList, 'SongDetailScreen'>;
 
+interface Song {
+    id: string;
+    ArtistId: string;
+    Title: string;
+    Url: string;
+    Description: string;
+    urlImg: string;
+    filePath: string;
+    filePathImg: string;
+    createdAt: {
+      _seconds: number;
+      _nanoseconds: number;
+    };
+    updatedAt: {
+      _seconds: number;
+      _nanoseconds: number;
+    };
+  }
 
 
 const SongDetailScreen = () => {
     const route = useRoute<SongDetailScreenRouteProp>();
     const { song } = route.params;
-
+    const [accessToken, setAccessToken] = useState<string | null>(null);
     const getArtistById = (artistId: number) => ImageSlider.find(artist => artist.id === artistId);
+
+    if (!song) {
+      return <Text>No song data</Text>;
+    }
+    useEffect(() => {
+        const getAccessToken = async () => {
+          try {
+            const storedToken = await AsyncStorage.getItem('accessToken');
+            setAccessToken(storedToken);
+          } catch (error) {
+            console.error("Error getting access token:", error);
+          }
+        };
+        getAccessToken();
+      }, []);
 
     return (
         <ScrollView style={styles.scrollView}>
             <ImageBackground
-                source={song.image}
+                source={{ uri: song.urlImg }}
                 style={styles.backgroundImage}
                 resizeMode="cover"
             >
-                <View>
-                    <View style={styles.song_detail}>
-                        <View style={styles.overlay} />
-                        <Text style={styles.title}>{song.name}</Text>
-                        <Text style={styles.desc}>{song.description}</Text>
-                    </View>
-
+                <BlurView intensity={50} style={StyleSheet.absoluteFillObject} /> {/* Add BlurView */}
+                <View style={styles.song_detail}>
+                    <Text style={styles.title}>{song.Title}</Text>
+                    <Text style={styles.desc}>{song.Description}</Text>
                 </View>
             </ImageBackground>
 
             <View style={styles.container}>
                 <Text style={styles.textartist}>Name of Artist</Text>
                 <FlatList
-                    data={song.artistIds}
+                    data={[song.ArtistId]}
                     keyExtractor={(item) => item.toString()}
                     horizontal={true}
                     renderItem={({ item }) => {
-                        const artist = getArtistById(item);
+                        const artist = getArtistById(parseInt(item,10)); //Parse to integer
                         return artist ? (
                             <View style={styles.artistContainer}>
-                                <Image source={artist.image} style={styles.artistImage} />
+                                <Image source={{ uri: artist.image }}
+                                    style={styles.artistImage} />
                                 <Text style={styles.artistName}>{artist.name}</Text>
                             </View>
                         ) : null;
@@ -57,10 +90,10 @@ const SongDetailScreen = () => {
                     contentContainerStyle={styles.artistList}
                     showsHorizontalScrollIndicator={false}
                 />
-                <Text style={styles.newsong}>Song Tracks</Text>
-                <SongTracks />
+                {/* <Text style={styles.newsong}>Song Tracks</Text>
+                <SongTracks songData={song} /> */}
                 <Text style={styles.newsong}>NEW SONG</Text>
-                <SongCarousel itemSong={Songs} />
+                {accessToken && <SongCarousel accessToken={accessToken} />}
                 <Text style={styles.newsong}>ARTISTS</Text>
                 <ArtistCarousel itemArtist={ImageSlider} />
             </View>
@@ -75,63 +108,51 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     backgroundImage: {
-        height: 500, // Chiều cao của ảnh nền, điều chỉnh theo ý muốn
+        flex: 1, // Cover the entire screen
         justifyContent: 'center',
-    },
-    overlay: {
-        ...StyleSheet.absoluteFillObject,
-        backgroundColor: '#fff',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.7,
-        shadowRadius: 6,
-        elevation: 7,
-        opacity: 0.5,
-    },
-    artistList: {
-        marginVertical: 10,
-    },
-    textartist: {
-        color: '#fffff',
-        fontFamily: 'Poppins-Bold',
-        fontSize: 30,
-        fontWeight: 'bold',
-        marginBottom: 10,
-        paddingLeft: 5,
-    },
-
-    container: {
-        flex: 1,
-        padding: 20,
-        backgroundColor: '#FFF4B7',
+        height: 750,
     },
     song_detail: {
         alignItems: 'center',
         marginBottom: 20,
-
+        padding: 20, // Added padding for better spacing
     },
     title: {
         fontSize: 24,
         fontFamily: 'Poppins-Bold',
-        color: '#333',
+        color: '#fff', // Changed to white for better contrast
         textAlign: 'center',
         marginVertical: 10,
     },
     desc: {
         fontFamily: 'Poppins-Regular',
         fontSize: 16,
-        color: '#555',
+        color: '#fff', // Changed to white for better contrast
         textAlign: 'center',
         paddingHorizontal: 15,
         marginVertical: 10,
+    },
+    textartist: {
+        color: '#fff',
+        fontFamily: 'Poppins-Bold',
+        fontSize: 30,
+        fontWeight: 'bold',
+        marginBottom: 10,
+        paddingLeft: 5,
+    },
+    container: {
+        flex: 1,
+        backgroundColor: '#FFF4B7',
     },
     newsong: {
         fontFamily: 'Poppins-Bold',
         fontSize: 26,
         color: '#333',
-        marginTop: 30,
-        marginBottom: 10,
-        paddingLeft: 10,
+        marginTop: 20, //Added margin for better spacing
+        paddingLeft: 5,
+    },
+    artistList: {
+        marginVertical: 0,
     },
     artistContainer: {
         alignItems: 'center',

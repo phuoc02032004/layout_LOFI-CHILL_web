@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Slider from '@react-native-community/slider';
-import { getAllSound } from '@/services/sound';
+import { getAllSound, createSound, updateSound, deleteSound } from '@/services/sound';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Audio } from 'expo-av';
 
-// Interface for sound data
 interface Sound {
   id: string;
   Description: string;
   filePath: string;
-  title: string;
+  Title: string;
   url: string;
   createdAt: {
     _seconds: number;
@@ -22,19 +21,22 @@ interface Sound {
   };
 }
 
+interface ApiResponse<T> {
+  err: number;
+  mes: string;
+  data: T;
+}
+
 const Sounds: React.FC = () => {
-  // State variables
   const [soundsData, setSoundsData] = useState<Sound[]>([]);
   const [soundVolumes, setSoundVolumes] = useState<{ [key: string]: number }>({});
   const [playingSounds, setPlayingSounds] = useState<string[]>([]);
   const [soundPlayers, setSoundPlayers] = useState<{ [key: string]: Audio.Sound }>({});
 
-  // Fetch sounds data and load saved volumes on component mount
   useEffect(() => {
     const fetchSoundsData = async () => {
       try {
         const response = await getAllSound();
-        setSoundsData(response.soundEffect || []);
       } catch (error) {
         console.error('Error fetching sounds data:', error);
       }
@@ -53,40 +55,33 @@ const Sounds: React.FC = () => {
     loadVolumes();
   }, []);
 
-  // Handle volume change for a sound
   const handleVolumeChange = (id: string, value: number) => {
     setSoundVolumes(prevVolumes => {
       const updatedVolumes = { ...prevVolumes, [id]: value };
       AsyncStorage.setItem('soundVolumes', JSON.stringify(updatedVolumes));
       return updatedVolumes;
     });
-
-    // Update the sound player's volume
     soundPlayers[id]?.setVolumeAsync(value);
   };
 
-  // Handle play/pause functionality for a sound
   const handlePlayPause = async (url: string) => {
     try {
       const isPlaying = playingSounds.includes(url);
       let sound: Audio.Sound = soundPlayers[url];
 
       if (isPlaying) {
-        // Pause the sound if it's playing
         if (sound) {
           await sound.pauseAsync();
           console.log('Paused sound:', url);
           setPlayingSounds(prevSounds => prevSounds.filter(s => s !== url));
         }
       } else {
-        // Create a new sound player or use the existing one
         if (!sound) {
           sound = new Audio.Sound();
           await sound.loadAsync({ uri: url });
-          await sound.playAsync(); // Start playing immediately
+          await sound.playAsync();
           setSoundPlayers(prevPlayers => ({ ...prevPlayers, [url]: sound }));
         } else {
-          // If sound player exists, just play it
           await sound.playAsync();
         }
 
@@ -98,13 +93,12 @@ const Sounds: React.FC = () => {
     }
   };
 
-  // Render the sounds list
   return (
     <View style={styles.container}>
       {soundsData.length > 0 ? (
         soundsData.map(sound => (
           <View key={sound.id} style={styles.soundItem}>
-            <Text style={styles.soundName}>{sound.title}</Text>
+            <Text style={styles.soundName}>{sound.Title}</Text>
             <TouchableOpacity onPress={() => handlePlayPause(sound.url)}>
               <Text style={styles.playPauseButton}>
                 {playingSounds.includes(sound.url) ? 'Pause' : 'Play'}
@@ -145,6 +139,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'white',
     fontFamily: 'Poppins-Bold',
+    zIndex: 10,
   },
   playPauseButton: {
     padding: 5,
@@ -153,7 +148,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginRight: 10,
     color: 'white',
-    fontFamily: 'Poppins-Bold',
+    fontFamily: 'Poppins-Bold', 
+    zIndex: 5, 
   },
   sliderContainer: {
     flex: 1,

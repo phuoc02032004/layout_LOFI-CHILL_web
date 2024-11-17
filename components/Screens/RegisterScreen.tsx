@@ -113,7 +113,7 @@ const RegisterScreen = () => {
       source={require('../../assets/images/te.jpg')}
       style={[styles.backgroundImage, StyleSheet.absoluteFill]}
     >
-      <BlurView intensity={5} style={styles.blurContainer}>
+      <BlurView intensity={50} tint='dark' style={styles.blurContainer}>
         <View style={styles.formContainer}>
           <Text style={styles.title}>{isRegistered ? 'Verify Email' : 'Register'}</Text>
           {message && <Text style={styles.message}>{message}</Text>}

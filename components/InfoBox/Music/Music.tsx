@@ -23,6 +23,7 @@ interface Song {
   artist: string;
   url: string;
   img: string;
+  description: string;
 }
 
 const Music: React.FC<MusicProps> = ({ onTabPress }) => {
@@ -195,7 +196,7 @@ const styles = StyleSheet.create({
   },
   playlistImage: {
     width: '100%',
-    height: 150,
+    height: 50,
     borderRadius: 10,
     resizeMode: 'cover',
   },

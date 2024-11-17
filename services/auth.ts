@@ -8,7 +8,8 @@ const loginUser = async (email: string, password: string): Promise<any> => {
       email,
       password,
     });
-    return response.data;
+    console.log("Phản hồi API đăng nhập:", response.data); 
+    return response.data; 
   } catch (error) {
     throw error;
   }

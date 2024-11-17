@@ -51,30 +51,33 @@ const LoginScreen = () => {
 
   const handleSubmit = async () => {
     setError(null);
-
     if (!email || !password) {
       setError('Vui lòng nhập đầy đủ email và mật khẩu!');
       return;
     }
-
+  
     try {
       const response = await loginUser(email, password);
-      await AsyncStorage.setItem('token', response.accessToken);
-
-      if (rememberMe) {
-        await AsyncStorage.setItem('email', email);
-        await AsyncStorage.setItem('password', password);
-      }
-
-      navigation.navigate('HomeScreen');
-    } catch (error: any) {
-      console.error('Login failed:', error);
-      console.log(error.response ? error.response.data : error.message);
-      if (axios.isAxiosError(error) && error.response && error.response.data.message) {
-        setError(error.response.data.message);
+      console.log('Phản hồi từ loginUser:', response);
+  
+      if (response && response.err === 0 && response.accessToken) {
+        try {
+          await AsyncStorage.setItem('accessToken', response.accessToken); // Sửa key ở đây
+          if (rememberMe) {
+            await AsyncStorage.setItem('email', email);
+            await AsyncStorage.setItem('password', password);
+          }
+          navigation.navigate('HomeScreen'); // Di chuyển đến HomeScreen sau khi lưu token
+        } catch (storageError) {
+          console.error('Lỗi khi lưu token vào AsyncStorage:', storageError);
+          setError('Có lỗi khi lưu thông tin đăng nhập. Vui lòng thử lại!');
+        }
       } else {
-        setError('Có lỗi xảy ra, vui lòng thử lại!');
+        setError(response?.mes || 'Đăng nhập thất bại. Vui lòng thử lại!');
       }
+    } catch (error: any) {
+      console.error('Lỗi đăng nhập:', error);
+      setError('Có lỗi xảy ra khi đăng nhập. Vui lòng kiểm tra kết nối mạng và thử lại!');
     }
   };
 

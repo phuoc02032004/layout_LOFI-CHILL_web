@@ -12,19 +12,25 @@ import SongDetailScreen from '@/components/Screens/SongDetailScreen';
 import ArtistDetailscreen from '@/components/Screens/ArtistDetailscreen';
 
 const Stack = createNativeStackNavigator();
-
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [initialRouteName, setInitialRouteName] = useState<string | null>(null);
 
   useEffect(() => {
     const checkLoggedIn = async () => {
-      const token = await AsyncStorage.getItem('token');
+      const token = await AsyncStorage.getItem('accessToken'); 
       setIsLoggedIn(!!token);
+      setInitialRouteName(!!token ? "HomeScreen" : "LoginScreen");
     };
 
     checkLoggedIn();
   }, []);
 
+  useEffect(() => {
+    if (initialRouteName) {
+      console.log("isLoggedIn after check:", isLoggedIn);
+    }
+  }, [initialRouteName]);
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
         <NavigationContainer independent={true}>

@@ -1,240 +1,163 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, FlatList, TouchableOpacity, ImageBackground } from 'react-native';
-import { RouteProp, useRoute } from '@react-navigation/native';
-import { Songs, Song } from '@/data/SongData';
-import { ImageSlider, ImageSliderType } from '@/data/SliderData';
-import ArtistCarousel from '../Carousel/ArtistCarousel';
-import SongCarousel from '../Carousel/SongCarousel';
-import { Tracks } from '@/data/tracks'; 
-import SongTracks from '../SongTracks/SongTracks';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Image, StyleSheet, ScrollView, ActivityIndicator, ImageBackground, Dimensions, Alert, Platform } from 'react-native';
+import { useRoute } from '@react-navigation/native';
+import { getSpecificArtist } from '@/services/artist';
+import { BlurView } from 'expo-blur';
 
+interface Artist {
+  id: string;
+  Description: string;
+  name: string;
+  urlImg: string;
+  filePathImg: string;
+  createdAt: {
+    _seconds: number;
+    _nanoseconds: number;
+  };
+  updatedAt: {
+    _seconds: number;
+    _nanoseconds: number;
+  };
+  songs: string;
+}
 
-type RootStackParamList = {
-  ArtistDetailscreen: { artistId: number };
+interface RouteParams {
+  artistId: string;
+}
+
+const isRouteParams = (params: any): params is RouteParams => {
+  return params && typeof params.artistId === 'string';
 };
 
-type ArtistDetailscreenNavigationProp = RouteProp<RootStackParamList, 'ArtistDetailscreen'>;
+const ArtistDetailsScreen: React.FC = () => {
+  const route = useRoute();
+  const [artist, setArtist] = useState<Artist | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const windowWidth = Dimensions.get('window').width;
+  const windowHeight = Dimensions.get('window').height;
 
-const ArtistDetailscreen = () => {
-  const route = useRoute<ArtistDetailscreenNavigationProp>();
-  const { artistId } = route.params;
+  useEffect(() => {
+    const fetchArtistData = async () => {
+      try {
+        if (isRouteParams(route.params)) {
+          const { artistId } = route.params;
+          const response = await getSpecificArtist(artistId);
+          if (response.err === 0) {
+            setArtist(response.artist);
+          } else {
+            setError(`Failed to load artist details: ${response.mes}`);
+            Alert.alert("Error", `Failed to load artist details: ${response.mes}`);
+          }
+        } else {
+          setError("Invalid route parameters");
+          Alert.alert("Error", "Invalid route parameters");
+        }
+      } catch (error: any) {
+        setError(`An unexpected error occurred: ${error.message}`);
+        Alert.alert("Error", `An unexpected error occurred: ${error.message}`);
+        console.error('Error fetching artist details:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchArtistData();
+  }, [route.params]);
 
-  const artist = ImageSlider.find(a => a.id === artistId); // Tìm nghệ sĩ dựa trên ID
-  const artistSongs = Songs.filter(song => song.artistIds.includes(artistId)); 
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
 
+  if (error) {
+    return <Text style={styles.errorText}>{error}</Text>;
+  }
 
-  
-  const renderSongItem = ({ item }: { item: Song }) => (
-    <TouchableOpacity style={styles.songContainer} onPress={() => {/* handle song press */ }}>
-      <ImageBackground source={item.image} style={styles.songBackground} imageStyle={styles.songBackgroundImage}>
-        <View style={styles.overlay}>
-          <Image source={item.image} style={styles.songImage} />
-        </View>
-        <Text style={styles.songName}>{item.name}</Text>
-      </ImageBackground>
-    </TouchableOpacity>
-  );
+  if (!artist) {
+    return <Text style={styles.errorText}>Artist not found</Text>;
+  }
 
   return (
-    <ScrollView style={styles.container}>
-      {artist ? (
-        <>
-          <View style={styles.artContainer}>
-            <ImageBackground source={artist.image} style={styles.artistBackgroundImage}>
-              <View style={styles.overlay}>
-                <Image source={artist.image} style={styles.artistimage}
-                />
-                <View style={styles.textContainer}>
-                  <Text style={styles.artistName}>{artist.name}</Text>
-                  <Text style={styles.artistDescription}>{artist.description}</Text>
-                </View>
-              </View>
-            </ImageBackground>
-          </View>
-          <View style={styles.sectionContainer}>
-            <Text style={styles.songsHeader}>SONG'S ARTIST:</Text>
-            <FlatList
-              data={artistSongs}
-              renderItem={renderSongItem}
-              keyExtractor={song => song.id.toString()}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.flatListContent}
-            />
-          </View>
-          <Text style={styles.newsong}>Song Tracks</Text>
-          <SongTracks />
-          <Text style={styles.newsong}>NEW SONG</Text>
-          <SongCarousel itemSong={Songs} />
-          <Text style={styles.newsong}>ARTISTS</Text>
-          <ArtistCarousel itemArtist={ImageSlider} />
-        </>
-      ) : (
-        <Text style={styles.notFoundText}>Không tìm thấy nghệ sĩ</Text>
-      )}
-    </ScrollView>
+    <View style={styles.container}>
+      <ImageBackground
+        source={{ uri: artist.urlImg || 'placeholder_image_url' }}
+        style={styles.backgroundImage}
+        resizeMode="cover"
+      >
+        <BlurView intensity={50} style={styles.blur} /> {/* Blurred overlay */}
+        <View style={styles.content}>
+          <Image
+            source={{ uri: artist.urlImg || 'placeholder_image_url' }}
+            style={styles.artistImage}
+            resizeMode="contain"
+          />
+          <Text style={styles.artistName}>{artist.name}</Text>
+          <Text style={styles.artistDescription}>{artist.Description}</Text>
+        </View>
+      </ImageBackground>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFF4B7',
-    paddingVertical: 20,
   },
-
-  songContainer: {
-    width: 250,
-    height: '100%',
-    alignItems: 'center',
-    marginHorizontal: 10,
-    padding: 10,
-
-  },
-  songBackground: {
-    width:'100%',
-    height:220,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 15,
-    overflow: 'hidden',
-  },
-  songBackgroundImage: {
-    opacity: 0.7,        
-    borderRadius: 15,
-  },
-  overlay: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    
-    shadowRadius: 10,
-    shadowColor: '#000',
-    
-    padding:8,
-    borderRadius: 15,
-
-  },
-  artContainer: {
-    alignItems: 'center',
-    marginBottom: 20,
-    marginHorizontal: 20,
-    shadowOffset: { width: 0, height: 10 },
-    justifyContent: 'center',
-    elevation: 15, 
-    width: 380,
-    height: 300,
-    shadowColor: '#000',               
-    shadowOpacity: 1,                
-    shadowRadius: 15,
-    borderWidth: 2,                  
-    borderRadius: 20,
-  },
-  artistBackgroundImage: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 15,
-    overflow: 'hidden',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Màu đen mờ 50%
-  },
-  artistimage: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    borderWidth: 3,
-    borderColor: '#E4C087',
-    marginLeft: 'auto',
-  },
-  textContainer: {
+  loadingContainer: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  backgroundImage: {
+    flex: 1,
+    width: null,
+    height: null,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  blur: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  content: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  artistImage: {
     width: 200,
-    height: 160,
-    paddingRight: 10,
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    marginRight: 10,
-    fontFamily: 'Poppins-Bold',
-    opacity: 0.85,
-
+    height: 200,
+    borderRadius: 75,
+    marginBottom: 20,
+    borderColor: '#fff',
   },
   artistName: {
-    textAlign:'center',
-    fontSize: 25,
-    fontWeight: 'bold',
-    fontFamily: 'Poppins-Bold',
-    color: '#333',
-    marginBottom: 2,
-    textShadowColor: 'rgba(0, 0, 0, 1)', // Thêm bóng cho chữ
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
-  },
-  artistDescription: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#555',
-    fontFamily: 'Poppins-Bold',
-    textShadowColor: 'rgba(0, 0, 0, 0.5)', // Thêm bóng cho chữ
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 1,
-  },
-  sectionContainer: {
-    paddingHorizontal: 20,
-    marginBottom: 15,
-  },
-  title: {
-    fontSize: 16,
-    fontFamily: 'Poppins-Bold',
-  },
-  songsHeader: {
-    color: '#fffff',
-    fontFamily: 'Poppins-Bold',
     fontSize: 30,
     fontWeight: 'bold',
+    color: 'white',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 4,
     marginBottom: 10,
   },
-  
-  songImage: {
-    width: '80%',
-    height: 150,
-    borderRadius: 10,
-  },
-  songName: {
+  artistDescription: {
     fontSize: 16,
-    fontFamily: 'Poppins-Bold',
-    fontWeight: 'bold',
-    marginTop: 8,
+    color: 'white',
     textAlign: 'center',
-    color: '#ffffff',
-    textShadowColor: '#000000',
-    textShadowOffset: {
-      width: 1,
-      height: 1,
-    },
-    textShadowRadius: 1,
+    lineHeight: 24,
   },
-  flatListContent: {
-    paddingHorizontal: 20,
-  },
-  carouselContainer: {
+  errorText: {
+    textAlign: 'center',
     marginTop: 20,
-    paddingHorizontal: 20,
+    color: 'red',
   },
-  notFoundText: {
-    textAlign: 'center',
-    fontSize: 18,
-    color: '#888',
-    marginTop: 40,
-  },
-  newsong: {
-    fontFamily: 'Poppins-Bold',
-    fontSize: 26,
-    color: '#333',
-    marginTop: 30,
-    marginBottom: 10,
-    paddingLeft: 25,
-},
 });
 
-export default ArtistDetailscreen;
+export default ArtistDetailsScreen;

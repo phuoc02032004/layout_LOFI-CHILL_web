@@ -6,7 +6,7 @@ interface Sound {
   id: string;
   Description: string;
   filePath: string;
-  title: string;
+  Title: string;
   url: string;
   createdAt: {
     _seconds: number;
@@ -18,16 +18,15 @@ interface Sound {
   };
 }
 
-interface SoundEffectResponse {
+interface ApiResponse<T> {
   err: number;
   mes: string;
-  soundEffect: Sound[];
 }
 
-const createSound = async (title: string, description: string, soundFile: { uri: string; type: string; name: string }) => {
+const createSound = async (title: string, description: string, soundFile: { uri: string; type: string; name: string }): Promise<ApiResponse<Sound>> => {
   try {
     const formData = new FormData();
-    formData.append('title', title);
+    formData.append('Title', title);
     formData.append('Description', description);
 
     const response = await fetch(soundFile.uri);
@@ -41,26 +40,35 @@ const createSound = async (title: string, description: string, soundFile: { uri:
       },
     });
 
-    return responseAPI.data;
+    return {
+      err: 0,
+      mes: 'Create sound effect successfully',
+    }
   } catch (error) {
-    throw error;
+    return {
+      err: 1,
+      mes: 'Error creating sound effect',
+    }
   }
 };
 
-const getAllSound = async (): Promise<SoundEffectResponse> => {
+const getAllSound = async (): Promise<ApiResponse<Sound[]>> => {
   try {
     const response = await axios.get(`${apiUrl}/getAllSoundEffect`);
     return response.data;
   } catch (error) {
-    throw error;
+    return {
+      err: 1,
+      mes: 'Error getting sound effects',
+    }
   }
 };
 
-const updateSound = async (id: string, title?: string, description?: string, soundFile?: { uri: string; type: string; name: string }) => {
+const updateSound = async (id: string, title?: string, description?: string, soundFile?: { uri: string; type: string; name: string }): Promise<ApiResponse<Sound>> => {
   try {
     const formData = new FormData();
     if (title) {
-      formData.append('title', title);
+      formData.append('Title', title);
     }
     if (description) {
       formData.append('Description', description);
@@ -78,18 +86,30 @@ const updateSound = async (id: string, title?: string, description?: string, sou
       },
     });
 
-    return response.data;
+    return {
+      err: 0,
+      mes: 'Update sound effect successfully',
+    }
   } catch (error) {
-    throw error;
+    return {
+      err: 1,
+      mes: 'Error updating sound effect',
+    }
   }
 };
 
-const deleteSound = async (soundId: string) => {
+const deleteSound = async (soundId: string): Promise<ApiResponse<Sound>> => {
   try {
     const response = await axios.delete(`${apiUrl}/deleteSoundEffect/${soundId}`);
-    return response.data;
+    return {
+      err: 0,
+      mes: 'Delete sound effect successfully',
+    }
   } catch (error) {
-    throw error;
+    return {
+      err: 1,
+      mes: 'Error deleting sound effect',
+    }
   }
 };
 

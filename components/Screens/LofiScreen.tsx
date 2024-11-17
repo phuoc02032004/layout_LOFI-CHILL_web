@@ -19,7 +19,8 @@ const LofiScreen = () => {
               tabBarInactiveTintColor: "#fff",
               tabBarIndicatorStyle: { backgroundColor: "tomato" },
               tabBarStyle: { backgroundColor: "#213E50" },
-              tabBarLabelStyle: { fontFamily: "Poppins-Bold" },
+              tabBarLabelStyle: { fontFamily: "Poppins-Bold", fontSize: 20 },
+              
             }}
           >
             <Tab.Screen name="Song" component={Songscreen} />
@@ -46,7 +47,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   tabText: {
-    fontSize: 20,
+    fontSize: 40,
     fontFamily: "Poppins-Bold",
     color: "tomato",
   },

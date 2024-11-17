@@ -42,7 +42,6 @@ const ControlChill: React.FC<ControlChillProps> = ({ showInitially, onBackground
         return (
           <Music 
             onTabPress={() => {}} 
-            onCurrentSongUrlChange={onCurrentSongUrlChange}
           /> 
         );
       case 'Visuals':

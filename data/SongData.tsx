@@ -4,7 +4,7 @@ export type Song = {
     id: number;
     name: string;
     image: ImageSourcePropType;
-    artistIds: number[]; // Mảng các ID nghệ sĩ
+    artistIds: number[]; 
     description: string; 
     key: string; 
 };

@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { View, Dimensions, Text, TouchableOpacity, StyleSheet, Animated, ScrollView } from 'react-native';
 import { useNavigation, useIsFocused, NavigationProp } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Video, ResizeMode } from 'expo-av';
 import Loading from '../Loading/Loading';
 import Header from '../Header/Header';
@@ -8,7 +9,6 @@ import PresetCarousel from '../Carousel/PresetCarousel';
 import SongCarousel from '../Carousel/SongCarousel';
 import ArtistCarousel from '../Carousel/ArtistCarousel';
 import { ImageSlider } from '@/data/SliderData';
-import { Songs } from '@/data/SongData';
 import { Presets } from '@/data/PresetData';
 
 type RootStackParamList = {
@@ -16,6 +16,25 @@ type RootStackParamList = {
   LOFI: undefined;
   CHILL: undefined;
 };
+
+interface Song {
+  id: string;
+  ArtistId: string;
+  Title: string;
+  Url: string;
+  Description: string;
+  urlImg: string;
+  filePath: string;
+  filePathImg: string;
+  createdAt: {
+    _seconds: number;
+    _nanoseconds: number;
+  };
+  updatedAt: {
+    _seconds: number;
+    _nanoseconds: number;
+  };
+}
 
 const HomeScreen = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -25,6 +44,7 @@ const HomeScreen = () => {
   const videoRef = useRef<Video>(null);
   const introduceRef = useRef(new Animated.Value(0)).current;
   const [isLoading, setIsLoading] = useState(true);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
 
   useEffect(() => {
     const loadVideo = async () => {
@@ -61,6 +81,27 @@ const HomeScreen = () => {
     navigation.navigate('CHILL'); 
   };
 
+  useEffect(() => {
+    const getAccessToken = async () => {
+      try {
+        const storedToken = await AsyncStorage.getItem('accessToken'); // Sửa key ở đây
+        console.log("Đang cố gắng lấy accessToken từ AsyncStorage");
+        console.log("Token lấy được:", storedToken);
+        if (storedToken) {
+          console.log("Token tồn tại");
+          setAccessToken(storedToken);
+        } else {
+          console.warn("Cảnh báo: Access token là null");
+        }
+      } catch (error) {
+        console.error("Lỗi khi lấy access token:", error);
+        console.error("Thông báo lỗi:", error);
+        alert("Có lỗi khi lấy access token. Vui lòng thử lại sau.");
+      }
+    };
+    getAccessToken();
+  }, []);
+
   return (
     <View style={styles.container}>
       <Header />
@@ -90,7 +131,7 @@ const HomeScreen = () => {
           <Text style={styles.newsong}>PRESETS</Text>
           <PresetCarousel itemPreset={Presets} />
           <Text style={styles.newsong}>NEW SONG</Text>
-          <SongCarousel itemSong={Songs} />
+          {accessToken && <SongCarousel accessToken={accessToken} />}
           <Text style={styles.newsong}>ARTISTS</Text>
           <ArtistCarousel itemArtist={ImageSlider} />
           <View style={styles.white}></View>
