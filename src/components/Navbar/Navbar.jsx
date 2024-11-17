@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import "./Navbar.css";
 import { FaUser } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
+import { logOut } from '../../services/auth';
+import Cookies from 'js-cookie';
 
 export default function Navbar() {
   const [showMenu, setShowMenu] = useState(false);
-  const [showNavbar, setShowNavbar] = useState(true); 
-  const [showLofiMenu, setShowLofiMenu] = useState(false); 
+  const [showNavbar, setShowNavbar] = useState(true);
+  const [showLofiMenu, setShowLofiMenu] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,13 +21,13 @@ export default function Navbar() {
       }
       timeoutId = setTimeout(() => {
         setShowNavbar(false);
-      }, 6000); 
+      }, 6000);
     };
 
     document.addEventListener('mousemove', handleMouseMove);
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
-      clearTimeout(timeoutId); 
+      clearTimeout(timeoutId);
     };
   }, [showNavbar]);
 
@@ -63,17 +65,44 @@ export default function Navbar() {
 
   const handleArtistPageClick = () => {
     navigate('/ArtistPage')
+  };
+
+  const handleLogOutClick = async () => {
+    try {
+      const accessToken = Cookies.get('accessToken');
+      if (!accessToken) {
+        console.error('No access token found in cookie!');
+        return;
+      }
+
+      const userId = localStorage.getItem('userId');
+
+      await logOut(userId, accessToken);
+
+      document.cookie.split(';').forEach(cookie => {
+        const eqPos = cookie.indexOf('=');
+        const name = eqPos > -1 ? cookie.substring(0, eqPos) : cookie;
+        document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      });
+      localStorage.clear();
+      sessionStorage.clear();
+      navigate('/')
+    } catch (error) {
+
+    }
+  };
+
+  const handleResetPasswordClick = async () => {
+    navigate('/ResetPassword')
   }
 
-
-
   return (
-    <header className={`header ${!showNavbar ? 'hidden-navbar' : ''}`} style={{background: 'linear-gradient(to top, rgba(28, 39, 48, 0), rgba(28, 39, 48, 0.8))'}}> 
+    <header className={`header ${!showNavbar ? 'hidden-navbar' : ''}`} style={{ background: 'linear-gradient(to top, rgba(28, 39, 48, 0), rgba(28, 39, 48, 0.8))' }}>
       <a href="/" className='logo'> LOGO </a>
 
       <nav className='navbar'>
         <a onClick={handleHomeClick}>HOME</a>
-        <div 
+        <div
           className="account-container"
           onMouseEnter={handleLofiMouseEnter}
           onMouseLeave={handleLofiMouseLeave}
@@ -89,17 +118,17 @@ export default function Navbar() {
         <a onClick={handleChillClick}>CHILL</a>
       </nav>
 
-      <div 
-        className="account-container" 
-        onMouseEnter={handleMouseEnter} 
+      <div
+        className="account-container"
+        onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
         <a className='acc'><FaUser className='icon' /></a>
         {showMenu && (
           <div className="dropdown-menu">
-            <a className="dropdown-item">Đổi mật khẩu</a>
+            <a className="dropdown-item" onClick={handleResetPasswordClick}>Đổi mật khẩu</a>
             <a className="dropdown-item" onClick={handleAdminClick}>Admin</a>
-            <a className="dropdown-item">Đăng xuất</a>
+            <a className="dropdown-item" onClick={handleLogOutClick}>Đăng xuất</a>
           </div>
         )}
       </div>

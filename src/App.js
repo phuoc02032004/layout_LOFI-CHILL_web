@@ -14,7 +14,7 @@ import SongPage from './components/pages/SongPage/SongPage';
 import SongDetail from './components/pages/SongPage/SongDetail/SongDetail';
 import ArtistPage_ad from './components/admin/ArtistPage_ad/ArtistPage_ad';
 import ArtistDetail from './components/pages/ArtistPage/ArtistDetail/ArtistDetail';
-
+import ResetPassword from './components/pages/ResetPassword';
 
 function App() {
 
@@ -47,6 +47,7 @@ function App() {
           <Route path='/SongPage' element={<SongPage />} />
           <Route path='/SongPage/:id' element={<SongDetail />} element={<SongDetailWrapper />} />
           <Route path='/ArtistPage_ad' element={<ArtistPage_ad />} />
+          <Route path='/ResetPassword' element={<ResetPassword />} />
         </Routes>
       </div>
     </BrowserRouter>
