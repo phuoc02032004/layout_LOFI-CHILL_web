@@ -69,15 +69,7 @@ export default function Navbar() {
 
   const handleLogOutClick = async () => {
     try {
-      const accessToken = Cookies.get('accessToken');
-      if (!accessToken) {
-        console.error('No access token found in cookie!');
-        return;
-      }
-
-      const userId = localStorage.getItem('userId');
-
-      await logOut(userId, accessToken);
+      await logOut();
 
       document.cookie.split(';').forEach(cookie => {
         const eqPos = cookie.indexOf('=');

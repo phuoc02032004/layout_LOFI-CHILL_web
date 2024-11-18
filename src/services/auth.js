@@ -1,5 +1,7 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import apiClient from '../CustomAxios/apiClient';
+
 const registerUser = async (userData) => {
     try {
         const response = await axios.post('http://localhost:3002/api/v1/auth/register', userData);
@@ -42,13 +44,13 @@ const loginUser = async (email, password) => {
     }
 };
 
-const logOut = async (userId, accessToken) => {
+const logOut = async () => {
     try {
-        const response = await axios.post('http://localhost:3002/api/v1/auth/logOut', { userId }, {
+        const userId = localStorage.getItem('userId');
+        const response = await apiClient.post('http://localhost:3002/api/v1/auth/logOut', { userId }, {
             headers: {
-                Authorization: `Bearer ${accessToken}`
+                Authorization: `Bearer ${Cookies.get('accessToken')}`
             },
-            withCredentials: true,
         });
         console.log(response);
         return response;
@@ -77,8 +79,23 @@ const resetPassword = async (userId, password, passwordnew, accessToken) => {
     }
 };
 
+const refreshAccessToken = async (id, refreshToken) => {
+    try {
+        const response = await axios.post('http://localhost:3002/api/v1/auth/refreshAccessToken', { id, refreshToken }, {
+            headers: {
+                Authorization: `Bearer ${refreshToken}`
+            },
+            withCredentials: true,
+        })
+        return response;
+    } catch (error) {
+        throw error;
+    }
+};
+
 export { registerUser };
 export { verify };
 export { loginUser };
 export { logOut };
 export { resetPassword };
+export { refreshAccessToken };

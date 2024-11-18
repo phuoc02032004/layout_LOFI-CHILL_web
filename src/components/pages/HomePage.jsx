@@ -107,12 +107,7 @@ export default function HomePage() {
   useEffect(() => {
     const fetchMusic = async () => {
       try {
-        const accessToken = Cookies.get('accessToken');
-        if (!accessToken) {
-          console.error('No access token found in cookie!');
-          return;
-        }
-        const musicData = await getNewSong(accessToken);
+        const musicData = await getNewSong();
         setSongs(musicData); // Cập nhật danh sách bài hát
       } catch (error) {
         console.error('Error fetching music:', error);

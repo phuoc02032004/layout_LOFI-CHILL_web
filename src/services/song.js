@@ -1,14 +1,14 @@
+import apiClient from "../CustomAxios/apiClient";
 import axios from "axios";
+import Cookies from "js-cookie";
 
-const getNewSong = async (accessToken) => {
+const getNewSong = async () => {
     try {
-        const response = await axios.get('http://localhost:3002/api/v1/song/getNewSong', {
+        const response = await apiClient.get('/song/getNewSong', {
             headers: {
-                Authorization: `Bearer ${accessToken}`
+                Authorization: `Bearer ${Cookies.get('accessToken')}`,
             },
-            withCredentials: true,
-        }
-        );
+        });
 
         console.log(response.data);
         const data = response.data.song.map(song => ({
