@@ -46,14 +46,14 @@ export const login = async (req, res) => {
     }
 };
 
-export const refreshToken = async (req, res) => {
+export const refreshAccessToken = async (req, res) => {
     try {
-        const { id, token: refreshToken } = req.body;
+        const { id, refreshToken } = req.body;
         if (!refreshToken || !id) {
             return res.status(400).json({ message: 'ID and refresh token are required' });
         }
 
-        const response = await refreshAccessToken(id, refreshToken);
+        const response = await services.auth.refreshAccessToken(id, refreshToken);
         return res.status(200).json(response);
     } catch (error) {
         console.error('Error in Refresh Token controller:', error);

@@ -125,9 +125,8 @@ export const refreshAccessToken = (id, refreshToken) => new Promise(async (resol
     try {
         if (!refreshToken) return reject({ status: 401, message: 'Refresh token is required' });
 
-        // Truy xuất tài liệu bằng ID
-        const userRef = db.collection('users').doc(id);
-        const userDoc = await userRef.get();
+        const userRef = doc(db, 'users', id);
+        const userDoc = await getDoc(userRef); 
 
         // Kiểm tra nếu tài liệu không tồn tại
         if (!userDoc.exists) {
