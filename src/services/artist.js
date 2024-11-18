@@ -190,3 +190,40 @@ export const deleteArtist = ({ id }) => new Promise(async (resolve, reject) => {
         return { status: 500, message: 'Error deleting artist', error };
     }
 });
+
+
+export const getArtistSong = ({ id }) => new Promise(async (resolve, reject) => {
+    try {
+        const playlistsSnapshot = await db.collection('Music').get();
+
+        if (playlistsSnapshot.empty) {
+            console.log('No playlists found');
+            resolve([]);
+            return;
+        }
+
+        const songs = [];
+
+        for (const playlistDoc of playlistsSnapshot.docs) {
+            const songsSnapshot = await playlistDoc.ref.collection('Songs')
+                .where('ArtistId', '==', id)
+                .get();
+
+            if (!songsSnapshot.empty) {
+                songsSnapshot.forEach(songDoc => {
+                    songs.push({ id: songDoc.id, ...songDoc.data() });
+                });
+            }
+        }
+
+        if (songs.length === 0) {
+            console.log('No songs found for artist:', id);
+        }
+
+        resolve(songs);
+
+    } catch (error) {
+        console.error("Error fetching artist's songs:", error);
+        reject(error);
+    }
+});

@@ -12,5 +12,6 @@ router.get('/getAllArtist', artist.getAllArtist);
 router.get('/getSpecificArtist/:id', artist.getSpecificArtist);
 router.put('/updateArtist/:id', upload.single('fileImg'), artist.updateArtist);
 router.delete('/deleteArtist/:id', artist.deleteArtist);
+router.get('/getArtistSong/:id', artist.getArtistSong);
 
 export default router;
