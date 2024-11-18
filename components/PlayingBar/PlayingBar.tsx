@@ -4,6 +4,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 interface PlayingBarProps {
+  songTitle: string;
+  songArtist: string;
+  isPlaying: boolean;
+  handlePlayPause: () => void;
+  handleVolumeChange: (value: number) => void;
+  handleNextSong: () => void;
   currentSongUrl: string;
 }
 

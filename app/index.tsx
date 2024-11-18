@@ -11,6 +11,8 @@ import BottomTab from '@/components/navigation/BottomTab';
 import SongDetailScreen from '@/components/Screens/SongDetailScreen';
 import ArtistDetailscreen from '@/components/Screens/ArtistDetailscreen';
 
+import { MusicProvider } from '@/components/MusicContext/MusicContext';
+
 const Stack = createNativeStackNavigator();
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -32,6 +34,7 @@ const App = () => {
     }
   }, [initialRouteName]);
   return (
+    <MusicProvider>
     <GestureHandlerRootView style={{ flex: 1 }}>
         <NavigationContainer independent={true}>
           <Stack.Navigator initialRouteName={isLoggedIn ? "HomeScreen" : "LoginScreen"}> 
@@ -43,6 +46,7 @@ const App = () => {
           </Stack.Navigator>
         </NavigationContainer>
     </GestureHandlerRootView>
+    </MusicProvider>
   );
 };
 

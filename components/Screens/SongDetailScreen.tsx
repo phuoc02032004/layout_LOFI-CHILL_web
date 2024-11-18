@@ -14,7 +14,9 @@ type RootStackParamList = {
     SongDetailScreen: { song: Song };
 };
 
-type SongDetailScreenRouteProp = RouteProp<RootStackParamList, 'SongDetailScreen'>;
+interface SongDetailScreenRouteProp extends RouteProp<RootStackParamList, 'SongDetailScreen'> {
+    params: { song: Song; artistId: string }; 
+  }
 
 interface Song {
     id: string;
@@ -38,7 +40,7 @@ interface Song {
 
 const SongDetailScreen = () => {
     const route = useRoute<SongDetailScreenRouteProp>();
-    const { song } = route.params;
+    const { song, artistId } = route.params;
     const [accessToken, setAccessToken] = useState<string | null>(null);
     const getArtistById = (artistId: number) => ImageSlider.find(artist => artist.id === artistId);
 
@@ -56,6 +58,8 @@ const SongDetailScreen = () => {
         };
         getAccessToken();
       }, []);
+
+      
 
     return (
         <ScrollView style={styles.scrollView}>
@@ -78,11 +82,13 @@ const SongDetailScreen = () => {
                     keyExtractor={(item) => item.toString()}
                     horizontal={true}
                     renderItem={({ item }) => {
-                        const artist = getArtistById(parseInt(item,10)); //Parse to integer
-                        return artist ? (
+                        const artist = getArtistById(parseInt(item, 10));
+                        return artist && artist.image ? ( //Check if artist and image exist
                             <View style={styles.artistContainer}>
-                                <Image source={{ uri: artist.image }}
-                                    style={styles.artistImage} />
+                                <Image
+                                    source={{ uri: artist.image }} // Corrected source
+                                    style={styles.artistImage}
+                                />
                                 <Text style={styles.artistName}>{artist.name}</Text>
                             </View>
                         ) : null;
@@ -90,13 +96,14 @@ const SongDetailScreen = () => {
                     contentContainerStyle={styles.artistList}
                     showsHorizontalScrollIndicator={false}
                 />
-                {/* <Text style={styles.newsong}>Song Tracks</Text>
-                <SongTracks songData={song} /> */}
+                <Text style={styles.newsong}>Song Tracks</Text>
+                <SongTracks songData={song} />
                 <Text style={styles.newsong}>NEW SONG</Text>
                 {accessToken && <SongCarousel accessToken={accessToken} />}
                 <Text style={styles.newsong}>ARTISTS</Text>
-                <ArtistCarousel itemArtist={ImageSlider} />
-            </View>
+                <ArtistCarousel />
+            </View>7
+            <View style={styles.spacewhite}></View>
         </ScrollView>
     );
 };
@@ -108,32 +115,32 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     backgroundImage: {
-        flex: 1, // Cover the entire screen
+        flex: 1, 
         justifyContent: 'center',
         height: 750,
     },
     song_detail: {
         alignItems: 'center',
         marginBottom: 20,
-        padding: 20, // Added padding for better spacing
+        padding: 20, 
     },
     title: {
         fontSize: 24,
         fontFamily: 'Poppins-Bold',
-        color: '#fff', // Changed to white for better contrast
+        color: '#fff', 
         textAlign: 'center',
         marginVertical: 10,
     },
     desc: {
         fontFamily: 'Poppins-Regular',
         fontSize: 16,
-        color: '#fff', // Changed to white for better contrast
+        color: '#fff', 
         textAlign: 'center',
         paddingHorizontal: 15,
         marginVertical: 10,
     },
     textartist: {
-        color: '#fff',
+        color: 'black',
         fontFamily: 'Poppins-Bold',
         fontSize: 30,
         fontWeight: 'bold',
@@ -148,7 +155,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Poppins-Bold',
         fontSize: 26,
         color: '#333',
-        marginTop: 20, //Added margin for better spacing
+        marginTop: 20, 
         paddingLeft: 5,
     },
     artistList: {
@@ -168,4 +175,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: '#333',
     },
+    spacewhite:{
+        height:10,
+    }
 });

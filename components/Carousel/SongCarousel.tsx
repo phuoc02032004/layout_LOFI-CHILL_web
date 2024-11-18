@@ -75,6 +75,7 @@ const SongCarousel = ({ accessToken }: Props) => {
 
   const renderItem = ({ item }: { item: Song }) => {
     console.log("Rendering item:", item);
+    console.log('item in renderItem:', item);
     return (
       <TouchableOpacity
         onPress={() => navigation.navigate("SongDetailScreen", { song: item })}
@@ -143,5 +144,6 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     textAlign: "center",
+    fontFamily: 'Poppins-Bold'
   },
 });

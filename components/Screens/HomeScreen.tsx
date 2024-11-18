@@ -133,7 +133,7 @@ const HomeScreen = () => {
           <Text style={styles.newsong}>NEW SONG</Text>
           {accessToken && <SongCarousel accessToken={accessToken} />}
           <Text style={styles.newsong}>ARTISTS</Text>
-          <ArtistCarousel itemArtist={ImageSlider} />
+          <ArtistCarousel />
           <View style={styles.white}></View>
         </ScrollView>
       </View>

@@ -64,7 +64,6 @@ const ChillScreen: React.FC<ChillScreenProps> = ({ currentSongUrl, onCurrentSong
         onError={(error) => console.error('Video Error:', error)}
       />
 
-      <PlayingBar currentSongUrl={currentSongUrl}/>
       <ControlChill 
         showInitially={true}
         onBackgroundChange={handleBackgroundChange} 

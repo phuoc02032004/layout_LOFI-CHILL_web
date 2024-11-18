@@ -5,7 +5,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { getAllSong } from '@/services/song'; 
 
 type RootStackParamList = {
-  SongDetailScreen: { song: Song };
+  SongDetailScreen: { song: Song; artistId: string };
   Songscreen: undefined; 
 };
 
@@ -32,8 +32,9 @@ const Songscreen = () => {
   const navigation = useNavigation<SongscreenNavigationProp>();
   const renderItem = ({ item }: { item: Song }) => (
     <TouchableOpacity
-      onPress={() => navigation.navigate('SongDetailScreen', { song: item })}
-    >
+    onPress={() =>
+      navigation.navigate("SongDetailScreen", { song: item, artistId: item.ArtistId })
+    }     >
       <View style={styles.card}>
         <Image
           source={{ uri: item.urlImg }}

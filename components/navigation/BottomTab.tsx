@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'; // Sử dụng bottom tab
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'; 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import HomeScreen from '../Screens/HomeScreen';
 import LofiScreen from '../Screens/LofiScreen';

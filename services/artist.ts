@@ -126,9 +126,15 @@ const getSpecificArtist = async (artistId: string) => {
   try {
     const response = await axios.get(`${apiUrl}/getSpecificArtist/${artistId}`);
     return response.data as ArtistResponse;
+    if (response.status !== 200 || response.data.err !== 0) {
+      console.error("API error:", response.data.message);
+      return null; 
+    }
+    return response.data.data;
   } catch (error: any) {
     if (error.response) {
       console.error("Error fetching artist:", error.response.data);
+      return null;
     } else {
       console.error("Error fetching artist:", error.message);
     }
