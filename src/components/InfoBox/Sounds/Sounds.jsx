@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import './Sounds.css';
 import { getAllSound } from '../../../services/sound';
+import { MusicPlayerContext } from '../../Context/MusicPlayerContext';
+
 
 let audioPlayers = {};
 let soundsCache = null;
@@ -9,6 +11,7 @@ const Sounds = () => {
   const [soundsData, setSoundsData] = useState([]);
   const [soundVolumes, setSoundVolumes] = useState({});
 
+  // Lấy dữ liệu âm thanh
   const fetchSoundsData = async () => {
     if (soundsCache) {
       setSoundsData(soundsCache);
@@ -18,17 +21,23 @@ const Sounds = () => {
     try {
       const response = await getAllSound();
       setSoundsData(response);
-      soundsCache = response; 
+      soundsCache = response;
 
-      response.forEach(sound => {
+      // Tạo audio player cho từng âm thanh và thiết lập sự kiện lặp lại
+      response.forEach((sound) => {
         if (!audioPlayers[sound.id]) {
           const audio = new Audio(sound.url);
           audioPlayers[sound.id] = audio;
 
           audio.addEventListener('ended', () => {
             audio.currentTime = 0;
-            audio.play(); 
+            audio.play(); // Lặp lại
           });
+
+          // Khôi phục âm lượng từ localStorage
+          const savedVolumes = JSON.parse(localStorage.getItem('soundVolumes')) || {};
+          const savedVolume = savedVolumes[sound.id] || 0;
+          audio.volume = savedVolume;
         }
       });
     } catch (error) {
@@ -39,16 +48,19 @@ const Sounds = () => {
   useEffect(() => {
     fetchSoundsData();
 
+    // Khôi phục âm lượng từ localStorage
     const savedVolumes = JSON.parse(localStorage.getItem('soundVolumes')) || {};
     setSoundVolumes(savedVolumes);
   }, []);
 
+  // Thay đổi âm lượng và lưu lại
   const handleVolumeChange = (id, event) => {
     const volume = parseFloat(event.target.value);
 
-    setSoundVolumes(prevVolumes => {
+    setSoundVolumes((prevVolumes) => {
       const updatedVolumes = { ...prevVolumes, [id]: volume };
 
+      // Lưu vào localStorage
       localStorage.setItem('soundVolumes', JSON.stringify(updatedVolumes));
       return updatedVolumes;
     });
@@ -56,6 +68,7 @@ const Sounds = () => {
     if (audioPlayers[id]) {
       audioPlayers[id].volume = volume;
 
+      // Bắt đầu phát âm thanh nếu chưa phát
       if (audioPlayers[id].paused) {
         audioPlayers[id].play();
       }
@@ -64,8 +77,8 @@ const Sounds = () => {
 
   return (
     <div className="sounds-container">
-      {soundsData.map(sound => (
-        <div key={sound.id} className="sound-item-s">
+      {soundsData.map((sound) => (
+        <div key={sound.id} className="sound-item">
           <span className="sound-name">{sound.title}</span>
           <div className="slider-container">
             <input

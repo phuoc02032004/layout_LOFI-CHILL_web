@@ -1,17 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import './Music.css';
 import { getAllPlaylists } from '../../../services/playlist';
 import { playSong } from '../../../services/song';
+import { MusicPlayerContext } from '../../Context/MusicPlayerContext';
 
 const Music = () => {
   const [stationsData, setStations] = useState([]);
-  const [playlistsState, setPlaylistsState] = useState({}); // Lưu trạng thái của các playlist đã phát
-  const [currentPlaylist, setCurrentPlaylist] = useState([]);
-  const [currentSongIndex, setCurrentSongIndex] = useState(0);
-  const [currentSongUrl, setCurrentSongUrl] = useState('');
-  const [currentPlaylistId, setCurrentPlaylistId] = useState(null);
-  const [currentTime, setCurrentTime] = useState(0); // Lưu vị trí hiện tại của bài hát
-  const audioRef = React.useRef(null);
+  const [playlistsState, setPlaylistsState] = useState({}); // Lưu trạng thái các playlist
+  const { playSong: playFromContext, currentSongUrl, currentTime } = useContext(MusicPlayerContext);
 
   useEffect(() => {
     const cachedPlaylists = localStorage.getItem('playlists');
@@ -28,32 +24,24 @@ const Music = () => {
       setStations(data);
       localStorage.setItem('playlists', JSON.stringify(data));
     } catch (error) {
-      console.error('Error fetching Playlist:', error);
+      console.error('Error fetching playlists:', error);
     }
   };
 
   const handlePlaylistClick = async (playlistId) => {
     if (playlistsState[playlistId]) {
-      // Nếu playlist đã từng được phát, phát từ bài hát và vị trí đã lưu
       const { songs, currentSongIndex, currentTime } = playlistsState[playlistId];
-      setCurrentPlaylistId(playlistId);
-      setCurrentPlaylist(songs);
-      setCurrentSongIndex(currentSongIndex);
-      setCurrentSongUrl(songs[currentSongIndex].url);
-      setCurrentTime(currentTime);
+      const songToPlay = songs[currentSongIndex];
+      playFromContext(songToPlay.url, currentTime); // Phát bài đã lưu trạng thái
     } else {
       try {
         const songs = await playSong(playlistId);
         if (songs.length > 0) {
-          setPlaylistsState(prevState => ({
+          setPlaylistsState((prevState) => ({
             ...prevState,
-            [playlistId]: { songs, currentSongIndex: 0, currentTime: 0 }
+            [playlistId]: { songs, currentSongIndex: 0, currentTime: 0 },
           }));
-          setCurrentPlaylistId(playlistId);
-          setCurrentPlaylist(songs);
-          setCurrentSongIndex(0);
-          setCurrentSongUrl(songs[0].url);
-          setCurrentTime(0);
+          playFromContext(songs[0].url, 0); // Phát bài hát đầu tiên
         }
       } catch (error) {
         console.error('Error playing playlist:', error);
@@ -61,43 +49,55 @@ const Music = () => {
     }
   };
 
-  const handleSongEnd = async () => {
-    if (currentSongIndex < currentPlaylist.length - 1) {
-      const nextIndex = currentSongIndex + 1;
-      setCurrentSongIndex(nextIndex);
-      setCurrentSongUrl(currentPlaylist[nextIndex].url);
-      setPlaylistsState(prevState => ({
-        ...prevState,
-        [currentPlaylistId]: {
-          songs: currentPlaylist,
-          currentSongIndex: nextIndex,
-          currentTime: 0
-        }
-      }));
-    }
-  };
-
-  const handleTimeUpdate = () => {
-    const time = audioRef.current.currentTime;
-    setPlaylistsState(prevState => ({
+  const handleTimeUpdate = (playlistId, currentTime) => {
+    setPlaylistsState((prevState) => ({
       ...prevState,
-      [currentPlaylistId]: {
-        ...prevState[currentPlaylistId],
-        currentTime: time // Cập nhật vị trí bài hát
-      }
+      [playlistId]: {
+        ...prevState[playlistId],
+        currentTime,
+      },
     }));
   };
 
+  const handleSongEnd = (playlistId) => {
+    const playlist = playlistsState[playlistId];
+    if (playlist && playlist.currentSongIndex < playlist.songs.length - 1) {
+      const nextIndex = playlist.currentSongIndex + 1;
+      const nextSong = playlist.songs[nextIndex];
+      setPlaylistsState((prevState) => ({
+        ...prevState,
+        [playlistId]: {
+          ...prevState[playlistId],
+          currentSongIndex: nextIndex,
+          currentTime: 0,
+        },
+      }));
+      playFromContext(nextSong.url, 0); // Phát bài hát tiếp theo
+    }
+  };
+
+  const findPlaylistIdBySongUrl = (url) => {
+    for (const playlistId in playlistsState) {
+      if (playlistsState[playlistId]?.songs?.some((song) => song.url === url)) {
+        return playlistId;
+      }
+    }
+    return null;
+  };
+
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = currentTime; // Phát từ vị trí đã lưu
+    if (currentSongUrl) {
+      const playlistId = findPlaylistIdBySongUrl(currentSongUrl);
+      if (playlistId) {
+        handleTimeUpdate(playlistId, currentTime);
+      }
     }
   }, [currentSongUrl, currentTime]);
 
   return (
     <div className="stations-container">
       <div className="stations-list">
-        {stationsData.map(station => (
+        {stationsData.map((station) => (
           <div
             key={station.id}
             className="station-item"
@@ -110,21 +110,6 @@ const Music = () => {
           </div>
         ))}
       </div>
-
-      {currentSongUrl && (
-        <div className="music-player">
-          <audio
-            ref={audioRef}
-            controls
-            autoPlay
-            src={currentSongUrl}
-            onTimeUpdate={handleTimeUpdate} // Cập nhật thời gian phát
-            onEnded={handleSongEnd}
-          >
-            Your browser does not support the audio element.
-          </audio>
-        </div>
-      )}
     </div>
   );
 };

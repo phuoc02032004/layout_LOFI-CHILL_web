@@ -4,7 +4,8 @@ import NavigationBar from '../NavigationBar/NavigationBar';
 import './ChillPage.css';
 import videoCover from '../assets/videos/bk.mp4';
 import Loading from './../Loading/Loading';
-import TutorialUser from '../tutorial/TutorialUser'; 
+import TutorialUser from '../tutorial/TutorialUser';
+import { MusicPlayerProvider } from '../Context/MusicPlayerContext';
 
 const ChillPage = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -24,7 +25,7 @@ const ChillPage = () => {
       setTimeout(() => setShowTutorial(true), 500);
     };
 
-    return () => video.removeEventListener('canplaythrough', () => {});
+    return () => video.removeEventListener('canplaythrough', () => { });
   }, []);
 
   useEffect(() => {
@@ -54,9 +55,11 @@ const ChillPage = () => {
     <div>
       {isLoading && <Loading />}
       <Navbar />
-      <NavigationBar showInitially={showNavigationBar} onBackgroundChange={handleBackgroundChange} />
-      <video className="background-video" ref={videoRef} src={backgroundVideo} autoPlay muted loop />
-      {!isLoading && showTutorial && <TutorialUser onClose={handleCloseTutorial} />}
+      <MusicPlayerProvider>
+        <NavigationBar showInitially={showNavigationBar} onBackgroundChange={handleBackgroundChange} />
+        <video className="background-video" ref={videoRef} src={backgroundVideo} autoPlay muted loop />
+        {!isLoading && showTutorial && <TutorialUser onClose={handleCloseTutorial} />}
+      </MusicPlayerProvider>
     </div>
   );
 };

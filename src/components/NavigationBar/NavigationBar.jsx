@@ -49,6 +49,7 @@ const NavigationBar = ({ showInitially, onBackgroundChange }) => {
   };
 
   const handlePlayPause = () => {
+    document.querySelectorAll('audio').forEach(el => el.pause());
     setIsPlaying(!isPlaying);
   };
 
