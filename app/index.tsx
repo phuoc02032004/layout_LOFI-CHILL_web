@@ -12,22 +12,30 @@ import SongDetailScreen from '@/components/Screens/SongDetailScreen';
 import ArtistDetailscreen from '@/components/Screens/ArtistDetailscreen';
 
 import { MusicProvider } from '@/components/MusicContext/MusicContext';
+import SongCarousel from '@/components/Carousel/SongCarousel';
 
 const Stack = createNativeStackNavigator();
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [initialRouteName, setInitialRouteName] = useState<string | null>(null);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
 
   useEffect(() => {
     const checkLoggedIn = async () => {
-      const token = await AsyncStorage.getItem('accessToken'); 
-      setIsLoggedIn(!!token);
-      setInitialRouteName(!!token ? "HomeScreen" : "LoginScreen");
+      try {
+        const token = await AsyncStorage.getItem('accessToken');
+        setAccessToken(token);
+        console.log("AccessToken:", token);  // Kiểm tra giá trị token
+        setIsLoggedIn(!!token);
+        setInitialRouteName(!!token ? "HomeScreen" : "LoginScreen");
+      } catch (error) {
+        console.error("Error fetching token from AsyncStorage:", error);
+      }
     };
 
     checkLoggedIn();
   }, []);
-
+  
   useEffect(() => {
     if (initialRouteName) {
       console.log("isLoggedIn after check:", isLoggedIn);
@@ -35,17 +43,23 @@ const App = () => {
   }, [initialRouteName]);
   return (
     <MusicProvider>
-    <GestureHandlerRootView style={{ flex: 1 }}>
-        <NavigationContainer independent={true}>
-          <Stack.Navigator initialRouteName={isLoggedIn ? "HomeScreen" : "LoginScreen"}> 
-            <Stack.Screen name="LoginScreen" component={LoginScreen} options={{ headerShown: false }} />
-            <Stack.Screen name="HomeScreen" component={BottomTab} options={{ headerShown: false }} />
-            <Stack.Screen name="RegisterScreen" component={RegisterScreen} options={{ headerShown: false }}  /> 
-            <Stack.Screen name="SongDetailScreen" component={SongDetailScreen} />
-            <Stack.Screen name="ArtistDetailscreen" component={ArtistDetailscreen} />
-          </Stack.Navigator>
-        </NavigationContainer>
-    </GestureHandlerRootView>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+          <NavigationContainer independent={true}>
+            <Stack.Navigator initialRouteName={isLoggedIn ? "HomeScreen" : "LoginScreen"}>
+              <Stack.Screen name="LoginScreen" component={LoginScreen} options={{ headerShown: false }} />
+              <Stack.Screen name="HomeScreen" component={BottomTab} options={{ headerShown: false }} />
+              <Stack.Screen name="RegisterScreen" component={RegisterScreen} options={{ headerShown: false }} />
+              <Stack.Screen name="SongDetailScreen" component={SongDetailScreen} />
+              <Stack.Screen
+                name="Songscreen"
+                component={SongCarousel}
+                options={{ headerShown: false }}
+                initialParams={{ accessToken }}
+              />
+              <Stack.Screen name="ArtistDetailscreen" component={ArtistDetailscreen} />
+            </Stack.Navigator>
+          </NavigationContainer>
+      </GestureHandlerRootView>
     </MusicProvider>
   );
 };

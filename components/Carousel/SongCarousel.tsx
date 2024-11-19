@@ -10,8 +10,8 @@ import {
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useNavigation } from "expo-router";
 import { getNewSong } from '@/services/song';
+import { useNavigation } from '@react-navigation/native';
 import { Provider as PaperProvider } from 'react-native-paper';
 
 
@@ -24,21 +24,19 @@ interface Song {
   urlImg: string;
 }
 
-interface Props {
-  accessToken: string;
+interface SongCarouselProps {
+  accessToken: string | null;
 }
 
 type RootStackParamList = {
-  SongDetailScreen: { song: Song };
+  SongDetailScreen: { song: Song; artistId: string };
   Songscreen: undefined;
 };
 
-type SongscreenNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  "Songscreen"
->;
+type SongscreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Songscreen'>;
 
-const SongCarousel = ({ accessToken }: Props) => {
+
+const SongCarousel: React.FC<SongCarouselProps> = ({ accessToken }) => {  
   const { width } = useWindowDimensions();
   const SIZE = width * 0.7;
   const SPACER = (width - SIZE) / 2;
@@ -52,34 +50,35 @@ const SongCarousel = ({ accessToken }: Props) => {
     const fetchSongs = async () => {
       try {
         setIsLoading(true);
-        console.log("Fetching songs with accessToken:", accessToken);
-        const data = await getNewSong(accessToken);
-        console.log("Received data from getNewSong:", data);
-        if (data !== null) {
-          setSongData(data); // Only set data if it's not null
+        if (accessToken) {
+          const data = await getNewSong(accessToken);
+          if (data) {
+            setSongData(data);
+          } else {
+            setError("Failed to fetch songs. Please check your network connection.");
+          }
         } else {
-          setError("Failed to fetch songs."); // Set an error if data is null
+          setError("Please sign in to view songs.");
         }
       } catch (err: any) {
-        setError(err.message);
-        console.error("Error fetching songs:", err);
+        setError(`Error fetching songs: ${err.message}`);
       } finally {
         setIsLoading(false);
       }
     };
-    console.log("accessToken in useEffect:", accessToken);
-    if (accessToken) {
+
+
+    if (accessToken) { // Chỉ fetch nếu có accessToken
       fetchSongs();
     }
   }, [accessToken]);
-
   const renderItem = ({ item }: { item: Song }) => {
     console.log("Rendering item:", item);
     console.log('item in renderItem:', item);
     return (
       <TouchableOpacity
-        onPress={() => navigation.navigate("SongDetailScreen", { song: item })}
-        style={{ width: SIZE, marginHorizontal: SPACER - 40 }}
+        onPress={() => navigation.navigate("SongDetailScreen", { song: item, artistId: item.ArtistId })}
+        style={{ width: SIZE, marginHorizontal: SPACER - 40, zIndex: 10 }}
       >
         <Image source={{ uri: item.urlImg }} style={styles.image} />
         <View style={styles.titleContainer}>
