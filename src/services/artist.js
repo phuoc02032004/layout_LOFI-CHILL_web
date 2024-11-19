@@ -91,4 +91,20 @@ const deleteArtist = async (artistId) => {
     }
 };
 
-export { createArtist, getAllArtist, getSpecificArtist, updateArtist, deleteArtist };
+const getArtistSong = async (artistId) => {
+    try {
+        const response = await axios.get(`http://localhost:3002/api/v1/artist/getArtistSong/${artistId}`);
+        if (response.status === 200) {
+            return response.data; // Trả về danh sách bài hát
+        } else {
+            throw new Error(response.data.mes || "Error fetching artist's songs");
+        }
+    } catch (error) {
+        console.error('Error fetching artist songs:', error.response ? error.response.data : error.message);
+        throw error;
+    }
+};
+
+
+
+export { createArtist, getAllArtist, getSpecificArtist, updateArtist, deleteArtist, getArtistSong };
