@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import "./NavigationBar.css";
 import InfoBox from "./../InfoBox/InfoBox";
 import Presets from "../InfoBox/Presets/Presets";
@@ -19,13 +19,14 @@ import { RiPlayListFill } from "react-icons/ri";
 import { IoChatboxEllipses } from "react-icons/io5";
 import { FaHeart } from "react-icons/fa";
 import History from "../InfoBox/History/History";
+import { MusicPlayerContext } from "../Context/MusicPlayerContext";
 
 const NavigationBar = ({ showInitially, onBackgroundChange }) => {
   const [activeButton, setActiveButton] = useState(null);
   const [showVolumeSlider, setShowVolumeSlider] = useState(false);
-  const [volume, setVolume] = useState(50);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [isHeart, setIsHeart] = useState(false);
+  const { isPlaying, resumeSong, pauseSong, volume, adjustVolume } = useContext(MusicPlayerContext);
+
 
   const handleClick = (buttonName) => {
     setActiveButton(buttonName);
@@ -40,17 +41,19 @@ const NavigationBar = ({ showInitially, onBackgroundChange }) => {
   };
 
   const handleVolumeChange = (event) => {
-    setVolume(event.target.value);
+    adjustVolume(event.target.value);
   };
 
-  const handleVolumeMute = () => {
-    setVolume(0);
+  const handleVolumeMute = (event) => {
     setShowVolumeSlider(false);
   };
 
   const handlePlayPause = () => {
-    document.querySelectorAll('audio').forEach(el => el.pause());
-    setIsPlaying(!isPlaying);
+    if (isPlaying) {
+      pauseSong();
+    } else {
+      resumeSong();
+    }
   };
 
   const handleHeartClick = () => {

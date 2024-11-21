@@ -126,7 +126,7 @@
     top: -100px;
     bottom:100px;
     left: 600px; 
-    transform: translateX(-50%); 
+    transform: translateX(-50%) rotate(180deg); 
     background: rgba(225, 255, 255, 0.2);
     padding: 5px 10px;
     border-radius: 5px; 
