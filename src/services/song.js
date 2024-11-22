@@ -352,12 +352,20 @@ export const playSong = ({ id }) => new Promise(async (resolve, reject) => {
 
         // Tạo mảng chứa các bài hát
         const songs = [];
-        songDoc.forEach(doc => {
+        for (const doc of songDoc.docs) {
+            const songData = doc.data();
+
+            const artistRef = db.collection('Artist').doc(songData.ArtistId);
+            const artistDoc = await artistRef.get(); 
+            const artistName = artistDoc.exists ? artistDoc.data().name : "Unknown Artist";
+
             songs.push({
                 id: doc.id,
-                ...doc.data()
+                ...songData,
+                artistName,
             });
-        });
+        }
+
 
         const shuffledSongs = songs.sort(() => 0.5 - Math.random());
         const randomSong = shuffledSongs.slice(0, 5);
