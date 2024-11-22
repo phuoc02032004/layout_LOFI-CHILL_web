@@ -12,6 +12,7 @@ import SongDetailScreen from '@/components/Screens/SongDetailScreen';
 import ArtistDetailscreen from '@/components/Screens/ArtistDetailscreen';
 
 import { MusicProvider } from '@/components/MusicContext/MusicContext';
+import PlayerProvider from '@/features/player/PlayerProvider';
 import SongCarousel from '@/components/Carousel/SongCarousel';
 
 const Stack = createNativeStackNavigator();
@@ -25,11 +26,9 @@ const App = () => {
       try {
         const token = await AsyncStorage.getItem('accessToken');
         setAccessToken(token);
-        console.log("AccessToken:", token);  // Kiểm tra giá trị token
         setIsLoggedIn(!!token);
         setInitialRouteName(!!token ? "HomeScreen" : "LoginScreen");
       } catch (error) {
-        console.error("Error fetching token from AsyncStorage:", error);
       }
     };
 
@@ -38,11 +37,11 @@ const App = () => {
   
   useEffect(() => {
     if (initialRouteName) {
-      console.log("isLoggedIn after check:", isLoggedIn);
     }
   }, [initialRouteName]);
   return (
     <MusicProvider>
+    <PlayerProvider>
       <GestureHandlerRootView style={{ flex: 1 }}>
           <NavigationContainer independent={true}>
             <Stack.Navigator initialRouteName={isLoggedIn ? "HomeScreen" : "LoginScreen"}>
@@ -60,6 +59,7 @@ const App = () => {
             </Stack.Navigator>
           </NavigationContainer>
       </GestureHandlerRootView>
+    </PlayerProvider>
     </MusicProvider>
   );
 };

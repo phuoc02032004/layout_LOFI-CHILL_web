@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import Slider from '@react-native-community/slider';
-import { getAllSound, createSound, updateSound, deleteSound } from '@/services/sound';
+import { getAllSound } from '@/services/sound';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Audio } from 'expo-av';
 
@@ -24,7 +24,7 @@ interface Sound {
 interface ApiResponse<T> {
   err: number;
   mes: string;
-  data: T;
+  data?: T;
 }
 
 const Sounds: React.FC = () => {
@@ -32,93 +32,184 @@ const Sounds: React.FC = () => {
   const [soundVolumes, setSoundVolumes] = useState<{ [key: string]: number }>({});
   const [playingSounds, setPlayingSounds] = useState<string[]>([]);
   const [soundPlayers, setSoundPlayers] = useState<{ [key: string]: Audio.Sound }>({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchSoundsData = async () => {
-      try {
-        const response = await getAllSound();
-      } catch (error) {
-        console.error('Error fetching sounds data:', error);
+  const fetchSoundsData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response: ApiResponse<Sound[]> = await getAllSound();
+      if (response.err === 0 && response.data) {
+        setSoundsData(response.data);
+      } else {
+        setError(response.mes || 'Lỗi khi lấy dữ liệu âm thanh');
       }
-    };
-
-    const loadVolumes = async () => {
-      try {
-        const savedVolumesString = await AsyncStorage.getItem('soundVolumes');
-        setSoundVolumes(savedVolumesString ? JSON.parse(savedVolumesString) : {});
-      } catch (error) {
-        console.error('Error loading sound volumes:', error);
-      }
-    };
-
-    fetchSoundsData();
-    loadVolumes();
+    } catch (error: any) {
+      setError(`Lỗi không xác định: ${error.message}`);
+      console.error('Error fetching sounds data:', error);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  const handleVolumeChange = (id: string, value: number) => {
+  useEffect(() => {
+    const loadState = async () => {
+      try {
+        const savedVolumesString = await AsyncStorage.getItem('soundVolumes');
+        const savedPlayingSoundsString = await AsyncStorage.getItem('playingSounds');
+        const volumes = savedVolumesString ? JSON.parse(savedVolumesString) : {};
+        const playingSounds = savedPlayingSoundsString ? JSON.parse(savedPlayingSoundsString) : [];
+        console.log('Loaded volumes:', volumes);
+        console.log('Loaded playing sounds:', playingSounds);
+        setSoundVolumes(volumes);
+        setPlayingSounds(playingSounds);
+      } catch (error) {
+        console.error('Error loading saved state:', error);
+        Alert.alert('Error', 'Failed to load saved sound settings.'); //Alert user of load failure.
+      }
+    };
+    fetchSoundsData();
+    loadState();
+  }, [fetchSoundsData]);
+
+  useEffect(() => {
+    console.log('Playing sounds updated:', playingSounds);
+    const restorePlayingSounds = async () => {
+      for (const soundUrl of playingSounds) {
+        try {
+          if (!soundPlayers[soundUrl]) {
+            const soundPlayer = new Audio.Sound();
+            await soundPlayer.loadAsync({ uri: soundUrl });
+            await soundPlayer.setIsLoopingAsync(true); //Set to looping if needed.
+            await soundPlayer.playAsync();
+            setSoundPlayers(prevPlayers => ({ ...prevPlayers, [soundUrl]: soundPlayer }));
+          }
+        } catch (error) {
+          console.error('Error restoring sound:', error);
+          Alert.alert('Error', `Failed to play sound: ${soundUrl}`); // Alert user of playback failure.
+        }
+      }
+    };
+
+    if (playingSounds.length > 0) {
+      restorePlayingSounds();
+    }
+  }, [playingSounds, soundPlayers]);
+
+  const handleVolumeChange = async (url: string, value: number) => {
+    console.log(`Volume change for ${url}: ${value}`);
     setSoundVolumes(prevVolumes => {
-      const updatedVolumes = { ...prevVolumes, [id]: value };
+      const updatedVolumes = { ...prevVolumes, [url]: value };
       AsyncStorage.setItem('soundVolumes', JSON.stringify(updatedVolumes));
       return updatedVolumes;
     });
-    soundPlayers[id]?.setVolumeAsync(value);
+    try {
+      if (soundPlayers[url]) {
+        await soundPlayers[url].setVolumeAsync(value);
+      }
+    } catch (error) {
+      console.error("Error setting volume:", error);
+      Alert.alert("Error", "Failed to adjust volume.");
+    }
   };
 
-  const handlePlayPause = async (url: string) => {
+  const handlePlayPause = async (sound: Sound) => {
+    console.log(`Play/Pause for ${sound.Title}`);
     try {
-      const isPlaying = playingSounds.includes(url);
-      let sound: Audio.Sound = soundPlayers[url];
+      const isPlaying = playingSounds.includes(sound.url);
+      let soundPlayer = soundPlayers[sound.url];
 
       if (isPlaying) {
-        if (sound) {
-          await sound.pauseAsync();
-          console.log('Paused sound:', url);
-          setPlayingSounds(prevSounds => prevSounds.filter(s => s !== url));
+        if (soundPlayer) {
+          await soundPlayer.pauseAsync();
+          setPlayingSounds(prevSounds => {
+            const updatedSounds = prevSounds.filter(s => s !== sound.url);
+            AsyncStorage.setItem('playingSounds', JSON.stringify(updatedSounds));
+            return updatedSounds;
+          });
         }
       } else {
-        if (!sound) {
-          sound = new Audio.Sound();
-          await sound.loadAsync({ uri: url });
-          await sound.playAsync();
-          setSoundPlayers(prevPlayers => ({ ...prevPlayers, [url]: sound }));
+        if (!soundPlayer) {
+          soundPlayer = new Audio.Sound();
+          await soundPlayer.loadAsync({ uri: sound.url });
+          await soundPlayer.setIsLoopingAsync(false); //Set to not loop unless specified
+          await soundPlayer.playAsync();
+          setSoundPlayers(prevPlayers => ({ ...prevPlayers, [sound.url]: soundPlayer }));
         } else {
-          await sound.playAsync();
+          await soundPlayer.playAsync();
         }
 
-        console.log('Playing sound:', url);
-        setPlayingSounds(prevSounds => [...prevSounds, url]);
+        setPlayingSounds(prevSounds => {
+          const updatedSounds = [...prevSounds, sound.url];
+          AsyncStorage.setItem('playingSounds', JSON.stringify(updatedSounds));
+          return updatedSounds;
+        });
       }
     } catch (error) {
       console.error('Error playing or pausing sound:', error);
+      Alert.alert('Error', `Failed to play/pause sound: ${sound.Title}`);
+    }
+  };
+
+  const handleReset = async () => {
+    console.log('Resetting sounds...');
+    try {
+      for (const soundUrl in soundPlayers) {
+        const player = soundPlayers[soundUrl];
+        if (player) {
+          await player.stopAsync();
+          await player.unloadAsync();
+        }
+      }
+      setPlayingSounds([]);
+      setSoundVolumes({});
+      setSoundPlayers({});
+      await AsyncStorage.setItem('playingSounds', JSON.stringify([]));
+      await AsyncStorage.setItem('soundVolumes', JSON.stringify({}));
+      fetchSoundsData(); //Refetches data after reset
+    } catch (error) {
+      console.error('Error resetting sounds:', error);
+      Alert.alert('Error', 'Failed to reset sounds.');
     }
   };
 
   return (
     <View style={styles.container}>
-      {soundsData.length > 0 ? (
-        soundsData.map(sound => (
-          <View key={sound.id} style={styles.soundItem}>
-            <Text style={styles.soundName}>{sound.Title}</Text>
-            <TouchableOpacity onPress={() => handlePlayPause(sound.url)}>
-              <Text style={styles.playPauseButton}>
-                {playingSounds.includes(sound.url) ? 'Pause' : 'Play'}
-              </Text>
-            </TouchableOpacity>
-            <Slider
-              style={styles.sliderContainer}
-              minimumValue={0}
-              maximumValue={1}
-              thumbTintColor='#000'
-              minimumTrackTintColor="#FFFFFF"
-              maximumTrackTintColor="#000000"
-              step={0.01}
-              value={soundVolumes[sound.id] || 0}
-              onValueChange={value => handleVolumeChange(sound.id, value)}
-            />
-          </View>
-        ))
+      {loading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : error ? (
+        <Text style={{ color: 'red' }}>{error}</Text>
+      ) : soundsData.length > 0 ? (
+        <View>
+          {soundsData.map(sound => (
+            <View key={sound.url} style={styles.soundItem}>
+              <Text style={styles.soundName}>{sound.Title}</Text>
+              <TouchableOpacity onPress={() => handlePlayPause(sound)}>
+                <Text style={styles.playPauseButton}>
+                  {playingSounds.includes(sound.url) ? 'Pause' : 'Play'}
+                </Text>
+              </TouchableOpacity>
+              <View style={styles.sliderContainer}>
+                <Slider
+                  style={{ flex: 1 }}
+                  minimumValue={0}
+                  maximumValue={1}
+                  step={0.01}
+                  value={soundVolumes[sound.url] || 0}
+                  onValueChange={value => handleVolumeChange(sound.url, value)}
+                  minimumTrackTintColor="white"
+                  maximumTrackTintColor="gray"
+                />
+              </View>
+            </View>
+          ))}
+          <TouchableOpacity style={styles.resetButton} onPress={handleReset}>
+            <Text style={styles.resetButtonText}>Reset</Text>
+          </TouchableOpacity>
+        </View>
       ) : (
-        <Text>No sounds found.</Text>
+        <Text>Không tìm thấy âm thanh nào.</Text>
       )}
     </View>
   );
@@ -128,6 +219,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 15,
+    backgroundColor: '#222', // Added background color for better visibility
+    color: 'white' //Added color for better visibility
   },
   soundItem: {
     flexDirection: 'row',
@@ -139,7 +232,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'white',
     fontFamily: 'Poppins-Bold',
-    zIndex: 10,
   },
   playPauseButton: {
     padding: 5,
@@ -148,13 +240,24 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginRight: 10,
     color: 'white',
-    fontFamily: 'Poppins-Bold', 
-    zIndex: 5, 
+    fontFamily: 'Poppins-Bold',
   },
   sliderContainer: {
     flex: 1,
     backgroundColor: '#1DB954',
     borderRadius: 10,
+  },
+  resetButton: {
+    backgroundColor: 'red',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  resetButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontFamily: 'Poppins-Bold',
   },
 });
 

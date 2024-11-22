@@ -9,7 +9,7 @@ interface PlayingBarProps {
   isPlaying: boolean;
   handlePlayPause: () => void;
   handleVolumeChange: (value: number) => void;
-  handleNextSong: () => void;
+  
   currentSongUrl: string;
 }
 

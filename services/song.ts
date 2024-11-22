@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Song } from "@/types/types";
 
 const apiUrl = 'http://192.168.2.177:3002/api/v1/song';
 
@@ -7,15 +8,6 @@ interface ApiResponse<T> {
     mes: string;
     data: T;
   }
-  
-interface Song {
-    id: string;
-    Title: string;
-    ArtistId: string; 
-    Url: string;
-    urlImg: string;
-    Description: string;
-}
 
 const getNewSong = async (accessToken: string): Promise<Song[] | null> => {
     try {
@@ -24,13 +16,11 @@ const getNewSong = async (accessToken: string): Promise<Song[] | null> => {
                 Authorization: `Bearer ${accessToken}`,
             },
         });
-        console.log("Full API Response:", response); // ADD THIS LOG
         if (response.status !== 200) {
           console.error(`API returned error status code: ${response.status}`);
           return null;
         }
         if (response.data.err !== 0) {
-          console.error("API Error:", response.data.mes);
           return null;
         }
         return response.data.song;
@@ -43,14 +33,14 @@ const getNewSong = async (accessToken: string): Promise<Song[] | null> => {
     }
 };
 
-const playSong = async (playlistId: string): Promise<{ id: string, title: string, artist: string, url: string, img: string, description: string }[]> => {
+const playSong = async (playlistId: string): Promise<Song[]> => {
     try {
         const response = await axios.get(`${apiUrl}/playSong/${playlistId}`);
-        return response.data.song.map((song: Song) => ({
+        return response.data.song.map((song: any) => ({ 
             id: song.id,
             title: song.Title,
             artist: song.ArtistId,
-            Url: song.Url,  
+            url: song.Url,  
             img: song.urlImg,
             description: song.Description
         }));

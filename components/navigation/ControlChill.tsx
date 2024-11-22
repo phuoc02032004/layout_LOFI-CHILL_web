@@ -7,6 +7,7 @@ import Preset from '../InfoBox/Presets/Preset';
 import Music from '../InfoBox/Music/Music';
 import Visuals from '../InfoBox/Visuals/Visuals'; 
 import Sounds from '../InfoBox/Sounds/Sounds';
+import PlayingBar from '../PlayingBar/PlayingBar';
 
 interface ControlChillProps {
   showInitially: boolean;

@@ -1,74 +1,96 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { Audio } from 'expo-av';
 
-interface MusicContextProps {
+interface MusicContextType {
+  sound: Audio.Sound | null;
   isPlaying: boolean;
-  currentSong: string | null;
-  loadAndPlaySong: (url: string) => void;
-  pause: () => void;
-  resume: () => void;
+  loadAndPlaySong: (url: string) => Promise<void>;
+  pauseSong: () => Promise<void>;
+  resumeSong: () => Promise<void>;
+  unloadSong: () => Promise<void>;
+  togglePlayPause: () => void; 
 }
 
-interface MusicProviderProps {
-  children: ReactNode; 
-}
+const MusicContext = createContext<MusicContextType | null>(null);
 
-const MusicContext = createContext<MusicContextProps | undefined>(undefined);
-
-export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
+export const MusicProvider = ({ children }: { children: React.ReactNode }) => {
   const [sound, setSound] = useState<Audio.Sound | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentSong, setCurrentSong] = useState<string | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false); 
 
   useEffect(() => {
-    const newSound = new Audio.Sound();
-    setSound(newSound); 
-
-    return () => {
-      if (sound) {
-        sound.unloadAsync();
-      }
+    const initSound = async () => {
+      const newSound = new Audio.Sound();
+      setSound(newSound);
+      return () => {
+        if (newSound) newSound.unloadAsync();
+      };
     };
-  }, []); 
+    initSound();
+  }, []);
 
-  const loadAndPlaySong = async (url: string) => {
+  const loadAndPlaySong = useCallback(async (url: string) => {
     if (sound) {
       try {
-        await sound.unloadAsync(); 
+        await sound.unloadAsync();
         await sound.loadAsync({ uri: url });
         await sound.playAsync();
         setIsPlaying(true);
-        setCurrentSong(url);
-      } catch (error) {
-        console.error('Lỗi khi phát nhạc:', error);
+      } catch (error: any) {
+        console.error('Error loading and playing song:', error);
       }
     }
-  };
+  }, [sound]);
 
-  const pause = async () => {
+  const pauseSong = useCallback(async () => {
     if (sound && isPlaying) {
       await sound.pauseAsync();
       setIsPlaying(false);
     }
-  };
+  }, [sound, isPlaying]);
 
-  const resume = async () => {
+  const resumeSong = useCallback(async () => {
     if (sound && !isPlaying) {
       await sound.playAsync();
-      setIsPlaying(true);
+      setIsPlaying(true); 
     }
+  }, [sound, isPlaying]);
+
+  const unloadSong = useCallback(async () => {
+    if (sound) {
+      await sound.unloadAsync();
+      setIsPlaying(false); 
+    }
+  }, [sound]);
+
+  const togglePlayPause = useCallback(() => {
+    setIsPlaying(!isPlaying); 
+    if (isPlaying) {
+      pauseSong();
+    } else {
+      resumeSong();
+    }
+  }, [isPlaying, pauseSong, resumeSong]);
+
+  const contextValue: MusicContextType = {
+    sound,
+    isPlaying,
+    loadAndPlaySong,
+    pauseSong,
+    resumeSong,
+    unloadSong,
+    togglePlayPause
   };
 
   return (
-    <MusicContext.Provider value={{ isPlaying, currentSong, loadAndPlaySong, pause, resume }}>
+    <MusicContext.Provider value={contextValue}>
       {children}
     </MusicContext.Provider>
   );
 };
 
-export const useMusic = (): MusicContextProps => {
+export const useMusic = () => {
   const context = useContext(MusicContext);
-  if (!context) {
+  if (context === null) {
     throw new Error('useMusic must be used within a MusicProvider');
   }
   return context;
