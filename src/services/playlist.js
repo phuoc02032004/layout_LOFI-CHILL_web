@@ -1,4 +1,26 @@
 import axios from "axios";
+import { CgCoffee } from "react-icons/cg";
+import { PiBuildingsBold } from "react-icons/pi";
+import { PiMoonStarsBold } from "react-icons/pi";
+import { PiHeadphonesBold } from "react-icons/pi";
+import { PiRadio } from "react-icons/pi";
+import { PiCloudRainBold } from "react-icons/pi";
+import { PiSunHorizonBold } from "react-icons/pi";
+import { PiPawPrintBold } from "react-icons/pi";
+import { PiBookOpenTextBold } from "react-icons/pi";
+
+const iconMap = {
+    CgCoffee: <CgCoffee />,
+    PiBuildingsBold: <PiBuildingsBold />,
+    PiMoonStarsBold: <PiMoonStarsBold />,
+    PiHeadphonesBold: <PiHeadphonesBold />,
+    PiRadio: <PiRadio />,
+    PiCloudRainBold: <PiCloudRainBold />,
+    PiSunHorizonBold: <PiSunHorizonBold />,
+    PiPawPrintBold: <PiPawPrintBold />,
+    PiBookOpenTextBold: <PiBookOpenTextBold />,
+};
+
 
 const createPlaylist = async (title, description) => {
     try {
@@ -23,15 +45,14 @@ const createPlaylist = async (title, description) => {
     }
 };
 
-
-
 const getAllPlaylists = async () => {
     try {
         const response = await axios.get("http://localhost:3002/api/v1/playlist/getAllPlaylist");
         return response.data.playlist.map(playlist => ({
             id: playlist.id,
             name: playlist.Title,
-            description: playlist.Description
+            description: playlist.Description,
+            icon: playlist.icon,
         }));
     } catch (error) {
         throw error;

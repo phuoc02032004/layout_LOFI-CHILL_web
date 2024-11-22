@@ -4,9 +4,31 @@ import { getAllPlaylists } from '../../../services/playlist';
 import { playSong } from '../../../services/song';
 import { MusicPlayerContext } from '../../Context/MusicPlayerContext';
 
+import { CgCoffee } from "react-icons/cg";
+import { PiBuildingsBold } from "react-icons/pi";
+import { PiMoonStarsBold } from "react-icons/pi";
+import { PiHeadphonesBold } from "react-icons/pi";
+import { PiRadio } from "react-icons/pi";
+import { PiCloudRainBold } from "react-icons/pi";
+import { PiSunHorizonBold } from "react-icons/pi";
+import { PiPawPrintBold } from "react-icons/pi";
+import { PiBookOpenTextBold } from "react-icons/pi";
+
+const iconMap = {
+  CgCoffee: <CgCoffee />,
+  PiBuildingsBold: <PiBuildingsBold />,
+  PiMoonStarsBold: <PiMoonStarsBold />,
+  PiHeadphonesBold: <PiHeadphonesBold />,
+  PiRadio: <PiRadio />,
+  PiCloudRainBold: <PiCloudRainBold />,
+  PiSunHorizonBold: <PiSunHorizonBold />,
+  PiPawPrintBold: <PiPawPrintBold />,
+  PiBookOpenTextBold: <PiBookOpenTextBold />,
+};
+
 const Music = () => {
   const [stationsData, setStations] = useState([]);
-  const [playlistsState, setPlaylistsState] = useState({}); // Lưu trạng thái các playlist
+  const [playlistsState, setPlaylistsState] = useState({});
   const { playSong: playFromContext, currentSongUrl, currentTime } = useContext(MusicPlayerContext);
 
   useEffect(() => {
@@ -41,7 +63,7 @@ const Music = () => {
             ...prevState,
             [playlistId]: { songs, currentSongIndex: 0, currentTime: 0 },
           }));
-          playFromContext(songs[0].url, 0); // Phát bài hát đầu tiên
+          playFromContext(songs[0].url, songs[0].title, songs[0].artist, songs[0].img, 0); // Phát bài hát đầu tiên
         }
       } catch (error) {
         console.error('Error playing playlist:', error);
@@ -103,6 +125,9 @@ const Music = () => {
             className="station-item"
             onClick={() => handlePlaylistClick(station.id)}
           >
+            <div className="station-icon">
+              {iconMap[station.icon] || "No icon available"}
+            </div>
             <div className="station-details">
               <h4 className="station-name">{station.name}</h4>
               <p className="station-description">{station.description}</p>

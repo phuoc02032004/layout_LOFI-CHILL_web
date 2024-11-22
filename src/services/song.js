@@ -29,7 +29,7 @@ const playSong = async (playlistId) => {
         return response.data.song.map(song => ({
             id: song.id,
             title: song.Title,
-            artist: song.Artist,
+            artist: song.artistName,
             url: song.Url,
             img: song.urlImg
         }));

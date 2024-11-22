@@ -25,7 +25,8 @@ const NavigationBar = ({ showInitially, onBackgroundChange }) => {
   const [activeButton, setActiveButton] = useState(null);
   const [showVolumeSlider, setShowVolumeSlider] = useState(false);
   const [isHeart, setIsHeart] = useState(false);
-  const { isPlaying, resumeSong, pauseSong, volume, adjustVolume } = useContext(MusicPlayerContext);
+  const { isPlaying, resumeSong, pauseSong, volume, adjustVolume, currentSongTitle,
+    currentSongArtist, currentImgSong } = useContext(MusicPlayerContext);
 
 
   const handleClick = (buttonName) => {
@@ -63,10 +64,10 @@ const NavigationBar = ({ showInitially, onBackgroundChange }) => {
   return (
     <div className={`navigation-bar ${showInitially ? "show" : ""}`}>
       <div className="song-info">
-        <img className="album-cover" src={albumCover} alt="Album Cover" />
+        <img className="album-cover" src={currentImgSong || albumCover} alt="Album Cover" />
         <div className="song-details">
-          <div className="song-title">BRAVO</div>
-          <div className="artist-name">Moose Dawa</div>
+          <div className="song-title">{currentSongTitle || "Nhom4Lofi"}</div>
+          <div className="artist-name">{currentSongArtist || ""}</div>
         </div>
       </div>
       <div className="controls">

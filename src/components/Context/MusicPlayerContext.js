@@ -10,10 +10,16 @@ export const MusicPlayerProvider = ({ children }) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [volume, setVolume] = useState(50); // Giá trị âm lượng mặc định là 50%
     const audioRef = useRef(null);
+    const [currentSongTitle, setCurrentSongTitle] = useState('');
+    const [currentSongArtist, setCurrentSongArtist] = useState('');
+    const [currentImgSong, setCurrentImgSong] = useState('');
 
-    const playSong = (url, startTime = 0) => {
+    const playSong = (url, title, artist, img, startTime = 0) => {
         if (currentSongUrl !== url) {
             setCurrentSongUrl(url);
+            setCurrentSongTitle(title);
+            setCurrentSongArtist(artist);
+            setCurrentImgSong(img);
             setCurrentTime(startTime);
         }
         setIsPlaying(true);
@@ -63,11 +69,14 @@ export const MusicPlayerProvider = ({ children }) => {
                 playSong,
                 pauseSong,
                 resumeSong,
-                adjustVolume, // Thêm phương thức điều chỉnh âm lượng
+                adjustVolume,
                 currentSongUrl,
                 currentTime,
                 isPlaying,
                 volume,
+                currentSongTitle,
+                currentSongArtist,
+                currentImgSong,
             }}
         >
             {children}
