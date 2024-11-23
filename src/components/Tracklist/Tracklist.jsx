@@ -1,41 +1,59 @@
 import React, { useState, useEffect } from "react";
 import "./Tracklist.css";
+import volumeIcon from "../assets/images/volume-icon.png";
 
 const TrackList = ({ tracks }) => {
-  const [currentAudio, setCurrentAudio] = useState(null); // Lưu trữ đối tượng Audio hiện tại
-  const [playingTrackId, setPlayingTrackId] = useState(null); // Lưu ID bài hát đang phát
+  const [currentAudio, setCurrentAudio] = useState(null); 
+  const [playingTrackId, setPlayingTrackId] = useState(null); 
+  const [isPlaying, setIsPlaying] = useState(false); 
+  const [volume, setVolume] = useState(1); 
 
   const handlePlayPause = (track) => {
-    console.log(track.url); 
-
     if (currentAudio) {
-      currentAudio.pause(); 
       if (playingTrackId === track.id) {
-        setPlayingTrackId(null);
-        setCurrentAudio(null);
+        if (!currentAudio.paused) {
+          currentAudio.pause();
+          setIsPlaying(false); 
+        } else {
+          currentAudio.play();
+          setIsPlaying(true); 
+        }
         return;
+      } else {
+        
+        currentAudio.pause();
       }
     }
 
     
     const newAudio = new Audio(track.url);
+    newAudio.volume = volume; 
     newAudio
       .play()
       .then(() => {
-        setCurrentAudio(newAudio); // Lưu nhạc đang phát
-        setPlayingTrackId(track.id); // Lưu ID bài hát đang phát
+        setCurrentAudio(newAudio); 
+        setPlayingTrackId(track.id); 
+        setIsPlaying(true); 
       })
       .catch((error) => {
         console.error("Error playing audio:", error);
       });
   };
 
-  // Dừng nhạc khi component bị unmount
+  const handleVolumeChange = (e, trackId) => {
+    const newVolume = parseFloat(e.target.value);
+    if (playingTrackId === trackId && currentAudio) {
+      currentAudio.volume = newVolume; 
+    }
+    setVolume(newVolume); 
+  };
+
   useEffect(() => {
     return () => {
       if (currentAudio) {
         currentAudio.pause();
         setCurrentAudio(null);
+        setIsPlaying(false);
       }
     };
   }, [currentAudio]);
@@ -58,12 +76,32 @@ const TrackList = ({ tracks }) => {
           <div className="track-right">
             <span className="track-duration">{track.duration}</span>
             <div className="track-controls">
-              
-              <button onClick={() => handlePlayPause(track)}>
-                {playingTrackId === track.id ? "⏸️" : "▶️"}
+              <button
+                onClick={() => handlePlayPause(track)}
+                className={`play-button ${
+                  playingTrackId === track.id && isPlaying ? "playing" : "paused"
+                }`}
+              >
+                {playingTrackId === track.id && isPlaying ? "⏸️" : "▶️"}
               </button>
-              <button>❤</button> 
-              <button>➕</button> 
+              <button>❤</button>
+              <button>➕</button>
+              <div className="volume-container">
+                <img
+                  src={volumeIcon}
+                  alt="Volume"
+                  className="volume-icon"
+                />
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  value={playingTrackId === track.id ? volume : 1}
+                  onChange={(e) => handleVolumeChange(e, track.id)}
+                  className="volume-slider"
+                />
+              </div>
             </div>
           </div>
         </div>

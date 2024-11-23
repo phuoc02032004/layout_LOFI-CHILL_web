@@ -1,59 +1,94 @@
 .track-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin: 20px 0;
-  }
-  
-  .track-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    backdrop-filter: blur(30px);
-    margin-left: 100px;
-    margin-right: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 20px 0;
+}
 
-  }
-  
-  .track-left {
-    display: flex;
-    align-items: center;
-  }
-  
-  .track-image {
-    width: 50px;
-    height: 50px;
-    margin-right: 10px;
-  }
-  
-  .track-info {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .track-title {
-    font-weight: bold;
-  }
-  
-  .track-artist {
-    font-size: 0.9rem;
-    color: #000;
-  }
-  
-  .track-right {
-    display: flex;
-    align-items: center;
-  }
-  
-  .track-duration {
-    margin-right: 20px;
-  }
-  
-  .track-controls button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    margin-left: 10px;
-  }
-  
+.track-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  backdrop-filter: blur(30px);
+  margin-left: 100px;
+  margin-right: 100px;
+}
+
+.track-left {
+  display: flex;
+  align-items: center;
+}
+
+.track-image {
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+}
+
+.track-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.track-title {
+  font-weight: bold;
+}
+
+.track-artist {
+  font-size: 0.9rem;
+  color: #000;
+}
+
+.track-right {
+  display: flex;
+  align-items: center;
+}
+
+.track-duration {
+  margin-right: 20px;
+}
+
+.track-controls {
+  display: flex;
+  align-items: center;
+}
+
+.track-controls button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.volume-container {
+  display: flex;
+  align-items: center;
+  gap: 5px; /* Tạo khoảng cách nhỏ giữa icon và thanh trượt */
+}
+
+.volume-icon {
+  width: 20px; /* Đặt chiều rộng icon nhỏ hơn */
+  height: 20px; /* Đặt chiều cao icon nhỏ hơn */
+  cursor: pointer; /* Thêm hiệu ứng con trỏ để biểu thị có thể tương tác */
+}
+
+.volume-slider {
+  width: 100px; /* Đặt chiều rộng thanh trượt */
+  -webkit-appearance: none;
+  appearance: none;
+  background: #ddd;
+  border-radius: 5px;
+  height: 5px;
+  outline: none;
+}
+
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: #333;
+  border-radius: 50%;
+  cursor: pointer;
+}
