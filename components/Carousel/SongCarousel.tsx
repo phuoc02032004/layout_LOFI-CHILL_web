@@ -14,7 +14,6 @@ import { getNewSong } from '@/services/song';
 import { useNavigation } from '@react-navigation/native';
 import { Provider as PaperProvider } from 'react-native-paper';
 
-
 interface Song {
   id: string;
   ArtistId: string;
@@ -22,6 +21,16 @@ interface Song {
   Url: string;
   Description: string;
   urlImg: string;
+  filePath: string;
+  filePathImg: string;
+  createdAt: {
+    _seconds: number;
+    _nanoseconds: number;
+  };
+  updatedAt: {
+    _seconds: number;
+    _nanoseconds: number;
+  };
 }
 
 interface SongCarouselProps {
@@ -68,13 +77,11 @@ const SongCarousel: React.FC<SongCarouselProps> = ({ accessToken }) => {
     };
 
 
-    if (accessToken) { // Chỉ fetch nếu có accessToken
+    if (accessToken) {
       fetchSongs();
     }
   }, [accessToken]);
   const renderItem = ({ item }: { item: Song }) => {
-    console.log("Rendering item:", item);
-    console.log('item in renderItem:', item);
     return (
       <TouchableOpacity
         onPress={() => navigation.navigate("SongDetailScreen", { song: item, artistId: item.ArtistId })}

@@ -1,30 +1,47 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { FlatList, ScrollView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';  // Thư viện biểu tượng FontAwesome
 
-import { Songs } from '../../data/SongData'; 
-import { ImageSlider } from '../../data/SliderData'; 
+interface SongTracksProps {
+    songData: Song | Song[];
+}
 
-const Track = () => {
+interface Song {
+    id: string;
+    ArtistId: string;
+    Title: string;
+    Url: string;
+    Description: string;
+    urlImg: string;
+    filePath: string;
+    filePathImg: string;
+    createdAt: {
+        _seconds: number;
+        _nanoseconds: number;
+    };
+    updatedAt: {
+        _seconds: number;
+        _nanoseconds: number;
+    };
+}
+
+const Track: React.FC<SongTracksProps> = ({ songData }) => {
+    const isSingleSong = !Array.isArray(songData);
+    const data = isSingleSong ? [songData] : songData;
     return (
         <View style={styles.container}>
-            {Songs.map(song => {
-                const artist = ImageSlider.filter(artist => song.artistIds.includes(artist.id));
-
-                return (
-                    <View key={song.id} style={styles.trackItem}>
+            <FlatList
+                data={data}
+                keyExtractor={(item, index) => item.id || index.toString()}
+                renderItem={({ item }) => (
+                    <View style={styles.trackItem}>
                         <View style={styles.trackLeft}>
-                            <Image source={song.image} style={styles.albumCover} />
-
-                            <View style={styles.trackInfo}>
-                                <Text style={styles.songTitle}>{song.name}</Text>
-                                {artist.map((artistInfo) => (
-                                    <Text key={artistInfo.id} style={styles.artistName}>{artistInfo.name}</Text>
-                                ))}
-                            </View>
+                            <Image source={{ uri: item.urlImg }} style={styles.albumCover} />
+                            <Text style={styles.songTitle}>{item.Title}</Text>
                         </View>
-
                         <View style={styles.trackRight}>
+                            <Text style={styles.trackDuration}>03:45</Text> {/* Thời lượng tạm thời, nên lấy từ item.duration nếu có */}
                             <View style={styles.trackControls}>
                                 <TouchableOpacity style={styles.controlButton}>
                                     <Icon name="play" size={24} color="#000" />
@@ -38,8 +55,8 @@ const Track = () => {
                             </View>
                         </View>
                     </View>
-                );
-            })}
+                )}
+            />
         </View>
     );
 };
@@ -49,6 +66,10 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 10,
     },
+    trackDuration: {
+        fontSize: 14,
+        color: 'gray',
+    },
     trackItem: {
         flexDirection: 'row',
         marginBottom: 15,
@@ -56,8 +77,8 @@ const styles = StyleSheet.create({
         borderBottomColor: '#e0e0e0',
         paddingBottom: 15,
         backgroundColor: 'rgba(255, 255, 255, 0.4)',  // Màu trắng với độ trong suốt (opacity)
-        borderRadius: 8,  
-        paddingHorizontal: 15, 
+        borderRadius: 8,
+        paddingHorizontal: 15,
         padding: 10,
     },
     trackLeft: {

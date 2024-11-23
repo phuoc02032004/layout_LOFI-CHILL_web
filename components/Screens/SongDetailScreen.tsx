@@ -8,7 +8,7 @@ import { ImageSlider, ImageSliderType } from '@/data/SliderData';
 import { FlatList } from 'react-native-gesture-handler';
 import SongTracks from '../SongTracks/SongTracks';
 import { BlurView } from 'expo-blur';
-import { ImageSourcePropType } from 'react-native'; 
+import { ImageSourcePropType } from 'react-native';
 
 type RootStackParamList = {
     SongDetailScreen: { song: Song };
@@ -37,19 +37,19 @@ interface Song {
     };
 }
 
-
 const SongDetailScreen = () => {
     const route = useRoute<SongDetailScreenRouteProp>();
     const { song, artistId } = route.params;
     const [accessToken, setAccessToken] = useState<string | null>(null);
     const getArtistById = (artistId: number) => ImageSlider.find(artist => artist.id === artistId);
-    const imageSource = typeof song.urlImg === 'string' && song.urlImg.trim().length >0 ? { uri: song.urlImg } : require('@/assets/images/essentials.jpg');     if (!song) {
+    const imageSource = typeof song.urlImg === 'string' && song.urlImg.trim().length > 0 ? { uri: song.urlImg } : require('@/assets/images/essentials.jpg'); if (!song) {
         return <Text>No song data</Text>;
     }
     useEffect(() => {
         const getAccessToken = async () => {
             try {
                 const storedToken = await AsyncStorage.getItem('accessToken');
+                console.log(storedToken)
                 setAccessToken(storedToken);
             } catch (error) {
                 console.error("Error getting access token:", error);
@@ -67,7 +67,7 @@ const SongDetailScreen = () => {
                 style={styles.backgroundImage}
                 resizeMode="cover"
             >
-                <BlurView intensity={50} style={StyleSheet.absoluteFillObject} /> {/* Add BlurView */}
+                <BlurView intensity={50} style={StyleSheet.absoluteFillObject} />
                 <View style={styles.song_detail}>
                     <Text style={styles.title}>{song.Title}</Text>
                     <Text style={styles.desc}>{song.Description}</Text>
@@ -84,11 +84,11 @@ const SongDetailScreen = () => {
                         const artist = getArtistById(parseInt(item, 10));
                         return artist && artist.image ? ( //Check if artist and image exist
                             <View style={styles.artistContainer}>
-                                <Image
-                                    source={{ uri: artist.image }} // Corrected source
+                                {/* <Image
+                                    // source={{ uri: artist.image }} // Corrected source
                                     style={styles.artistImage}
-                                />
-                                {/* <Image source={imageSource} style={styles.artistImage} /> */}
+                                /> */}
+                                <Image source={imageSource} style={styles.artistImage} />
                                 <Text style={styles.artistName}>{artist.name}</Text>
                             </View>
                         ) : null;
@@ -96,13 +96,20 @@ const SongDetailScreen = () => {
                     contentContainerStyle={styles.artistList}
                     showsHorizontalScrollIndicator={false}
                 />
-                <Text style={styles.newsong}>Song Tracks</Text>
-                <SongTracks songData={song} />
-                <Text style={styles.newsong}>NEW SONG</Text>
-                {accessToken && <SongCarousel accessToken={accessToken} />}
-                <Text style={styles.newsong}>ARTISTS</Text>
-                <ArtistCarousel />
+                <View>
+                    <Text style={styles.newsong}>Song Tracks</Text>
+                    <View> {/* Bọc SongTracks bằng View */}
+                        <SongTracks songData={song} />
+                    </View>
+                </View>
+                <View>
+                    <Text style={styles.newsong}>NEW SONG</Text>
+                    <View> {/* Bọc SongCarousel bằng View */}
+                        {accessToken && <SongCarousel accessToken={accessToken} />}
+                    </View>
+                </View>
             </View>
+
             <View style={styles.spacewhite}></View>
         </ScrollView>
     );
