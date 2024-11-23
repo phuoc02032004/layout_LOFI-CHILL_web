@@ -1,6 +1,5 @@
 import React, { createContext, useState, useRef, useEffect } from 'react';
 import '../InfoBox/Sounds/Sounds.css';
-import { useLocation } from 'react-router-dom';
 
 export const MusicPlayerContext = createContext();
 
@@ -8,13 +7,19 @@ export const MusicPlayerProvider = ({ children }) => {
     const [currentSongUrl, setCurrentSongUrl] = useState('');
     const [currentTime, setCurrentTime] = useState(0);
     const [isPlaying, setIsPlaying] = useState(false);
-    const [volume, setVolume] = useState(50); // Giá trị âm lượng mặc định là 50%
+    const [volume, setVolume] = useState(50);
     const audioRef = useRef(null);
     const [currentSongTitle, setCurrentSongTitle] = useState('');
     const [currentSongArtist, setCurrentSongArtist] = useState('');
     const [currentImgSong, setCurrentImgSong] = useState('');
+    const [playlist, setPlaylist] = useState([]); 
+    const [currentIndex, setCurrentIndex] = useState(0);
 
-    const playSong = (url, title, artist, img, startTime = 0) => {
+    const playSong = (url, title, artist, img, startTime = 0, playlistData = [], index = 0) => {
+        if (playlistData.length > 0) {
+            setPlaylist(playlistData); // Cập nhật danh sách phát
+            setCurrentIndex(index); // Cập nhật chỉ mục bài hát
+        }
         if (currentSongUrl !== url) {
             setCurrentSongUrl(url);
             setCurrentSongTitle(title);
@@ -23,6 +28,25 @@ export const MusicPlayerProvider = ({ children }) => {
             setCurrentTime(startTime);
         }
         setIsPlaying(true);
+    };
+
+    const playNextSong = () => {
+        if (playlist.length > 0 && currentIndex < playlist.length - 1) {
+            const nextIndex = currentIndex + 1;
+            const nextSong = playlist[nextIndex];
+            setCurrentIndex(nextIndex);
+            playSong(
+                nextSong.url,
+                nextSong.title,
+                nextSong.artist,
+                nextSong.img,
+                0,
+                playlist,
+                nextIndex
+            );
+        } else {
+            setIsPlaying(false);
+        }
     };
 
     const pauseSong = () => {
@@ -36,7 +60,7 @@ export const MusicPlayerProvider = ({ children }) => {
     const adjustVolume = (newVolume) => {
         setVolume(newVolume);
         if (audioRef.current) {
-            audioRef.current.volume = newVolume / 100; // Chuyển đổi từ 0-100 sang 0-1
+            audioRef.current.volume = newVolume / 100;
         }
     };
 
@@ -62,7 +86,6 @@ export const MusicPlayerProvider = ({ children }) => {
         }
     }, [currentSongUrl, isPlaying, volume, currentTime]);
 
-
     return (
         <MusicPlayerContext.Provider
             value={{
@@ -70,6 +93,7 @@ export const MusicPlayerProvider = ({ children }) => {
                 pauseSong,
                 resumeSong,
                 adjustVolume,
+                playNextSong, // Hàm để phát bài tiếp theo (có thể gọi từ bên ngoài)
                 currentSongUrl,
                 currentTime,
                 isPlaying,
@@ -77,13 +101,15 @@ export const MusicPlayerProvider = ({ children }) => {
                 currentSongTitle,
                 currentSongArtist,
                 currentImgSong,
+                playlist,
+                currentIndex,
             }}
         >
             {children}
             <audio
                 ref={audioRef}
                 onTimeUpdate={() => setCurrentTime(audioRef.current?.currentTime || 0)}
-                onEnded={() => setIsPlaying(false)}
+                onEnded={playNextSong} // Gọi playNextSong khi bài hát kết thúc
                 style={{ display: 'none' }}
             />
         </MusicPlayerContext.Provider>

@@ -63,7 +63,7 @@ const Music = () => {
             ...prevState,
             [playlistId]: { songs, currentSongIndex: 0, currentTime: 0 },
           }));
-          playFromContext(songs[0].url, songs[0].title, songs[0].artist, songs[0].img, 0); // Phát bài hát đầu tiên
+          playFromContext(songs[0].url, songs[0].title, songs[0].artist, songs[0].img, 0, songs, 0); // Phát bài hát đầu tiên
         }
       } catch (error) {
         console.error('Error playing playlist:', error);
@@ -81,11 +81,18 @@ const Music = () => {
     }));
   };
 
-  const handleSongEnd = (playlistId) => {
-    const playlist = playlistsState[playlistId];
-    if (playlist && playlist.currentSongIndex < playlist.songs.length - 1) {
-      const nextIndex = playlist.currentSongIndex + 1;
-      const nextSong = playlist.songs[nextIndex];
+  const handleSongEnd = () => {
+    const playlistId = findPlaylistIdBySongUrl(currentSongUrl);
+    if (!playlistId) return;
+
+    const { songs, currentSongIndex } = playlistsState[playlistId];
+
+    // Nếu còn bài hát tiếp theo
+    if (currentSongIndex < songs.length - 1) {
+      const nextIndex = currentSongIndex + 1;
+      const nextSong = songs[nextIndex];
+
+      // Cập nhật state
       setPlaylistsState((prevState) => ({
         ...prevState,
         [playlistId]: {
@@ -94,7 +101,11 @@ const Music = () => {
           currentTime: 0,
         },
       }));
-      playFromContext(nextSong.url, 0); // Phát bài hát tiếp theo
+
+      // Phát bài hát tiếp theo
+      playFromContext(nextSong.url, nextSong.title, nextSong.artist, nextSong.img, 0);
+    } else {
+      console.log("Playlist đã kết thúc.");
     }
   };
 
