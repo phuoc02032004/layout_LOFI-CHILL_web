@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useNavigation } from "expo-router";
+import { useNavigation } from '@react-navigation/native';
 import { getAllArtist } from "@/services/artist";
 import { Provider as PaperProvider } from 'react-native-paper';
 

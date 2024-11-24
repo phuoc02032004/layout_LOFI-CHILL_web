@@ -14,6 +14,7 @@ import ArtistDetailscreen from '@/components/Screens/ArtistDetailscreen';
 import { MusicProvider } from '@/components/MusicContext/MusicContext';
 import PlayerProvider from '@/features/player/PlayerProvider';
 import SongCarousel from '@/components/Carousel/SongCarousel';
+import ArtistCarousel from '@/components/Carousel/ArtistCarousel';
 
 const Stack = createNativeStackNavigator();
 const App = () => {
@@ -34,32 +35,28 @@ const App = () => {
 
     checkLoggedIn();
   }, []);
-  
+
   useEffect(() => {
     if (initialRouteName) {
     }
   }, [initialRouteName]);
   return (
     <MusicProvider>
-    <PlayerProvider>
-      <GestureHandlerRootView style={{ flex: 1 }}>
+      <PlayerProvider>
+        <GestureHandlerRootView style={{ flex: 1 }}>
           <NavigationContainer independent={true}>
             <Stack.Navigator initialRouteName={isLoggedIn ? "HomeScreen" : "LoginScreen"}>
               <Stack.Screen name="LoginScreen" component={LoginScreen} options={{ headerShown: false }} />
               <Stack.Screen name="HomeScreen" component={BottomTab} options={{ headerShown: false }} />
               <Stack.Screen name="RegisterScreen" component={RegisterScreen} options={{ headerShown: false }} />
               <Stack.Screen name="SongDetailScreen" component={SongDetailScreen} />
-              <Stack.Screen
-                name="Songscreen"
-                component={SongCarousel}
-                options={{ headerShown: false }}
-                initialParams={{ accessToken }}
-              />
+              <Stack.Screen name="Songscreen" component={SongCarousel} options={{ headerShown: false }} initialParams={{ accessToken }}/>
               <Stack.Screen name="ArtistDetailscreen" component={ArtistDetailscreen} />
+              <Stack.Screen name="Artscreen" component={ArtistCarousel} options={{ headerShown: false }}/>
             </Stack.Navigator>
           </NavigationContainer>
-      </GestureHandlerRootView>
-    </PlayerProvider>
+        </GestureHandlerRootView>
+      </PlayerProvider>
     </MusicProvider>
   );
 };
