@@ -1,5 +1,23 @@
 import axios from "axios";
 
+interface Song {
+  id: string;
+  ArtistId: string;
+  Title: string;
+  Url: string;
+  Description: string;
+  urlImg: string;
+  filePath: string;
+  filePathImg: string;
+  createdAt: {
+    _seconds: number;
+    _nanoseconds: number;
+  };
+  updatedAt: {
+    _seconds: number;
+    _nanoseconds: number;
+  };
+}
 interface Artist {
   id: string;
   Description: string;
@@ -16,6 +34,11 @@ interface Artist {
   };
   songs: string;
 }
+interface SongResponse {
+  err: number;
+  mes: string;
+  songs: Song[];
+}
 
 interface ArtistResponse {
   err: number;
@@ -23,7 +46,7 @@ interface ArtistResponse {
   artist: Artist;
 }
 
-const apiUrl = "http://192.168.2.177:3002/api/v1/artist";
+const apiUrl = "http://172.16.21.103:3002/api/v1/artist";
 
 const createArtist = async (
   name: string,
@@ -142,4 +165,25 @@ const getSpecificArtist = async (artistId: string) => {
   }
 };
 
-export { createArtist, getAllArtist, updateArtist, deleteArtist, getSpecificArtist };
+const getArtistSong = async (artistId: string) => {
+  try {
+      const response = await await axios.get(`${apiUrl}/getArtistSong/${artistId}`);
+      if (response.status === 200) {
+        //Kiểm tra xem response.data có đúng cấu trúc mong muốn không
+        if (Array.isArray(response.data) && response.data.every(item => item.ArtistId && item.Title && item.Url)) {
+          return { songs: response.data };
+        } else {
+          console.error("Invalid data format from getArtistSong:", response.data);
+          throw new Error("Invalid data format from getArtistSong");
+        }
+      } else {
+        console.error(`Error fetching artist's songs: Status code ${response.status}, data: `, response.data);
+        throw new Error(`Error fetching artist's songs: Status code ${response.status}`);
+      }
+    } catch (error: any) {
+      console.error("Error in getArtistSong:", error);
+      throw error; // Re-throw the error to be handled in useEffect
+    }
+};
+
+export { createArtist, getAllArtist, updateArtist, deleteArtist, getSpecificArtist,getArtistSong };
