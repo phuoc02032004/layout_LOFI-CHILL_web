@@ -1,42 +1,66 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import './Presets.css';
 import { AiOutlineCamera } from "react-icons/ai";
 import { GiSoundWaves } from "react-icons/gi";
-import axios from 'axios';
+import { getAllPreset } from '../../../services/presets';
+import { playSong } from '../../../services/song';
+import { MusicPlayerContext } from "../../Context/MusicPlayerContext";
 
-const Presets = () => {
+const Presets = ({ onBackgroundChange }) => { 
   const [presetsData, setPresetsData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { playSong: playMusic, setPlaylist } = useContext(MusicPlayerContext);
 
-  const getAllPreset = async () => {
+  const fetchPresets = async () => {
+    setIsLoading(true);
     try {
-      const response = await axios.get('http://localhost:3002/api/v1/presets/getAllPresets');
-
-      if (response.data && response.data.err === 0) {
-        const formattedPresets = response.data.presets.map(preset => ({
-          id: preset.id || '',
-          name: preset.Title || 'Unknown Title',
-          description: preset.Description || 'No Description',
-          visuals: (preset.urls && preset.urls.visualUrlVideo) || 'No Visuals Available',
-          sounds: (preset.urls && preset.urls.soundDetails)
-            ? preset.urls.soundDetails.map(sound => sound.soundTitle).join(', ')
-            : 'No Sounds Available',
-          image: (preset.urls && preset.urls.visualUrlImg) || 'default-image-url.jpg',
-          isDefault: preset.isDefault || false,
-        }));
-        setPresetsData(formattedPresets);
-      } else {
-        console.error('Failed to fetch presets:', response.data.mes);
-      }
+      const presets = await getAllPreset();
+      setPresetsData(presets);
     } catch (error) {
-      console.error('Error fetching presets:', error);
+      console.error('Error fetching presets:', error.message);
+      alert('Failed to fetch presets. Please try again later.');
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handlePresetClick = async (preset) => {
+    if (preset.playlistId) {
+        try {
+            const songs = await playSong(preset.playlistId); 
+            setPlaylist(songs); 
+
+            if (songs.length > 0) {
+                const firstSong = songs[0]; 
+                playMusic(
+                    firstSong.url,
+                    firstSong.title,
+                    firstSong.artist,
+                    firstSong.img,
+                    0, 
+                    songs, 
+                    0 
+                );
+            } else {
+                console.warn('Playlist is empty for this preset.');
+            }
+        } catch (error) {
+            console.error('Error playing preset playlist:', error);
+        }
+    } else {
+        console.warn('This preset does not have a valid playlistId.');
+    }
+
+    if (preset.visualVideoUrl) {
+        onBackgroundChange(preset.visualVideoUrl); 
+    } else if (preset.visualImgUrl) {
+        console.warn('Only video visuals are supported for the background.');
+    }
+};
+
+
   useEffect(() => {
-    getAllPreset();
+    fetchPresets();
   }, []);
 
   return (
@@ -44,33 +68,29 @@ const Presets = () => {
       {isLoading ? (
         <div>Loading...</div>
       ) : (
-        presetsData.map(preset => (
-          <div key={preset.id} className="preset-item">
+        presetsData.map((preset) => (
+          <div
+            key={preset.id}
+            className="preset-item"
+            onClick={() => handlePresetClick(preset)}
+          >
             <img
-              src={preset.image}
+              src={preset.visualImgUrl || 'https://example.com/default-image.jpg'}
               alt={preset.name}
               className="preset-image"
             />
             <div className="preset-details">
               <h4 className="preset-name">{preset.name}</h4>
               <div className="preset-info">
-                <AiOutlineCamera className="icon" /> {preset.visuals}
+                <AiOutlineCamera className="icon" />
+                {preset.visualVideoUrl || 'No Visuals Available'}
               </div>
-              {preset.sounds && (
+              {preset.sounds && preset.sounds.length > 0 && (
                 <div className="preset-info">
-                  <GiSoundWaves className="icon" /> {preset.sounds}
+                  <GiSoundWaves className="icon" />
+                  {preset.sounds.map((sound) => sound.soundTitle).join(', ')}
                 </div>
               )}
-            </div>
-            <div className="preset-actions">
-              {preset.isDefault ? (
-                <button className="default-button">DEFAULT</button>
-              ) : (
-                <button className="save-button">SAVE</button>
-              )}
-              <div className="options-button">
-                <span>...</span> 
-              </div>
             </div>
           </div>
         ))

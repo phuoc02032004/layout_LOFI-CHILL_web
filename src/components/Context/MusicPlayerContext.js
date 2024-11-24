@@ -17,8 +17,8 @@ export const MusicPlayerProvider = ({ children }) => {
 
     const playSong = (url, title, artist, img, startTime = 0, playlistData = [], index = 0) => {
         if (playlistData.length > 0) {
-            setPlaylist(playlistData); // Cập nhật danh sách phát
-            setCurrentIndex(index); // Cập nhật chỉ mục bài hát
+            setPlaylist(playlistData); 
+            setCurrentIndex(index); 
         }
         if (currentSongUrl !== url) {
             setCurrentSongUrl(url);
@@ -66,13 +66,11 @@ export const MusicPlayerProvider = ({ children }) => {
 
     useEffect(() => {
         if (audioRef.current) {
-            // Nếu nguồn thay đổi, đặt lại src và thời gian
             if (currentSongUrl && audioRef.current.src !== currentSongUrl) {
                 audioRef.current.src = currentSongUrl;
                 audioRef.current.currentTime = currentTime;
             }
 
-            // Cập nhật âm lượng
             audioRef.current.volume = volume / 100;
 
             // Phát hoặc dừng nhạc tùy thuộc trạng thái
@@ -93,7 +91,7 @@ export const MusicPlayerProvider = ({ children }) => {
                 pauseSong,
                 resumeSong,
                 adjustVolume,
-                playNextSong, // Hàm để phát bài tiếp theo (có thể gọi từ bên ngoài)
+                playNextSong, 
                 currentSongUrl,
                 currentTime,
                 isPlaying,
@@ -102,6 +100,7 @@ export const MusicPlayerProvider = ({ children }) => {
                 currentSongArtist,
                 currentImgSong,
                 playlist,
+                setPlaylist,
                 currentIndex,
             }}
         >
@@ -109,7 +108,7 @@ export const MusicPlayerProvider = ({ children }) => {
             <audio
                 ref={audioRef}
                 onTimeUpdate={() => setCurrentTime(audioRef.current?.currentTime || 0)}
-                onEnded={playNextSong} // Gọi playNextSong khi bài hát kết thúc
+                onEnded={playNextSong} 
                 style={{ display: 'none' }}
             />
         </MusicPlayerContext.Provider>

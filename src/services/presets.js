@@ -28,6 +28,7 @@ const getAllPreset = async () => {
                 description: preset.Description,
                 visualVideoUrl: preset.urls.visualUrlVideo,
                 visualImgUrl: preset.urls.visualUrlImg,
+                playlistId: preset.playlistId,
                 sounds: preset.urls.soundDetails.map(sound => ({
                     soundUrl: sound.soundUrl,
                     soundVol: sound.volume,

@@ -25,9 +25,16 @@ const NavigationBar = ({ showInitially, onBackgroundChange }) => {
   const [activeButton, setActiveButton] = useState(null);
   const [showVolumeSlider, setShowVolumeSlider] = useState(false);
   const [isHeart, setIsHeart] = useState(false);
-  const { isPlaying, resumeSong, pauseSong, volume, adjustVolume, currentSongTitle,
-    currentSongArtist, currentImgSong } = useContext(MusicPlayerContext);
-
+  const {
+    isPlaying,
+    resumeSong,
+    pauseSong,
+    volume,
+    adjustVolume,
+    currentSongTitle,
+    currentSongArtist,
+    currentImgSong,
+  } = useContext(MusicPlayerContext);
 
   const handleClick = (buttonName) => {
     setActiveButton(buttonName);
@@ -64,7 +71,11 @@ const NavigationBar = ({ showInitially, onBackgroundChange }) => {
   return (
     <div className={`navigation-bar ${showInitially ? "show" : ""}`}>
       <div className="song-info">
-        <img className="album-cover" src={currentImgSong || albumCover} alt="Album Cover" />
+        <img
+          className="album-cover"
+          src={currentImgSong || albumCover}
+          alt="Album Cover"
+        />
         <div className="song-details">
           <div className="song-title">{currentSongTitle || "Nhom4Lofi"}</div>
           <div className="artist-name">{currentSongArtist || ""}</div>
@@ -101,6 +112,7 @@ const NavigationBar = ({ showInitially, onBackgroundChange }) => {
           </div>
         )}
       </div>
+
       <div className="navigation-items">
         <div className="nav-item" onClick={() => handleClick("Presets")}>
           <FiSliders /> Presets
@@ -111,7 +123,7 @@ const NavigationBar = ({ showInitially, onBackgroundChange }) => {
             content={
               <div>
                 <p>Pre-curated music, visuals & atmospheres</p>
-                <Presets />
+                <Presets onBackgroundChange={onBackgroundChange} />{" "}
               </div>
             }
             onClose={handleClose}
