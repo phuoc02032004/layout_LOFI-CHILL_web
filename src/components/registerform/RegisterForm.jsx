@@ -129,16 +129,8 @@ const RegisterForm = () => {
         ) : (
           <>
             <div className="input-box">
-              <input
-                type='text'
-                name='verificationCode'
-                placeholder='Enter verification code'
-                required
-                value={verificationCode}
-                onChange={(e) => setVerificationCode(e.target.value)}
-              />
+              <h3>Check Your Mail To Verify Account</h3>
             </div>
-            <button type='submit'>Verify</button>
           </>
         )}
         <div className="login-link">

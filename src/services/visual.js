@@ -1,4 +1,6 @@
+import apiClient from "../CustomAxios/apiClient";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 const createVisual = async (title, imgFile, VideoFile) => {
     try {
@@ -20,12 +22,17 @@ const createVisual = async (title, imgFile, VideoFile) => {
 
 const getAllVisual = async () => {
     try {
-        const response = await axios.get('http://localhost:3002/api/v1/visual/getAllVisual');
+        const response = await apiClient.get('/visual/getAllVisual', {
+            headers: {
+                Authorization: `Bearer ${Cookies.get('accessToken')}`,
+            }
+        });
         return response.data.visual.map(visual => ({
             id: visual.id,
             title: visual.Title,
             urlImg: visual.imgUrl,
             urlVideo: visual.videoUrl,
+            vip: visual.vip,
         }));
     } catch (error) {
         console.error('Error fetching sound:', error);

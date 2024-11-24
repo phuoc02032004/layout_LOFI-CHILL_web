@@ -1,6 +1,8 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { getAllVisual } from '../../../services/visual';
 import './Visuals.css';
+import { jwtDecode } from 'jwt-decode';
+import Cookies from 'js-cookie';
 
 const Visuals = ({ onBackgroundChange }) => {
   const videoRef = useRef(null);
@@ -12,12 +14,14 @@ const Visuals = ({ onBackgroundChange }) => {
     return cachedVisuals ? JSON.parse(cachedVisuals) : [];
   });
 
+  const [isVip, setIsVip] = useState(false);
+
   useEffect(() => {
     const fetchVisuals = async () => {
       try {
         const data = await getAllVisual();
         setVisualsData(data);
-        localStorage.setItem('visualsData', JSON.stringify(data));  // Lưu vào localStorage
+        localStorage.setItem('visualsData', JSON.stringify(data));
       } catch (error) {
         console.error('Error loading visuals:', error);
       }
@@ -48,6 +52,21 @@ const Visuals = ({ onBackgroundChange }) => {
     };
   }, [selectedVideo]);
 
+  useEffect(() => {
+    const accessToken = Cookies.get('accessToken');
+    if (accessToken) {
+      const decodedToken = jwtDecode(accessToken);
+      setIsVip(decodedToken.isVip);
+    }
+  }, []);
+
+  const filteredVisuals = visualsData.filter((background) => {
+    if (background.vip && !isVip) {
+      return false;
+    }
+    return true;
+  });
+
   const handleBackgroundChange = useCallback((videoSrc) => {
     setSelectedVideo(videoSrc);
     onBackgroundChange(videoSrc);
@@ -58,7 +77,7 @@ const Visuals = ({ onBackgroundChange }) => {
       <video ref={videoRef} src={selectedVideo} loop muted autoPlay crossOrigin="anonymous" style={{ display: 'none' }} />
       <canvas ref={canvasRef} style={{ display: 'none' }} />
 
-      {visualsData.map((background) => (
+      {filteredVisuals.map((background) => (
         <div
           key={background.id}
           className="background-item"
