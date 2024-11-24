@@ -102,6 +102,8 @@ const ArtistCarousel = () => {
         decelerationRate="normal"
         contentContainerStyle={{ paddingHorizontal: 40 }}
         keyExtractor={(item) => item.id}
+        nestedScrollEnabled={true}
+
       />
     </PaperProvider>
   );

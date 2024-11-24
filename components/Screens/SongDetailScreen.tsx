@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, Text, Image, ImageBackground, StyleSheet, ScrollView, Platform } from 'react-native';
+import { View, Text, Image, ImageBackground, StyleSheet, Platform } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import SongCarousel from '../Carousel/SongCarousel';
@@ -61,17 +62,18 @@ const SongDetailScreen = () => {
 
 
     return (
-        <ScrollView style={styles.scrollView}>
+        <ScrollView scrollEnabled={false} style={styles.scrollView}>
             <ImageBackground
                 source={{ uri: song.urlImg }}
                 style={styles.backgroundImage}
                 resizeMode="cover"
             >
-                <BlurView intensity={50} style={StyleSheet.absoluteFillObject} />
+                <BlurView intensity={50} style={StyleSheet.absoluteFillObject} >
                 <View style={styles.song_detail}>
                     <Text style={styles.title}>{song.Title}</Text>
                     <Text style={styles.desc}>{song.Description}</Text>
                 </View>
+                </BlurView>
             </ImageBackground>
 
             <View style={styles.container}>
@@ -80,15 +82,16 @@ const SongDetailScreen = () => {
                     data={[song.ArtistId]}
                     keyExtractor={(item) => item.toString()}
                     horizontal={true}
+                    nestedScrollEnabled={true}
                     renderItem={({ item }) => {
                         const artist = getArtistById(parseInt(item, 10));
                         return artist && artist.image ? ( //Check if artist and image exist
                             <View style={styles.artistContainer}>
                                 {/* <Image
-                                    // source={{ uri: artist.image }} // Corrected source
+                                    source={{ uri: artist.image }} // Corrected source
                                     style={styles.artistImage}
                                 /> */}
-                                <Image source={imageSource} style={styles.artistImage} />
+
                                 <Text style={styles.artistName}>{artist.name}</Text>
                             </View>
                         ) : null;
@@ -98,13 +101,13 @@ const SongDetailScreen = () => {
                 />
                 <View>
                     <Text style={styles.newsong}>Song Tracks</Text>
-                    <View> {/* Bọc SongTracks bằng View */}
+                    <View> 
                         <SongTracks songData={song} />
                     </View>
                 </View>
                 <View>
                     <Text style={styles.newsong}>NEW SONG</Text>
-                    <View> {/* Bọc SongCarousel bằng View */}
+                    <View> 
                         {accessToken && <SongCarousel accessToken={accessToken} />}
                     </View>
                 </View>
@@ -127,8 +130,9 @@ const styles = StyleSheet.create({
         height: 750,
     },
     song_detail: {
+        marginTop:250,
         alignItems: 'center',
-        marginBottom: 20,
+
         padding: 20,
     },
     title: {

@@ -34,6 +34,7 @@ const Track: React.FC<SongTracksProps> = ({ songData }) => {
             <FlatList
                 data={data}
                 keyExtractor={(item, index) => item.id || index.toString()}
+                nestedScrollEnabled={true}
                 renderItem={({ item }) => (
                     <View style={styles.trackItem}>
                         <View style={styles.trackLeft}>

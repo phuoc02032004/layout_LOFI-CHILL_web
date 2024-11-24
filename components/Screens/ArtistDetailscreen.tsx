@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, ActivityIndicator, ImageBackground, Dimensions, Alert, Platform } from 'react-native';
+import { View, Text, Image, StyleSheet, ActivityIndicator, ImageBackground, Dimensions, Alert, Platform } from 'react-native';
 import { useRoute } from '@react-navigation/native';
-import { getSpecificArtist } from '@/services/artist';
+import { getSpecificArtist, getArtistSong } from '@/services/artist';
 import { BlurView } from 'expo-blur';
+import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
+
+import SongTracks from '../SongTracks/SongTracks';
+import ArtistCarousel from '../Carousel/ArtistCarousel';
 
 interface Artist {
   id: string;
@@ -18,9 +22,26 @@ interface Artist {
     _seconds: number;
     _nanoseconds: number;
   };
-  songs: string;
+  songs: Song[];
 }
-
+interface Song {
+  id: string;
+  ArtistId: string;
+  Title: string;
+  Url: string;
+  Description: string;
+  urlImg: string;
+  filePath: string;
+  filePathImg: string;
+  createdAt: {
+    _seconds: number;
+    _nanoseconds: number;
+  };
+  updatedAt: {
+    _seconds: number;
+    _nanoseconds: number;
+  };
+}
 interface RouteParams {
   artistId: string;
 }
@@ -29,10 +50,18 @@ const isRouteParams = (params: any): params is RouteParams => {
   return params && typeof params.artistId === 'string';
 };
 
+interface CombinedItem {
+  type: 'song' | 'artist';
+  data: Song | Artist;
+}
+
+
 const ArtistDetailsScreen: React.FC = () => {
   const route = useRoute();
   const [artist, setArtist] = useState<Artist | null>(null);
   const [loading, setLoading] = useState(true);
+  const [songs, setSongs] = useState<Song[]>([]); // Add state for songs
+  const [combinedData, setCombinedData] = useState<CombinedItem[]>([]);
   const [error, setError] = useState<string | null>(null);
   const windowWidth = Dimensions.get('window').width;
   const windowHeight = Dimensions.get('window').height;
@@ -42,12 +71,21 @@ const ArtistDetailsScreen: React.FC = () => {
       try {
         if (isRouteParams(route.params)) {
           const { artistId } = route.params;
-          const response = await getSpecificArtist(artistId);
-          if (response.err === 0) {
-            setArtist(response.artist);
+          const artistResponse = await getSpecificArtist(artistId);
+          if (artistResponse.err === 0) {
+            setArtist(artistResponse.artist);
+            // Call getArtistSong after getting artist data
+            const songsResponse = await getArtistSong(artistId);
+            console.log(songsResponse)
+            if (songsResponse) {
+              setSongs(songsResponse.songs);
+            } else {
+              setError("Failed to load artist's songs");
+              Alert.alert("Error", "Failed to load artist's songs");
+            }
           } else {
-            setError(`Failed to load artist details: ${response.mes}`);
-            Alert.alert("Error", `Failed to load artist details: ${response.mes}`);
+            setError(`Failed to load artist details: ${artistResponse.mes}`);
+            Alert.alert("Error", `Failed to load artist details: ${artistResponse.mes}`);
           }
         } else {
           setError("Invalid route parameters");
@@ -79,32 +117,59 @@ const ArtistDetailsScreen: React.FC = () => {
   if (!artist) {
     return <Text style={styles.errorText}>Artist not found</Text>;
   }
-
   return (
-    <View style={styles.container}>
-      <ImageBackground
-        source={{ uri: artist.urlImg || 'placeholder_image_url' }}
-        style={styles.backgroundImage}
-        resizeMode="cover"
-      >
-        <BlurView intensity={50} style={styles.blur} /> {/* Blurred overlay */}
-        <View style={styles.content}>
-          <Image
+    <>
+        <ScrollView scrollEnabled={false} style={styles.container}>
+          <ImageBackground
             source={{ uri: artist.urlImg || 'placeholder_image_url' }}
-            style={styles.artistImage}
-            resizeMode="contain"
-          />
-          <Text style={styles.artistName}>{artist.name}</Text>
-          <Text style={styles.artistDescription}>{artist.Description}</Text>
-        </View>
-      </ImageBackground>
-    </View>
+            style={styles.backgroundImage}
+            resizeMode="cover"
+          >
+            <BlurView intensity={50} style={styles.blur} /> {/* Blurred overlay */}
+            <View style={styles.content}>
+              <Image
+                source={{ uri: artist.urlImg || 'placeholder_image_url' }}
+                style={styles.artistImage}
+                resizeMode="contain"
+              />
+              <Text style={styles.artistName}>{artist.name}</Text>
+              <Text style={styles.artistDescription}>{artist.Description}</Text>
+            </View>
+          </ImageBackground>
+          <View>
+            <Text style={styles.newsong}>Song Tracks</Text>
+            <SongTracks songData={songs} />
+            <Text style={styles.newsong}>ARTISTS</Text>
+            <ArtistCarousel />
+            <View style={styles.white}></View>
+          </View>
+
+        </ScrollView>
+
+    </>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#FFF4B7'
+  },
+  white: {
+    height: 100,
+  },
+  newsong: {
+    fontFamily: 'Poppins-Bold',
+    fontSize: 30,
+    color: '#333',
+    paddingLeft: 30,
+    paddingTop: 30,
+    paddingBottom: 5,
+  },
+  songItem: {
+    fontSize: 16,
+    color: 'white',
+    marginBottom: 5,
   },
   loadingContainer: {
     flex: 1,
