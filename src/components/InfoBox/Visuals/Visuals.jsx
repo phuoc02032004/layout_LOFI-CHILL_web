@@ -9,7 +9,6 @@ const Visuals = ({ onBackgroundChange }) => {
   const canvasRef = useRef(null);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [visualsData, setVisualsData] = useState(() => {
-    // Khởi tạo từ cache nếu có trong localStorage
     const cachedVisuals = localStorage.getItem('visualsData');
     return cachedVisuals ? JSON.parse(cachedVisuals) : [];
   });
@@ -60,12 +59,12 @@ const Visuals = ({ onBackgroundChange }) => {
     }
   }, []);
 
-  const filteredVisuals = visualsData.filter((background) => {
-    if (background.vip && !isVip) {
-      return false;
-    }
-    return true;
-  });
+  // const filteredVisuals = visualsData.filter((background) => {
+  //   if (background.vip && !isVip) {
+  //     return false;
+  //   }
+  //   return true;
+  // });
 
   const handleBackgroundChange = useCallback((videoSrc) => {
     setSelectedVideo(videoSrc);
@@ -77,13 +76,20 @@ const Visuals = ({ onBackgroundChange }) => {
       <video ref={videoRef} src={selectedVideo} loop muted autoPlay crossOrigin="anonymous" style={{ display: 'none' }} />
       <canvas ref={canvasRef} style={{ display: 'none' }} />
 
-      {filteredVisuals.map((background) => (
+      {visualsData.map((background) => (
         <div
           key={background.id}
-          className="background-item"
-          onClick={() => handleBackgroundChange(background.urlVideo)}
+          className={`background-item ${background.vip ? 'background-vip' : ''}`}
+          onClick={() => {
+            if (!background.vip || isVip) {
+              handleBackgroundChange(background.urlVideo);
+            } else {
+              alert('Visual này chỉ dành cho người dùng VIP!');
+            }
+          }}
         >
           <img src={background.urlImg} alt={background.title} className="background-image" />
+          <div className="vip-label">{background.vip ? 'VIP' : ''}</div>
           <span className="background-name">{background.title}</span>
         </div>
       ))}
