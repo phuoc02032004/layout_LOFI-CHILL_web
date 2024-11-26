@@ -59,13 +59,6 @@ const Visuals = ({ onBackgroundChange }) => {
     }
   }, []);
 
-  // const filteredVisuals = visualsData.filter((background) => {
-  //   if (background.vip && !isVip) {
-  //     return false;
-  //   }
-  //   return true;
-  // });
-
   const handleBackgroundChange = useCallback((videoSrc) => {
     setSelectedVideo(videoSrc);
     onBackgroundChange(videoSrc);

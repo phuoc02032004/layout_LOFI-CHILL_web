@@ -13,6 +13,9 @@ import { PiCloudRainBold } from "react-icons/pi";
 import { PiSunHorizonBold } from "react-icons/pi";
 import { PiPawPrintBold } from "react-icons/pi";
 import { PiBookOpenTextBold } from "react-icons/pi";
+import { RiVipCrownFill } from "react-icons/ri";
+import { jwtDecode } from 'jwt-decode';
+import Cookies from 'js-cookie';
 
 const iconMap = {
   CgCoffee: <CgCoffee />,
@@ -30,6 +33,7 @@ const Music = () => {
   const [stationsData, setStations] = useState([]);
   const [playlistsState, setPlaylistsState] = useState({});
   const { playSong: playFromContext, currentSongUrl, currentTime } = useContext(MusicPlayerContext);
+  const [isVip, setIsVip] = useState(false);
 
   useEffect(() => {
     const cachedPlaylists = localStorage.getItem('playlists');
@@ -127,14 +131,28 @@ const Music = () => {
     }
   }, [currentSongUrl, currentTime]);
 
+  useEffect(() => {
+    const accessToken = Cookies.get('accessToken');
+    if (accessToken) {
+      const decodedToken = jwtDecode(accessToken);
+      setIsVip(decodedToken.isVip);
+    }
+  }, []);
+
   return (
     <div className="stations-container">
       <div className="stations-list">
         {stationsData.map((station) => (
           <div
             key={station.id}
-            className="station-item"
-            onClick={() => handlePlaylistClick(station.id)}
+            className={`station-item ${station.vip ? 'station-vip' : ''}`}
+            onClick={() => {
+              if (!station.vip || isVip) {
+                handlePlaylistClick(station.id)
+              } else {
+                alert('Playlist này chỉ dành cho người dùng VIP!');
+              }
+            }}
           >
             <div className="station-icon">
               {iconMap[station.icon] || "No icon available"}
@@ -143,6 +161,9 @@ const Music = () => {
               <h4 className="station-name">{station.name}</h4>
               <p className="station-description">{station.description}</p>
             </div>
+            {station.vip && (
+              <RiVipCrownFill className="vip-icon" />
+            )}
           </div>
         ))}
       </div>

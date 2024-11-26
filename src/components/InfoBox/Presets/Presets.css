@@ -4,14 +4,12 @@
   overflow-y: auto;
   padding: 15px;
   border-radius: 8px;
-  /* box-shadow: 0 4px 6px rgba(255, 205, 3, 0.1); */
 }
 
 .preset-item {
   display: flex;
   align-items: center;
   padding: 15px 10px;
-  /* background-color: #ffffff; */
   border-radius: 8px;
   margin-bottom: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -27,12 +25,9 @@
   width: 80px;
   height: 80px;
   border-radius: 8px;
-  /* Tăng border radius để hình ảnh mềm mại hơn */
   margin-right: 15px;
   object-fit: cover;
-  /* Đảm bảo hình ảnh không bị méo */
   border: 2px solid #eee;
-  /* Viền nhẹ để làm nổi hình ảnh */
 }
 
 .preset-details {
@@ -68,7 +63,6 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  /* Khoảng cách đều giữa các nút */
 }
 
 .default-button,
@@ -90,12 +84,23 @@
 
 .save-button {
   background-color: #e9c46a;
-  /* Màu vàng nhạt */
   color: white;
 }
 
 .save-button:hover {
   background-color: #d4a63a;
-  /* Tối hơn khi hover */
   transform: scale(1.05);
+}
+
+.preset-vip {
+  position: relative;
+}
+
+.preset-vip .vip-icon {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  color: gold;
+  font-size: 24px;
 }

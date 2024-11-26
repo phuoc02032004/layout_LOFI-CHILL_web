@@ -14,13 +14,13 @@
 .station-icon {
   font-size: 20px;
   margin-right: 20px;
-  display: flex; 
-  align-items: center; 
+  display: flex;
+  align-items: center;
 }
 
 .station-icon svg {
-  width: 40px; 
-  height: 40px; 
+  width: 40px;
+  height: 40px;
 }
 
 .station-details {
@@ -36,4 +36,18 @@
 .station-description {
   font-size: 12px;
   color: #777;
+}
+
+.station-vip {
+  position: relative;
+}
+
+.station-vip .vip-icon {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  /* Căn chỉnh sát mép phải */
+  transform: translateY(-50%);
+  color: gold;
+  font-size: 24px;
 }

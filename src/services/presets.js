@@ -33,7 +33,8 @@ const getAllPreset = async () => {
                     soundUrl: sound.soundUrl,
                     soundVol: sound.volume,
                     soundTitle: sound.soundTitle
-                }))
+                })),
+                vip: preset.vip,
             }));
         } else {
             throw new Error(response.data.mes || 'Failed to fetch presets');

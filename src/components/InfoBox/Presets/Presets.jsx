@@ -5,11 +5,15 @@ import { GiSoundWaves } from "react-icons/gi";
 import { getAllPreset } from '../../../services/presets';
 import { playSong } from '../../../services/song';
 import { MusicPlayerContext } from "../../Context/MusicPlayerContext";
+import { RiVipCrownFill } from "react-icons/ri";
+import { jwtDecode } from 'jwt-decode';
+import Cookies from 'js-cookie';
 
-const Presets = ({ onBackgroundChange }) => { 
+const Presets = ({ onBackgroundChange }) => {
   const [presetsData, setPresetsData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const { playSong: playMusic, setPlaylist } = useContext(MusicPlayerContext);
+  const [isVip, setIsVip] = useState(false);
 
   const fetchPresets = async () => {
     setIsLoading(true);
@@ -26,41 +30,49 @@ const Presets = ({ onBackgroundChange }) => {
 
   const handlePresetClick = async (preset) => {
     if (preset.playlistId) {
-        try {
-            const songs = await playSong(preset.playlistId); 
-            setPlaylist(songs); 
+      try {
+        const songs = await playSong(preset.playlistId);
+        setPlaylist(songs);
 
-            if (songs.length > 0) {
-                const firstSong = songs[0]; 
-                playMusic(
-                    firstSong.url,
-                    firstSong.title,
-                    firstSong.artist,
-                    firstSong.img,
-                    0, 
-                    songs, 
-                    0 
-                );
-            } else {
-                console.warn('Playlist is empty for this preset.');
-            }
-        } catch (error) {
-            console.error('Error playing preset playlist:', error);
+        if (songs.length > 0) {
+          const firstSong = songs[0];
+          playMusic(
+            firstSong.url,
+            firstSong.title,
+            firstSong.artist,
+            firstSong.img,
+            0,
+            songs,
+            0
+          );
+        } else {
+          console.warn('Playlist is empty for this preset.');
         }
+      } catch (error) {
+        console.error('Error playing preset playlist:', error);
+      }
     } else {
-        console.warn('This preset does not have a valid playlistId.');
+      console.warn('This preset does not have a valid playlistId.');
     }
 
     if (preset.visualVideoUrl) {
-        onBackgroundChange(preset.visualVideoUrl); 
+      onBackgroundChange(preset.visualVideoUrl);
     } else if (preset.visualImgUrl) {
-        console.warn('Only video visuals are supported for the background.');
+      console.warn('Only video visuals are supported for the background.');
     }
-};
+  };
 
 
   useEffect(() => {
     fetchPresets();
+  }, []);
+
+  useEffect(() => {
+    const accessToken = Cookies.get('accessToken');
+    if (accessToken) {
+      const decodedToken = jwtDecode(accessToken);
+      setIsVip(decodedToken.isVip);
+    }
   }, []);
 
   return (
@@ -71,8 +83,14 @@ const Presets = ({ onBackgroundChange }) => {
         presetsData.map((preset) => (
           <div
             key={preset.id}
-            className="preset-item"
-            onClick={() => handlePresetClick(preset)}
+            className={`preset-item ${preset.vip ? 'preset-vip' : ''}`}
+            onClick={() => {
+              if (!preset.vip || isVip) {
+                handlePresetClick(preset)
+              } else {
+                alert('Preset này chỉ dành cho người dùng VIP!');
+              }
+            }}
           >
             <img
               src={preset.visualImgUrl || 'https://example.com/default-image.jpg'}
@@ -90,6 +108,9 @@ const Presets = ({ onBackgroundChange }) => {
                   <GiSoundWaves className="icon" />
                   {preset.sounds.map((sound) => sound.soundTitle).join(', ')}
                 </div>
+              )}
+              {preset.vip && (
+                <RiVipCrownFill className="vip-icon" />
               )}
             </div>
           </div>

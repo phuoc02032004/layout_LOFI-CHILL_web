@@ -31,7 +31,7 @@ const playSong = async (playlistId) => {
             title: song.Title,
             artist: song.artistName,
             url: song.Url,
-            img: song.urlImg
+            img: song.urlImg,
         }));
     } catch (error) {
         console.error('Error fetching Music:', error);

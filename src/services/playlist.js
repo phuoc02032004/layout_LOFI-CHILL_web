@@ -53,6 +53,7 @@ const getAllPlaylists = async () => {
             name: playlist.Title,
             description: playlist.Description,
             icon: playlist.icon,
+            vip: playlist.vip,
         }));
     } catch (error) {
         throw error;
