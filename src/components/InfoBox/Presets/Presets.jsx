@@ -83,7 +83,7 @@ const Presets = ({ onBackgroundChange }) => {
               <h4 className="preset-name">{preset.name}</h4>
               <div className="preset-info">
                 <AiOutlineCamera className="icon" />
-                {preset.visualVideoUrl || 'No Visuals Available'}
+                {preset.name || 'No Visuals Available'}
               </div>
               {preset.sounds && preset.sounds.length > 0 && (
                 <div className="preset-info">

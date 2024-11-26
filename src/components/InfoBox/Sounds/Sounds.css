@@ -1,39 +1,37 @@
-.sounds-container {
+.soundsInfo-container {
   padding-top: 30px;
   padding-left: 20px;
   max-height: 300px;
   overflow-y: auto;
 }
 
-.sound-item-s {
+.soundInfo-item {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 30px;
+  justify-content: space-between;
+  margin-bottom: 20px;
 }
 
-.sound-name {
-  flex: 1;
+.soundInfo-name {
   font-size: 16px;
   text-align: left;
+  flex: 1;
 }
 
-.slider-container {
+.sliderInfo-container {
   width: 200px;
-  margin-left: 10px;
-  margin-right: 40px;
 }
 
-.volume-slider {
+.volumeInfo-slider {
   -webkit-appearance: none;
-  width: 100%;
+  width: 90%;
   height: 3px;
   background: #d3d3d3;
   outline: none;
   border-radius: 10px;
 }
 
-.volume-slider::-webkit-slider-thumb {
+.volumeInfo-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   width: 14px;

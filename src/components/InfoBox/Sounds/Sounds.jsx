@@ -76,11 +76,11 @@ const Sounds = () => {
   };
 
   return (
-    <div className="sounds-container">
+    <div className="soundsInfo-container">
       {soundsData.map((sound) => (
-        <div key={sound.id} className="sound-item">
-          <span className="sound-name">{sound.title}</span>
-          <div className="slider-container">
+        <div key={sound.id} className="soundInfo-item">
+          <span className="soundInfo-name">{sound.title}</span>
+          <div className="sliderInfo-container">
             <input
               type="range"
               min="0"
@@ -88,7 +88,7 @@ const Sounds = () => {
               step="0.01"
               value={soundVolumes[sound.id] || 0}
               onChange={(e) => handleVolumeChange(sound.id, e)}
-              className="volume-slider"
+              className="volumeInfo-slider"
             />
           </div>
         </div>
