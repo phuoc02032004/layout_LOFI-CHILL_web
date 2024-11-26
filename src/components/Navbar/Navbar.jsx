@@ -3,6 +3,7 @@ import "./Navbar.css";
 import { FaUser } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
 import { logOut } from '../../services/auth';
+import { jwtDecode } from 'jwt-decode';
 import Cookies from 'js-cookie';
 
 export default function Navbar() {
@@ -10,6 +11,8 @@ export default function Navbar() {
   const [showNavbar, setShowNavbar] = useState(true);
   const [showLofiMenu, setShowLofiMenu] = useState(false);
   const navigate = useNavigate();
+  const [isVip, setIsVip] = useState(false);
+  const [role, setRole] = useState(0);
 
   useEffect(() => {
     let timeoutId;
@@ -88,6 +91,15 @@ export default function Navbar() {
     navigate('/ResetPassword')
   }
 
+  useEffect(() => {
+    const accessToken = Cookies.get('accessToken');
+    if (accessToken) {
+      const decodedToken = jwtDecode(accessToken);
+      setIsVip(decodedToken.isVip);
+      setRole(decodedToken.role);
+    }
+  }, []);
+
   return (
     <header className={`header ${!showNavbar ? 'hidden-navbar' : ''}`} style={{ background: 'linear-gradient(to top, rgba(28, 39, 48, 0), rgba(28, 39, 48, 0.8))' }}>
       <a href="/" className='logo'> LOGO </a>
@@ -119,7 +131,12 @@ export default function Navbar() {
         {showMenu && (
           <div className="dropdown-menu">
             <a className="dropdown-item" onClick={handleResetPasswordClick}>Đổi mật khẩu</a>
-            <a className="dropdown-item" onClick={handleAdminClick}>Admin</a>
+            {role === 1 && (
+              <a className="dropdown-item" onClick={handleAdminClick}>Admin</a>
+            )}
+            {!isVip && (
+              <a className="dropdown-item" onClick={handleAdminClick}>Đăng Ký Tài Khoản Vip</a>
+            )}
             <a className="dropdown-item" onClick={handleLogOutClick}>Đăng xuất</a>
           </div>
         )}
