@@ -1,0 +1,115 @@
+  .vip-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+  }
+  
+  .vip-back-button {
+    margin-bottom: 30px;
+    padding: 12px 20px;
+    background-color: white;
+    color: black;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease; 
+    font-weight: 700;
+    left:100
+  }
+  
+  .vip-back-button:hover {
+    background-color: black;
+    color: white; 
+  }
+  
+  
+  .vip-main-content {
+    color: white;
+    text-align: left;
+    width: 400px;
+    animation: slideIn 2s forwards;
+    top: 180px;
+    left: 50%;
+    transform: translateX(-50%); 
+    background: transparent;
+    border-radius: 10px;
+    padding: 30px 40px;
+    border: 2px solid rgba(225, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    margin-top: 100px;
+    margin-left: 60px;
+  }
+  
+  .vip-package-name {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: white; 
+  }
+  
+  .vip-package-price {
+    font-size: 24px;
+    color: white;
+    margin-bottom: 25px;
+  }
+  
+  .vip-package-description {
+    font-size: 16px;
+    line-height: 1.6;
+    color: whitesmoke;
+    margin-bottom: 30px;
+  }
+  
+  .vip-package-description ul {
+    list-style: disc;
+    padding-left: 20px;
+  }
+  
+  .vip-package-description li {
+      margin-bottom: 5px;
+  }
+  
+    .vip-register-button {
+    padding: 15px 30px;
+    background-color: whitesmoke; 
+    color: black;
+    font-weight: 700;
+    font-family:'Poppins';
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .vip-register-button:hover {
+        background-color: black;
+        color: white; 
+  }
+  
+  .vip-registration-success {
+    color: green;
+    font-weight: bold;
+    margin-top: 20px;
+  }
+  
+  .vip-error-message {
+    color: red;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+  
+  @media (max-width: 500px) {
+    .vip-main-content {
+      width: 95%; 
+    }
+  }
+
+  .vip-all-content{
+    display: flex;
+  }

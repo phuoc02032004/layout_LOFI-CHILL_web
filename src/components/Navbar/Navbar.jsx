@@ -70,6 +70,10 @@ export default function Navbar() {
     navigate('/ArtistPage')
   };
 
+  const handleVippageClick = () => {
+    navigate('/VIP')
+  }
+
   const handleLogOutClick = async () => {
     try {
       await logOut();
@@ -135,7 +139,7 @@ export default function Navbar() {
               <a className="dropdown-item" onClick={handleAdminClick}>Admin</a>
             )}
             {!isVip && (
-              <a className="dropdown-item" onClick={handleAdminClick}>Đăng Ký Tài Khoản Vip</a>
+              <a className="dropdown-item" onClick={handleVippageClick}>Đăng Ký Tài Khoản Vip</a>
             )}
             <a className="dropdown-item" onClick={handleLogOutClick}>Đăng xuất</a>
           </div>
