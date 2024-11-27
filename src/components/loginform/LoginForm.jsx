@@ -4,12 +4,14 @@ import { FaUser } from "react-icons/fa";
 import { FaLock } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../../services/auth';
+import ForgotPasswordModal from '../forgotpass/ForgotPasswordModal';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const [showForgotModal, setShowForgotModal] = useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -64,12 +66,17 @@ const LoginForm = () => {
         </div>
 
         <div className="remember-forgot">
-          <label htmlFor="">
-            <input type="checkbox" /> Remember me
-          </label>
-          <a href="/"> Forgot Password?</a>
-        </div>
-
+        <label htmlFor="">
+          <input type="checkbox" /> Remember me
+        </label>
+        <a href="#" onClick={(e) => {
+          e.preventDefault(); 
+          setShowForgotModal(true);
+        }}>Forgot Password?</a>
+      </div>
+      {showForgotModal && (
+        <ForgotPasswordModal onClose={() => setShowForgotModal(false)} />
+      )}
         <button type='submit'>Login</button>
 
         <div className="register-link">
