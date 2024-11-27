@@ -6,7 +6,7 @@ const bucket = admin.storage().bucket(process.env.BUCKET);
 const db = admin.firestore();
 
 // POST a new playlist
-export const createPlaylist = ({ Title, Description }) => new Promise(async (resolve, reject) => {
+export const createPlaylist = ({ Title, Description, isVip }) => new Promise(async (resolve, reject) => {
     try {
         // Kiểm tra xem playlist đã tồn tại chưa
         const playlistsRef = db.collection('Music');
@@ -36,6 +36,7 @@ export const createPlaylist = ({ Title, Description }) => new Promise(async (res
             Title,
             Description,
             filePathPlaylist: folderName,
+            isVip,
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         });

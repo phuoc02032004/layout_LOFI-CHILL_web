@@ -8,7 +8,7 @@ const bucket = admin.storage().bucket(process.env.BUCKET);
 const db = admin.firestore();
 
 // Create Visual
-export const createVisual = ({ Title, vip }, fileImg, fileVideo) => new Promise(async (resolve, reject) => {
+export const createVisual = ({ Title, isVip }, fileImg, fileVideo) => new Promise(async (resolve, reject) => {
     try {
         const visualRef = db.collection('Visuals');
 
@@ -50,7 +50,7 @@ export const createVisual = ({ Title, vip }, fileImg, fileVideo) => new Promise(
         // Thêm visual vào Firestore với URL video và ảnh
         const newVisualRef = await visualRef.add({
             Title: Title,
-            vip: vip,
+            isVip: isVip,
             imgUrl: urlImg,
             videoUrl: urlVideo,
             filePathImg: filenameImg,

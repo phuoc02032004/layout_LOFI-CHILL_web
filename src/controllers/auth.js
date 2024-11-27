@@ -106,3 +106,25 @@ export const resetPassword = async (req, res) => {
         });
     }
 };
+
+export const forgetPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({
+                message: 'Email is required.',
+            });
+        };
+
+        const response = await services.auth.forgetPassword({ email });
+
+        return res.status(200).json(response);
+    } catch (error) {
+        console.error('Error in Forget Password controller:', error);
+        return res.status(500).json({
+            message: 'Internal Server Error',
+            error,
+        });
+    }
+}

@@ -1,12 +1,12 @@
 import * as services from '../services/index.js';
 import { internalServerError } from '../middleware/handle_error.js';
 import joi from 'joi'
-import { Title, Description } from '../helper/joi_schema.js';
+import { Title, Description, isVip } from '../helper/joi_schema.js';
 
 
 export const createPlaylist = async (req, res) => {
     try {
-        const { error } = joi.object({ Title, Description }).validate(req.body);
+        const { error } = joi.object({ Title, Description, isVip }).validate(req.body);
         if (error) return res.status(400).json({ error: error.details[0].message });
 
         const response = await services.playlist.createPlaylist(req.body);

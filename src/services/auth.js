@@ -3,9 +3,9 @@ import bcrypt from 'bcrypt';
 import { sendVerificationEmail } from '../utils/email.js';
 import jwt from 'jsonwebtoken';
 import { auth, db } from '../config/firebaseConfig.js';
-import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
+import { createUserWithEmailAndPassword, getAuth, sendEmailVerification } from "firebase/auth";
 import { collection, query, where, getDocs, updateDoc, serverTimestamp, addDoc, setDoc, doc, getDoc } from "firebase/firestore";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
 import { refreshToken } from 'firebase-admin/app';
 admin.initializeApp();
 
@@ -126,7 +126,7 @@ export const refreshAccessToken = (id, refreshToken) => new Promise(async (resol
         if (!refreshToken) return reject({ status: 401, message: 'Refresh token is required' });
 
         const userRef = doc(db, 'users', id);
-        const userDoc = await getDoc(userRef); 
+        const userDoc = await getDoc(userRef);
 
         // Kiểm tra nếu tài liệu không tồn tại
         if (!userDoc.exists) {
@@ -220,3 +220,16 @@ export const resetPassword = async ({ id, password, passwordnew }) => {
     }
 };
 
+export const forgetPassword = async ({ email }) => {
+    try {
+        const auth = getAuth();
+        await sendPasswordResetEmail(auth, email);
+        return { err: 0, mes: 'Password reset email sent successfully. Please check your inbox.' };
+    } catch (error) {
+        console.error('Error sending password reset email:', error);
+        if (error.code === 'auth/user-not-found') {
+            throw { status: 404, message: 'User with this email does not exist.' };
+        }
+        throw { status: 500, message: 'Internal Server Error' };
+    }
+};
