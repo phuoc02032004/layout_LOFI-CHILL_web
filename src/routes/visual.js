@@ -7,17 +7,17 @@ const upload = multer({ storage });
 
 const router = express.Router();
 
-router.post('/createVisual', upload.fields([
+router.post('/createVisual', accessToken, upload.fields([
     { name: 'image', maxCount: 1 },
     { name: 'video', maxCount: 1 }
 ]), visual.createVisual);
 router.get('/getAllVisual', accessToken, visual.getAllVisual);
 router.get('/getSpecificVisual/:id', visual.getSpecificVisual);
-router.put('/updateVisual/:id', upload.fields([
+router.put('/updateVisual/:id', accessToken, upload.fields([
     { name: 'image', maxCount: 1 },
     { name: 'video', maxCount: 1 }
 ]), visual.updateVisual);
-router.delete('/deleteVisual/:id', visual.deleteVisual);
+router.delete('/deleteVisual/:id', accessToken, visual.deleteVisual);
 
 
 

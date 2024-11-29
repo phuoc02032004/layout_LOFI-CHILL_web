@@ -1,16 +1,17 @@
 import * as services from '../services/index.js';
 import { internalServerError } from '../middleware/handle_error.js';
 import joi from 'joi';
-import { Title, Description, playlistId, visualId, sounds, isVip } from '../helper/joi_schema.js';
+import { Title, Description, playlistId, visualId, sounds, vip } from '../helper/joi_schema.js';
 
 // Create a new preset
 export const createPreset = async (req, res) => {
     try {
         const { error } = joi.object({
-            Title, Description, playlistId, visualId, sounds, isVip
+            Title, Description, playlistId, visualId, sounds, vip
         }).validate(req.body);
 
         if (error) {
+            console.error('Validation error:', error.details);
             return res.status(400).json({ error: error.details[0].message });
         }
 

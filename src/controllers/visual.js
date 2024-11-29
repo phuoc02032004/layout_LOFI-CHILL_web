@@ -1,13 +1,24 @@
 import { internalServerError } from '../middleware/handle_error.js';
 import * as services from '../services/index.js';
 import joi from 'joi'
-import { Title, isVip } from '../helper/joi_schema.js';
+import { Title, vip } from '../helper/joi_schema.js';
 
 export const createVisual = async (req, res) => {
     try {
-        const { error } = joi.object({ Title, isVip }).validate(req.body);
 
-        if (error) return res.status(400).json({ error: error.details[0].message });
+        const { Title, vip } = req.body;
+
+        const schema = joi.object({
+            Title: joi.string().required(),
+            vip: joi.string().valid('true', 'false').required(),
+        });
+
+        const { error } = schema.validate({ Title, vip });
+        if (error) {
+            return res.status(400).json({ error: error.details[0].message });
+        }
+
+        const vipBoolean = vip === 'true';
 
         if (!req.files || !req.files.image || !req.files.video) {
             return res.status(400).json({
@@ -21,7 +32,7 @@ export const createVisual = async (req, res) => {
 
         // Gọi dịch vụ với dữ liệu tệp ảnh và video
         const response = await services.visual.createVisual(
-            { Title, isVip },
+            { Title, vip: vipBoolean },
             imageFile,
             videoFile
         );

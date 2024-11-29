@@ -28,4 +28,4 @@ export const visualUrl = joi.string().required()
 export const soundUrl = joi.string().required()
 export const soundVol = joi.string().required()
 export const ArtistId = joi.string().required()
-export const isVip = joi.boolean().required();
+export const vip = joi.boolean().required();
