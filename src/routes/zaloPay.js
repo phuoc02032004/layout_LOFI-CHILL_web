@@ -27,23 +27,23 @@ router.use(bodyParser.json());
 router.post('/create-payment', async (req, res) => {
     const embed_data = {
         //sau khi hoàn tất thanh toán sẽ đi vào link này (thường là link web thanh toán thành công của mình)
-        redirecturl: 'https://docs.zalopay.vn/v2/general/overview.html',
+        redirecturl: 'http://localhost:3000/homepage',
     };
 
     const items = [];
     const transID = Math.floor(Math.random() * 1000000);
-    const { userId, amount } = req.body;
+    const { userId } = req.body;
     const order = {
         app_id: config.app_id,
-        app_trans_id: `${moment().format('YYMMDD')}_${transID}`, // translation missing: vi.docs.shared.sample_code.comments.app_trans_id
+        app_trans_id: `${moment().format('YYMMDD')}_${transID}`,
         app_user: userId,
-        app_time: Date.now(), // miliseconds
+        app_time: Date.now(),
         item: JSON.stringify(items),
         embed_data: JSON.stringify(embed_data),
-        amount: amount,
+        amount: 100000,
         //khi thanh toán xong, zalopay server sẽ POST đến url này để thông báo cho server của mình
         //Chú ý: cần dùng ngrok để public url thì Zalopay Server mới call đến được
-        callback_url: 'https://f2ef-116-110-43-9.ngrok-free.app/api/v1/zalopay/callback',
+        callback_url: 'https://4bff-125-235-239-181.ngrok-free.app/api/v1/zalopay/callback',
         description: `VIP Membership - Payment for the order #${transID}`,
         bank_code: '',
     };
