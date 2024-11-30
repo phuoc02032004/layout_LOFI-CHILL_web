@@ -62,9 +62,10 @@ function BGPage() {
     const updatedName = document.getElementById('editVisualName').value;
     const updatedImageFile = document.getElementById('editImageFile').files[0];
     const updatedVideoFile = document.getElementById('editVideoFile').files[0];
+    const updatedVipStatus = document.getElementById('editVisualVip').value;
 
     try {
-      await updateVisual(imageToEdit.id, updatedName, updatedImageFile, updatedVideoFile);
+      await updateVisual(imageToEdit.id, updatedName, updatedImageFile, updatedVideoFile, updatedVipStatus);
       await fetchVisuals();
       setIsEditModalOpen(false);
       setImageToEdit(null);
@@ -82,9 +83,10 @@ function BGPage() {
     const newVisualTitle = document.getElementById('newVisualName').value;
     const newImageFile = document.getElementById('newImageFile').files[0];
     const newVideoFile = document.getElementById('newVideoFile').files[0];
+    const newVipStatus = document.getElementById('newGenreVip').value;
 
     try {
-      await createVisual(newVisualTitle, newImageFile, newVideoFile);
+      await createVisual(newVisualTitle, newImageFile, newVideoFile, newVipStatus);
       await fetchVisuals();
       setIsAddModalOpen(false);
     } catch (error) {
@@ -92,13 +94,11 @@ function BGPage() {
     }
   };
 
-  // Tính toán chỉ số của phần tử trên từng trang
   const indexOfLastImage = currentPage * imagesPerPage;
   const indexOfFirstImage = indexOfLastImage - imagesPerPage;
-  const currentImages = images.slice(indexOfFirstImage, indexOfLastImage); // Hình ảnh trên trang hiện tại
+  const currentImages = images.slice(indexOfFirstImage, indexOfLastImage);
 
-  // Tạo số trang
-  const totalPages = Math.ceil(images.length / imagesPerPage); // Số trang tổng
+  const totalPages = Math.ceil(images.length / imagesPerPage);
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
@@ -120,6 +120,12 @@ function BGPage() {
 
               <label htmlFor="newVideoFile">Select Video File:</label>
               <input type="file" id="newVideoFile" name="newVideoFile" accept="video/*" />
+
+              <label htmlFor="newGenreVip">VIP Status:</label>
+              <select id="newGenreVip" name="newGenreVip" required>
+                <option value="false">Normal</option>
+                <option value="true">VIP</option>
+              </select>
 
               <button type="submit">Save Visual</button>
             </form>
@@ -143,7 +149,6 @@ function BGPage() {
           ))}
         </div>
 
-        {/* Hiển thị phân trang */}
         <div className="pagination">
           {Array.from({ length: totalPages }, (_, index) => (
             <button
@@ -157,7 +162,6 @@ function BGPage() {
         </div>
       </div>
 
-      {/* Modal Edit */}
       {isEditModalOpen && (
         <div className="edit-modal">
           <div className="modal-content">
@@ -165,7 +169,7 @@ function BGPage() {
             <h2>Edit Visual</h2>
             <form onSubmit={handleSaveEdit}>
               <label htmlFor="editVisualName">Visual Title:</label>
-              <input type="text" id="editVisualName" name="editVisualName" defaultValue={imageToEdit?.name} required />
+              <input type="text" id="editVisualName" name="editVisualName" defaultValue={imageToEdit?.title} required />
 
               <label htmlFor="editImageFile">Select Thumbnail:</label>
               <input type="file" id="editImageFile" name="editImageFile" accept="image/*" />
@@ -173,13 +177,18 @@ function BGPage() {
               <label htmlFor="editVideoFile">Select Video File:</label>
               <input type="file" id="editVideoFile" name="editVideoFile" accept="video/*" />
 
+              <label htmlFor="editVisualVip">VIP Status:</label>
+              <select id="editVisualVip" name="editVisualVip" required defaultValue={imageToEdit?.vip}>
+                <option value="false">Normal</option>
+                <option value="true">VIP</option>
+              </select>
+
               <button type="submit">Save Changes</button>
             </form>
           </div>
         </div>
       )}
 
-      {/* Modal Delete */}
       {isDeleteModalOpen && (
         <div className="delete-modal">
           <div className="delete-content">

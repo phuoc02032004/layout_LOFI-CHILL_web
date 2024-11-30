@@ -8,24 +8,24 @@ import {
 } from "../../../services/playlist";
 
 const GenreM = () => {
-  const [stations, setStations] = useState([]);
+  const [stations, setStations] = useState([]);  
   const [isDeleteGenreModalOpen, setIsDeleteGenreModalOpen] = useState(false);
   const [genreToDelete, setGenreToDelete] = useState(null);
   const [isEditGenreModalOpen, setIsEditGenreModalOpen] = useState(false);
   const [genreToEdit, setGenreToEdit] = useState(null);
   const [isAddGenreModalOpen, setIsAddGenreModalOpen] = useState(false);
 
-  // Fetch genres on component mount
+ 
   useEffect(() => {
     const fetchGenres = async () => {
       try {
         const playlists = await getAllPlaylists();
-        setStations(playlists);
+        setStations(playlists);  
       } catch (error) {
         console.error("Error fetching playlists:", error);
       }
     };
-    fetchGenres();
+    fetchGenres();  
   }, []);
 
   const handleAddGenreClick = () => {
@@ -52,11 +52,11 @@ const GenreM = () => {
 
   const handleConfirmDeleteGenre = async () => {
     try {
-      await deletePlaylist(genreToDelete.id);
+      await deletePlaylist(genreToDelete.id); 
       const updatedStations = stations.filter(
-        (station) => station.id !== genreToDelete.id
+        (station) => station.id !== genreToDelete.id  
       );
-      setStations(updatedStations);
+      setStations(updatedStations);  
     } catch (error) {
       console.error("Error deleting playlist:", error);
     } finally {
@@ -68,15 +68,15 @@ const GenreM = () => {
   const handleSaveEditGenre = async (event) => {
     event.preventDefault();
     const updatedGenreName = document.getElementById("editGenreName").value;
-    const updatedGenreDescription = document.getElementById(
-      "editGenreDescription"
-    ).value;
+    const updatedGenreDescription = document.getElementById("editGenreDescription").value;
+    const updatedGenreVip = document.getElementById("editGenreVip").value === "true";  
 
     try {
       await updatePlaylist(
         genreToEdit.id,
         updatedGenreName,
-        updatedGenreDescription
+        updatedGenreDescription,
+        updatedGenreVip  
       );
       const updatedStations = stations.map((station) =>
         station.id === genreToEdit.id
@@ -84,10 +84,11 @@ const GenreM = () => {
               ...station,
               name: updatedGenreName,
               description: updatedGenreDescription,
+              vip: updatedGenreVip,  
             }
           : station
       );
-      setStations(updatedStations);
+      setStations(updatedStations);  
     } catch (error) {
       console.error("Error updating playlist:", error);
     } finally {
@@ -99,14 +100,14 @@ const GenreM = () => {
   const handleSaveAddGenre = async (event) => {
     event.preventDefault();
     const newGenreName = document.getElementById("newGenreName").value;
-    const newGenreDescription = document.getElementById(
-      "newGenreDescription"
-    ).value;
+    const newGenreDescription = document.getElementById("newGenreDescription").value;
+    const newGenreVip = document.getElementById("newGenreVip").value === "true";  
 
     try {
       const newPlaylist = await createPlaylist(
         newGenreName,
-        newGenreDescription
+        newGenreDescription,
+        newGenreVip 
       );
       if (newPlaylist && newPlaylist.id) {
         const updatedStations = [
@@ -115,9 +116,10 @@ const GenreM = () => {
             id: newPlaylist.id,
             name: newPlaylist.Title,
             description: newPlaylist.Description,
+            vip: newPlaylist.vip,  
           },
         ];
-        setStations(updatedStations);
+        setStations(updatedStations);  
       } else {
         console.error("Invalid playlist data:", newPlaylist);
       }
@@ -155,6 +157,11 @@ const GenreM = () => {
                 name="newGenreDescription"
                 required
               ></textarea>
+              <label htmlFor="newGenreVip">VIP Status:</label>
+              <select id="newGenreVip" name="newGenreVip" required>
+                <option value="false">Normal</option>
+                <option value="true">VIP</option>
+              </select>
               <button type="submit">Save Genre</button>
             </form>
           </div>
@@ -184,6 +191,11 @@ const GenreM = () => {
                 defaultValue={genreToEdit?.description}
                 required
               ></textarea>
+              <label htmlFor="editGenreVip">VIP Status:</label>
+              <select id="editGenreVip" name="editGenreVip" defaultValue={genreToEdit?.vip.toString()} required>
+                <option value="false">Normal</option>
+                <option value="true">VIP</option>
+              </select>
               <button type="submit">Save Changes</button>
             </form>
           </div>
@@ -219,10 +231,9 @@ const GenreM = () => {
             <span className="close-modal" onClick={handleCloseGenreModal}>
               ×
             </span>
-            <h2>Are you sure you want to delete {genreToDelete?.name}?</h2>
-            <button className="btn-delete" onClick={handleConfirmDeleteGenre}>
-              DELETE
-            </button>
+            <h2>Are you sure you want to delete this genre?</h2>
+            <button onClick={handleConfirmDeleteGenre}>Yes</button>
+            <button onClick={handleCloseGenreModal}>No</button>
           </div>
         </div>
       )}

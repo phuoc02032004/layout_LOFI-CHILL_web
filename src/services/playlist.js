@@ -8,7 +8,7 @@ import { PiCloudRainBold } from "react-icons/pi";
 import { PiSunHorizonBold } from "react-icons/pi";
 import { PiPawPrintBold } from "react-icons/pi";
 import { PiBookOpenTextBold } from "react-icons/pi";
-
+import Cookies from "js-cookie";
 const iconMap = {
     CgCoffee: <CgCoffee />,
     PiBuildingsBold: <PiBuildingsBold />,
@@ -22,28 +22,32 @@ const iconMap = {
 };
 
 
-const createPlaylist = async (title, description) => {
-    try {
-        const response = await axios.post('http://localhost:3002/api/v1/playlist/createPlaylist', {
-            Title: title,
-            Description: description,
-        }, {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-
-        console.log('Playlist Created:', response.data);
-        return response.data.playlist; // Trả về playlist từ API
-    } catch (error) {
-        if (error.response) {
-            console.error('Error creating Playlist:', error.response.data);  // Log chi tiết lỗi từ server
-        } else {
-            console.error('Error creating Playlist:', error.message);
-        }
-        throw error; // Quăng lỗi để xử lý ở nơi gọi hàm
+const createPlaylist = async (title, description, vip) => {
+    const accessToken = Cookies.get("accessToken");
+    if (!accessToken) {
+      throw new Error("Token not found. Please log in.");
     }
-};
+  
+    console.log("Data to be sent:", { Title: title, description, vip });  // Log dữ liệu
+  
+    try {
+      const response = await axios.post(
+        "http://localhost:3002/api/v1/playlist/createPlaylist",
+        { Title: title, Description: description, vip: vip },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error creating Playlist: ", error.response ? error.response.data : error);
+      throw error;
+    }
+  };
+  
+
 
 const getAllPlaylists = async () => {
     try {
@@ -60,26 +64,43 @@ const getAllPlaylists = async () => {
     }
 };
 
-const updatePlaylist = async (playlistId, Title, Description) => {
+const updatePlaylist = async (playlistId, Title, Description, vip) => {
+    const accessToken = Cookies.get("accessToken");
+    if (!accessToken) {
+      throw new Error("Token not found. Please log in.");
+    }
     try {
         const payload = {};
         if (Title) payload.Title = Title;
         if (Description) payload.Description = Description;
+        if (vip !== undefined) payload.vip = vip;  
+
         const response = await axios.put(`http://localhost:3002/api/v1/playlist/updatePlaylist/${playlistId}`, payload, {
             headers: {
-                'Content-Type': 'application/json'
+              Authorization: `Bearer ${accessToken}`,
             },
-        });
+          });
+
         console.log('Playlist Updated:', response.data);
         return response.data;
     } catch (error) {
         console.error('Error update Playlist:', error.response ? error.response.data : error.message);
+        throw error; 
     }
 };
 
+
 const deletePlaylist = async (playlistId) => {
+    const accessToken = Cookies.get("accessToken");
+    if (!accessToken) {
+      throw new Error("Token not found. Please log in.");
+    }
     try {
-        const response = await axios.delete(`http://localhost:3002/api/v1/playlist/deletePlaylist/${playlistId}`);
+        const response = await axios.delete(`http://localhost:3002/api/v1/playlist/deletePlaylist/${playlistId}`,{
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          });
         console.log('Playlist Deleted:', response.data);
     } catch (error) {
         console.error('Error deleting Playlist:', error.response ? error.response.data : error.message);
