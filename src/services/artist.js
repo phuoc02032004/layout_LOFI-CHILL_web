@@ -1,4 +1,6 @@
 import axios from "axios";
+import Cookies from 'js-cookie';
+import apiClient from '../CustomAxios/apiClient';
 
 const createArtist = async (name, Description, imgFile) => {
     try {
@@ -7,9 +9,10 @@ const createArtist = async (name, Description, imgFile) => {
         formData.append('Description', Description);
         formData.append('fileImg', imgFile);
 
-        const response = await axios.post('http://localhost:3002/api/v1/artist/createArtist', formData, {
+        const response = await apiClient.post('http://localhost:3002/api/v1/artist/createArtist', formData, {
             headers: {
-                'Content-Type': 'multipart/form-data'
+                'Content-Type': 'multipart/form-data',
+                Authorization: `Bearer ${Cookies.get('accessToken')}`,
             },
         });
         console.log('Artist Created: ', response.data);
