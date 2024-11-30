@@ -14,6 +14,11 @@ import { getNewSong } from '@/services/song';
 import { useNavigation } from '@react-navigation/native';
 import { Provider as PaperProvider } from 'react-native-paper';
 
+
+interface Timestamp {
+  _seconds: number;
+  _nanoseconds: number;
+}
 interface Song {
   id: string;
   ArtistId: string;
@@ -23,14 +28,8 @@ interface Song {
   urlImg: string;
   filePath: string;
   filePathImg: string;
-  createdAt: {
-    _seconds: number;
-    _nanoseconds: number;
-  };
-  updatedAt: {
-    _seconds: number;
-    _nanoseconds: number;
-  };
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
 }
 
 interface SongCarouselProps {

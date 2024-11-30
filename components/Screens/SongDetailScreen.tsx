@@ -5,11 +5,11 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import SongCarousel from '../Carousel/SongCarousel';
 import ArtistCarousel from '../Carousel/ArtistCarousel';
-import { ImageSlider, ImageSliderType } from '@/data/SliderData';
 import { FlatList } from 'react-native-gesture-handler';
 import SongTracks from '../SongTracks/SongTracks';
 import { BlurView } from 'expo-blur';
-import { ImageSourcePropType } from 'react-native';
+import { getSpecificArtist } from '@/services/artist';
+import { ActivityIndicator } from 'react-native-paper';
 
 type RootStackParamList = {
     SongDetailScreen: { song: Song };
@@ -17,6 +17,11 @@ type RootStackParamList = {
 
 interface SongDetailScreenRouteProp extends RouteProp<RootStackParamList, 'SongDetailScreen'> {
     params: { song: Song; artistId: string };
+}
+
+interface Timestamp {
+    _seconds: number;
+    _nanoseconds: number;
 }
 
 interface Song {
@@ -28,24 +33,27 @@ interface Song {
     urlImg: string;
     filePath: string;
     filePathImg: string;
-    createdAt: {
-        _seconds: number;
-        _nanoseconds: number;
-    };
-    updatedAt: {
-        _seconds: number;
-        _nanoseconds: number;
-    };
+    createdAt: Timestamp;
+    updatedAt: Timestamp;
 }
 
+interface Artist {
+    id: string;
+    Description: string;
+    name: string;
+    urlImg: string;
+    filePathImg: string;
+    createdAt: Timestamp;
+    updatedAt: Timestamp;
+    songs: Song[];
+}
 const SongDetailScreen = () => {
     const route = useRoute<SongDetailScreenRouteProp>();
+    const [artistData, setArtistData] = useState<Artist | null>(null); // State for artist data
     const { song, artistId } = route.params;
     const [accessToken, setAccessToken] = useState<string | null>(null);
-    const getArtistById = (artistId: number) => ImageSlider.find(artist => artist.id === artistId);
-    const imageSource = typeof song.urlImg === 'string' && song.urlImg.trim().length > 0 ? { uri: song.urlImg } : require('@/assets/images/essentials.jpg'); if (!song) {
-        return <Text>No song data</Text>;
-    }
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     useEffect(() => {
         const getAccessToken = async () => {
             try {
@@ -57,11 +65,27 @@ const SongDetailScreen = () => {
             }
         };
         getAccessToken();
-    }, []);
 
-
-
+        const fetchArtistData = async () => {
+            try {
+                setIsLoading(true);
+                const response = await getSpecificArtist(artistId);
+                if (response && response.err === 0) { 
+                    setArtistData(response.artist);
+                } 
+            } catch (error) {
+                console.error("Error fetching artist data:", error);
+                setError("An error occurred while fetching artist data.");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        if (artistId) {
+            fetchArtistData();
+        }
+    }, [artistId]);
     return (
+
         <ScrollView scrollEnabled={false} style={styles.scrollView}>
             <ImageBackground
                 source={{ uri: song.urlImg }}
@@ -69,45 +93,44 @@ const SongDetailScreen = () => {
                 resizeMode="cover"
             >
                 <BlurView intensity={50} style={StyleSheet.absoluteFillObject} >
-                <View style={styles.song_detail}>
-                    <Text style={styles.title}>{song.Title}</Text>
-                    <Text style={styles.desc}>{song.Description}</Text>
-                </View>
+                    <View style={styles.song_detail}>
+                        <Text style={styles.title}>{song.Title}</Text>
+                        <Text style={styles.desc}>{song.Description}</Text>
+                    </View>
                 </BlurView>
             </ImageBackground>
 
             <View style={styles.container}>
                 <Text style={styles.textartist}>Name of Artist</Text>
-                <FlatList
-                    data={[song.ArtistId]}
-                    keyExtractor={(item) => item.toString()}
-                    horizontal={true}
-                    nestedScrollEnabled={true}
-                    renderItem={({ item }) => {
-                        const artist = getArtistById(parseInt(item, 10));
-                        return artist && artist.image ? ( //Check if artist and image exist
-                            <View style={styles.artistContainer}>
-                                {/* <Image
-                                    source={{ uri: artist.image }} // Corrected source
-                                    style={styles.artistImage}
-                                /> */}
 
-                                <Text style={styles.artistName}>{artist.name}</Text>
-                            </View>
-                        ) : null;
-                    }}
-                    contentContainerStyle={styles.artistList}
-                    showsHorizontalScrollIndicator={false}
-                />
+                {isLoading ? (
+                    <ActivityIndicator size="large" color="#0000ff" style={{ marginTop: 20 }} />
+                ) : error ? (
+                    <Text style={{ color: 'red', marginTop: 20 }}>{error}</Text>
+                ) : artistData && artistData.urlImg ? (
+                    <View style={styles.artistContainer}>
+                        <Image
+                            source={{ uri: artistData.urlImg }}
+                            style={styles.artistImage}
+                            
+                            onError={(e) => console.error('Image load error:', e)}
+                        />
+                        <Text style={styles.artistName}>{artistData.name}</Text>
+                    </View>
+                ) : (
+                    <Text style={{ marginTop: 20 }}>No artist information available.</Text>
+                )}
+
+
                 <View>
                     <Text style={styles.newsong}>Song Tracks</Text>
-                    <View> 
+                    <View>
                         <SongTracks songData={song} />
                     </View>
                 </View>
                 <View>
                     <Text style={styles.newsong}>NEW SONG</Text>
-                    <View> 
+                    <View>
                         {accessToken && <SongCarousel accessToken={accessToken} />}
                     </View>
                 </View>
@@ -130,7 +153,7 @@ const styles = StyleSheet.create({
         height: 750,
     },
     song_detail: {
-        marginTop:250,
+        marginTop: 250,
         alignItems: 'center',
 
         padding: 20,
@@ -173,7 +196,7 @@ const styles = StyleSheet.create({
         marginVertical: 0,
     },
     artistContainer: {
-        alignItems: 'center',
+        paddingLeft:10,
         marginHorizontal: 20,
     },
     artistImage: {

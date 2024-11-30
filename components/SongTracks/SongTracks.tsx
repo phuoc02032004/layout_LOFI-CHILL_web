@@ -7,6 +7,11 @@ interface SongTracksProps {
     songData: Song | Song[];
 }
 
+interface Timestamp {
+    _seconds: number;
+    _nanoseconds: number;
+}
+
 interface Song {
     id: string;
     ArtistId: string;
@@ -16,14 +21,8 @@ interface Song {
     urlImg: string;
     filePath: string;
     filePathImg: string;
-    createdAt: {
-        _seconds: number;
-        _nanoseconds: number;
-    };
-    updatedAt: {
-        _seconds: number;
-        _nanoseconds: number;
-    };
+    createdAt: Timestamp;
+    updatedAt: Timestamp;
 }
 
 const Track: React.FC<SongTracksProps> = ({ songData }) => {
