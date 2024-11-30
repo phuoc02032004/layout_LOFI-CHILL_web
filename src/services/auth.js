@@ -11,7 +11,7 @@ admin.initializeApp();
 
 function generateAccessToken(user) {
     const userPayload = { ...user }
-    return jwt.sign(userPayload, process.env.JWT_SECRET, { expiresIn: '5m' })
+    return jwt.sign(userPayload, process.env.JWT_SECRET, { expiresIn: '7d' })
 }
 
 function generateRefreshToken(user) {
