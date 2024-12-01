@@ -6,6 +6,7 @@ const db = admin.firestore();
 
 export const addHistory = ({ userId, playlistId, songId }) => new Promise(async (resolve, reject) => {
     try {
+        console.log('Adding to history:', { userId, playlistId, songId });
         const historyRef = db.collection('users').doc(userId).collection('history');
         const snapshot = await historyRef.where('songId', '==', songId).get();
 

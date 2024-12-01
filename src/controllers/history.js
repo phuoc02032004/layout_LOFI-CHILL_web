@@ -8,6 +8,8 @@ export const addHistory = async (req, res) => {
         const { error } = joi.object({ userId, playlistId, songId }).validate(req.body);
         if (error) return res.status(400).json({ error: error.details[0].message });
 
+        console.log('Received data:', { userId, playlistId, songId });
+
         const response = await services.history.addHistory({ userId, playlistId, songId });
         return res.status(200).json(response);
     } catch (error) {
