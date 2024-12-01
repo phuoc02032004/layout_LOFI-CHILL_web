@@ -2,7 +2,6 @@ import { song } from '../controllers/index.js';
 import express from 'express';
 import { accessToken } from '../middleware/authToken.js';
 import multer from 'multer';
-import { getNewSong } from '../services/song.js';
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 const router = express.Router();

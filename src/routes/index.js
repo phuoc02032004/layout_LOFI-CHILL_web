@@ -10,6 +10,7 @@ import zaloPay from './zaloPay.js'
 import admin from './admin.js';
 import artist from './artist.js';
 import presets from './presets.js';
+import history from './history.js';
 
 const router = express.Router();
 
@@ -25,6 +26,7 @@ const initRoutes = (app) => {
   app.use('/api/v1/admin', admin);
   app.use('/api/v1/artist', artist);
   app.use('/api/v1/presets', presets);
+  app.use('/api/v1/history', history);
   app.use(notFound);
 };
 

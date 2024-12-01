@@ -7,6 +7,7 @@ import * as soundEffect from './soundEffect.js';
 import * as admin from './admin.js';
 import * as artist from './artist.js';
 import * as presets from './presets.js';
+import * as history from './history.js';
 
 export { auth };
 export { user };
@@ -17,4 +18,5 @@ export { soundEffect };
 export { admin };
 export { artist };
 export { presets };
+export { history };
 
