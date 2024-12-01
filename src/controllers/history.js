@@ -18,7 +18,7 @@ export const addHistory = async (req, res) => {
 
 export const getHistory = async (req, res) => {
     try {
-        const { userId } = req.body;
+        const { userId } = req.query;
         const { error } = joi.object({ userId }).validate(req.body);
         if (error) return res.status(400).json({ error: error.details[0].message });
 

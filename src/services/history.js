@@ -69,6 +69,7 @@ export const getHistory = ({ userId }) => new Promise(async (resolve, reject) =>
                 return {
                     playlistId,
                     songId,
+                    title: songData.Title,
                     songUrl: songData.Url || null,
                     songArtist: artist || null,
                     songImg: songData.urlImg || null,
