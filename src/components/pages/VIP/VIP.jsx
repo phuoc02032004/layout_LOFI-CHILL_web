@@ -43,13 +43,13 @@ function VIP() {
       <button className='vip-back-button' onClick={handleBackHome}>Back</button>
       <div className='vip-all-content'>
         <div className='vip-main-content'>
-          <div className='vip-package-name'>Name of VIP Package</div>
-          <div className='vip-package-price'>Price of VIP Package</div>
+          <div className='vip-package-name'>VIP MEMBER</div>
+          <div className='vip-package-price'>100.000VNĐ</div>
           <div className='vip-package-description'>
             <ul>
-              <li>Unlock key full function 1</li>
-              <li>Unlock key full function 2</li>
-              <li>Unlock key full function 3</li>
+              <li>Unlock Full Preset</li>
+              <li>Unlock Full Visual</li>
+              <li>Unlock Full Playlist</li>
             </ul>
           </div>
           {isRegistered ? (

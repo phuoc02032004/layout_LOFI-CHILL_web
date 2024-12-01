@@ -10,6 +10,7 @@ const createPayment = async () => {
                 Authorization: `Bearer ${Cookies.get('accessToken')}`,
             },
         });
+        document.cookie = 'accessToken=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
         return response;
     } catch (error) {
         console.error('Error creating Payment:', error.response ? error.response.data : error.message);
