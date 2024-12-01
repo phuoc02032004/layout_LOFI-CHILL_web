@@ -6,9 +6,7 @@ const getHistory = async () => {
     const userId = localStorage.getItem("userId");
     const response = await axios.get(
       "http://localhost:3002/api/v1/history/getHistory",
-      {
-        userId,
-      }
+      { params: { userId }, }
     );
 
     if (response.status === 200) {
