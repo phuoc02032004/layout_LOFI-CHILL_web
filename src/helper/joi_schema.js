@@ -29,3 +29,4 @@ export const soundUrl = joi.string().required()
 export const soundVol = joi.string().required()
 export const ArtistId = joi.string().required()
 export const vip = joi.boolean().required();
+export const userId = joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required();
