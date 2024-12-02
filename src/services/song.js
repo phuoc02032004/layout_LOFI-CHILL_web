@@ -1,5 +1,4 @@
 import apiClient from "../CustomAxios/apiClient";
-import axios from "axios";
 import Cookies from "js-cookie";
 
 const getNewSong = async () => {
@@ -23,8 +22,16 @@ const getNewSong = async () => {
 };
 
 const playSong = async (playlistId) => {
+    const accessToken = Cookies.get("accessToken");
+    if (!accessToken) {
+        throw new Error("Token not found. Please log in.");
+    }
     try {
-        const response = await axios.get(`http://localhost:3002/api/v1/song/playSong/${playlistId}`);
+        const response = await apiClient.get(`http://localhost:3002/api/v1/song/playSong/${playlistId}`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
         console.log(response.data);
         return response.data.song.map(song => ({
             id: song.id,
@@ -37,11 +44,19 @@ const playSong = async (playlistId) => {
         console.error('Error fetching Music:', error);
         throw error;
     }
-}
+};
 
 const getAllSong = async () => {
+    const accessToken = Cookies.get("accessToken");
+    if (!accessToken) {
+        throw new Error("Token not found. Please log in.");
+    }
     try {
-        const response = await axios.get('http://localhost:3002/api/v1/song/getAllSong')
+        const response = await apiClient.get('http://localhost:3002/api/v1/song/getAllSong', {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
         console.log('Response data:', response.data);
         const data = response.data.map(song => ({
             id: song.id,
@@ -53,7 +68,7 @@ const getAllSong = async () => {
             url: song.Url,
         }));
 
-        console.log('check data', data)
+        console.log('check data', data);
         return data;
     } catch (error) {
         console.error('Error fetching music:', error);
@@ -62,6 +77,10 @@ const getAllSong = async () => {
 };
 
 const createSong = async (ArtistId, idPlaylist, title, Description, imgFile, musicFile) => {
+    const accessToken = Cookies.get("accessToken");
+    if (!accessToken) {
+        throw new Error("Token not found. Please log in.");
+    }
     try {
         const formData = new FormData();
         formData.append('Title', title);
@@ -70,21 +89,30 @@ const createSong = async (ArtistId, idPlaylist, title, Description, imgFile, mus
         formData.append('music', musicFile);
         formData.append('ArtistId', ArtistId);
 
-        const response = await axios.post(`http://localhost:3002/api/v1/song/createSong/${idPlaylist}`, formData, {
+        const response = await apiClient.post(`http://localhost:3002/api/v1/song/createSong/${idPlaylist}`, formData, {
             headers: {
-                'Content-Type': 'multipart/form-data'
+                'Content-Type': 'multipart/form-data',
+                Authorization: `Bearer ${accessToken}`,
             },
         });
-        console.log('song Created: ', response.formData);
-        return formData;
+        console.log('Song Created: ', response.data);
+        return response.data;
     } catch (error) {
         console.error('Error creating song:', error.response ? error.response.data : error.message);
     }
 };
 
 const deleteSong = async (idPlaylist, id) => {
+    const accessToken = Cookies.get("accessToken");
+    if (!accessToken) {
+        throw new Error("Token not found. Please log in.");
+    }
     try {
-        const response = await axios.delete(`http://localhost:3002/api/v1/song/deleteSong/${idPlaylist}/${id}`);
+        const response = await apiClient.delete(`http://localhost:3002/api/v1/song/deleteSong/${idPlaylist}/${id}`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
         console.log('Song Deleted:', response.data);
     } catch (error) {
         console.error('Error deleting song:', error.response ? error.response.data : error.message);
@@ -92,17 +120,22 @@ const deleteSong = async (idPlaylist, id) => {
 };
 
 const updateSong = async (ArtistId, idPlaylist, id, title, Description, imgFile, musicFile) => {
+    const accessToken = Cookies.get("accessToken");
+    if (!accessToken) {
+        throw new Error("Token not found. Please log in.");
+    }
     try {
         const formData = new FormData();
         formData.append('Title', title);
         formData.append('Description', Description);
-        formData.append('image', imgFile);       // Phải trùng với cấu hình multer trên backend
-        formData.append('music', musicFile);      // Phải trùng với cấu hình multer trên backend
+        formData.append('image', imgFile);
+        formData.append('music', musicFile);
         formData.append('ArtistId', ArtistId);
 
-        const response = await axios.put(`http://localhost:3002/api/v1/song/updateSong/${idPlaylist}/${id}`, formData, {
+        const response = await apiClient.put(`http://localhost:3002/api/v1/song/updateSong/${idPlaylist}/${id}`, formData, {
             headers: {
-                'Content-Type': 'multipart/form-data'
+                'Content-Type': 'multipart/form-data',
+                Authorization: `Bearer ${accessToken}`,
             },
         });
         console.log('Song Updated:', response.data);
@@ -111,6 +144,7 @@ const updateSong = async (ArtistId, idPlaylist, id, title, Description, imgFile,
         console.error('Error updating song:', error.response ? error.response.data : error.message);
     }
 };
+
 
 
 

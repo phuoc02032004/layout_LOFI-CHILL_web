@@ -1,4 +1,3 @@
-import axios from "axios";
 import Cookies from 'js-cookie';
 import apiClient from '../CustomAxios/apiClient';
 

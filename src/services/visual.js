@@ -1,5 +1,4 @@
 import apiClient from "../CustomAxios/apiClient";
-import axios from "axios";
 import Cookies from "js-cookie";
 
 const createVisual = async (title, imgFile, VideoFile, vip) => {
@@ -14,7 +13,7 @@ const createVisual = async (title, imgFile, VideoFile, vip) => {
     formData.append("video", VideoFile);
     formData.append("vip", vip);
 
-    const response = await axios.post(
+    const response = await apiClient.post(
       "http://localhost:3002/api/v1/visual/createVisual",
       formData,
       {
@@ -33,12 +32,19 @@ const createVisual = async (title, imgFile, VideoFile, vip) => {
 };
 
 const getAllVisual = async () => {
+  const accessToken = Cookies.get("accessToken");
+  if (!accessToken) {
+    throw new Error("Token not found. Please log in.");
+  }
   try {
-    const response = await apiClient.get("/visual/getAllVisual", {
-      headers: {
-        Authorization: `Bearer ${Cookies.get("accessToken")}`,
-      },
-    });
+    const response = await apiClient.get(
+      "/visual/getAllVisual",
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
     return response.data.visual.map((visual) => ({
       id: visual.id,
       title: visual.Title,
@@ -47,7 +53,7 @@ const getAllVisual = async () => {
       vip: visual.vip,
     }));
   } catch (error) {
-    console.error("Error fetching sound:", error);
+    console.error("Error fetching visuals:", error);
     throw error;
   }
 };
@@ -71,16 +77,16 @@ const updateVisual = async (id, title, imgFile, videoFile, vip) => {
       formData.append("video", videoFile);
     }
 
-    if (vip) {
+    if (vip !== undefined) {
       formData.append("vip", vip);
     }
 
-    const response = await axios.put(
+    const response = await apiClient.put(
       `http://localhost:3002/api/v1/visual/updateVisual/${id}`,
       formData,
       {
         headers: {
-          Authorization: `Bearer ${Cookies.get("accessToken")}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       }
     );
@@ -102,11 +108,11 @@ const deleteVisual = async (visualId) => {
     throw new Error("Token not found. Please log in.");
   }
   try {
-    const response = await axios.delete(
+    const response = await apiClient.delete(
       `http://localhost:3002/api/v1/visual/deleteVisual/${visualId}`,
       {
         headers: {
-          Authorization: `Bearer ${Cookies.get("accessToken")}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       }
     );
@@ -118,5 +124,6 @@ const deleteVisual = async (visualId) => {
     );
   }
 };
+
 
 export { createVisual, getAllVisual, updateVisual, deleteVisual };

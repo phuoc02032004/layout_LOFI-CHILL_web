@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import apiClient from "../../../CustomAxios/apiClient"; // Đảm bảo rằng apiClient được import đúng
 import "./SongPage.css";
 import Navbar from "../../Navbar/Navbar";
 import Loading from "../../Loading/Loading";
 import Footer from "../../footer/Footer";
 import { Link } from "react-router-dom";
+import Cookies from "js-cookie"; 
 
 function SongPage() {
   const [isLoading, setIsLoading] = useState(true);
@@ -13,19 +14,29 @@ function SongPage() {
   const songsPerPage = 6;
 
   const fetchSongs = async () => {
+    const accessToken = Cookies.get("accessToken");
+    if (!accessToken) {
+      console.error("Token not found. Please log in.");
+      return; 
+    }
+
     try {
-      const response = await axios.get(
-        "http://localhost:3002/api/v1/song/getAllSong"
-      );
+      const response = await apiClient.get("http://localhost:3002/api/v1/song/getAllSong", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
       const data = response.data.map((song) => ({
         id: song.id,
         title: song.Title,
         image: song.urlImg,
         idPlaylist: song.idPlaylist,
-        description: song.description,
+        description: song.Description,
         ArtistId: song.ArtistId,
         url: song.Url,
       }));
+
       setSongs(data);
     } catch (error) {
       console.error("Error fetching music:", error);
@@ -35,7 +46,7 @@ function SongPage() {
   };
 
   useEffect(() => {
-    fetchSongs(); 
+    fetchSongs();
     document.body.classList.add("song-page-bg");
     return () => {
       document.body.classList.remove("song-page-bg");

@@ -1,5 +1,5 @@
-import axios from "axios";
 import Cookies from "js-cookie";
+import apiClient from '../CustomAxios/apiClient';
 
 const createPreset = async ({
   Title,
@@ -14,7 +14,7 @@ const createPreset = async ({
     throw new Error("Token not found. Please log in.");
   }
   try {
-    const response = await axios.post(
+    const response = await apiClient.post(
       "http://localhost:3002/api/v1/presets/createPreset",
       {
         Title,
@@ -38,13 +38,21 @@ const createPreset = async ({
 };
 
 const getAllPreset = async () => {
+  const accessToken = Cookies.get("accessToken");
+  if (!accessToken) {
+    throw new Error("Token not found. Please log in.");
+  }
   try {
-    const response = await axios.get(
-      "http://localhost:3002/api/v1/presets/getAllPresets"
+    const response = await apiClient.get(
+      "http://localhost:3002/api/v1/presets/getAllPresets",
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
     );
 
     if (response.data && response.data.err === 0) {
-      // Duyệt qua các preset và xử lý nếu cần
       return response.data.presets.map((preset) => ({
         id: preset.id,
         name: preset.Title,
@@ -68,13 +76,14 @@ const getAllPreset = async () => {
   }
 };
 
+
 const updatePreset = async (id, data) => {
   const accessToken = Cookies.get("accessToken");
   if (!accessToken) {
     throw new Error("Token not found. Please log in.");
   }
   try {
-    const response = await axios.put(
+    const response = await apiClient.put(
       `http://localhost:3002/api/v1/presets/updatePreset/${id}`,
       data,
       {
@@ -98,7 +107,7 @@ const deletePreset = async (id) => {
     throw new Error("Token not found. Please log in.");
   }
   try {
-    const response = await axios.delete(
+    const response = await apiClient.delete(
       `http://localhost:3002/api/v1/presets/deletePreset/${id}`,
       {
         headers: {
@@ -114,5 +123,6 @@ const deletePreset = async (id) => {
     );
   }
 };
+
 
 export { createPreset, getAllPreset, updatePreset, deletePreset };

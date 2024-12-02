@@ -1,4 +1,3 @@
-import axios from "axios";
 import Cookies from 'js-cookie';
 import apiClient from '../CustomAxios/apiClient';
 
@@ -23,7 +22,11 @@ const createArtist = async (name, Description, imgFile) => {
 
 const getAllArtist = async () => {
     try {
-        const response = await axios.get('http://localhost:3002/api/v1/artist/getAllArtist');
+        const response = await apiClient.get('http://localhost:3002/api/v1/artist/getAllArtist', {
+            headers: {
+                Authorization: `Bearer ${Cookies.get('accessToken')}`,
+            },
+        });
         return response.data.artists.map(artist => ({
             id: artist.id,
             title: artist.name,
@@ -31,14 +34,18 @@ const getAllArtist = async () => {
             image: artist.urlImg,
         }));
     } catch (error) {
-        console.error('Error fetching sound:', error);
+        console.error('Error fetching artists:', error.response ? error.response.data : error.message);
         throw error;
     }
 };
 
 const getSpecificArtist = async (artistId) => {
     try {
-        const response = await axios.get(`http://localhost:3002/api/v1/artist/getSpecificArtist/${artistId}`);
+        const response = await apiClient.get(`http://localhost:3002/api/v1/artist/getSpecificArtist/${artistId}`, {
+            headers: {
+                Authorization: `Bearer ${Cookies.get('accessToken')}`,
+            },
+        });
         if (response.data.err === 0) {
             const artist = response.data.artist;
             return {
@@ -59,35 +66,32 @@ const getSpecificArtist = async (artistId) => {
 const updateArtist = async (id, name, Description, imgFile) => {
     try {
         const formData = new FormData();
-        if (name) {
-            formData.append('name', name);
-        }
+        if (name) formData.append('name', name);
+        if (Description) formData.append('Description', Description);
+        if (imgFile) formData.append('fileImg', imgFile);
 
-        if (Description) {
-            formData.append('Description', Description);
-        }
-
-        if (imgFile) {
-            formData.append('fileImg', imgFile);
-        }
-
-        const response = await axios.put(`http://localhost:3002/api/v1/artist/updateArtist/${id}`, formData, {
+        const response = await apiClient.put(`http://localhost:3002/api/v1/artist/updateArtist/${id}`, formData, {
             headers: {
-                'Content-Type': 'multipart/form-data'
+                'Content-Type': 'multipart/form-data',
+                Authorization: `Bearer ${Cookies.get('accessToken')}`,
             },
         });
 
         console.log('Artist Updated: ', response.data);
         return response.data;
     } catch (error) {
-        console.error('Error updating Visual:', error.response ? error.response.data : error.message);
+        console.error('Error updating Artist:', error.response ? error.response.data : error.message);
         throw error;
     }
 };
 
 const deleteArtist = async (artistId) => {
     try {
-        const response = await axios.delete(`http://localhost:3002/api/v1/artist/deleteArtist/${artistId}`);
+        const response = await apiClient.delete(`http://localhost:3002/api/v1/artist/deleteArtist/${artistId}`, {
+            headers: {
+                Authorization: `Bearer ${Cookies.get('accessToken')}`,
+            },
+        });
         console.log('Artist Deleted:', response.data);
     } catch (error) {
         console.error('Error deleting Artist:', error.response ? error.response.data : error.message);
@@ -96,7 +100,11 @@ const deleteArtist = async (artistId) => {
 
 const getArtistSong = async (artistId) => {
     try {
-        const response = await axios.get(`http://localhost:3002/api/v1/artist/getArtistSong/${artistId}`);
+        const response = await apiClient.get(`http://localhost:3002/api/v1/artist/getArtistSong/${artistId}`, {
+            headers: {
+                Authorization: `Bearer ${Cookies.get('accessToken')}`,
+            },
+        });
         if (response.status === 200) {
             return response.data; // Trả về danh sách bài hát
         } else {
@@ -107,6 +115,7 @@ const getArtistSong = async (artistId) => {
         throw error;
     }
 };
+
 
 
 
