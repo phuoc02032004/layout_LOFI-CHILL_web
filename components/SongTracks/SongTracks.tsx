@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';  // Thư viện biểu tượng FontAwesome
-
+import { Audio } from 'expo-av';
 interface SongTracksProps {
     songData: Song | Song[];
 }
@@ -28,6 +28,47 @@ interface Song {
 const Track: React.FC<SongTracksProps> = ({ songData }) => {
     const isSingleSong = !Array.isArray(songData);
     const data = isSingleSong ? [songData] : songData;
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [currentSong, setCurrentSong] = useState<Song | null>(null);
+    const [sound, setSound] = useState<Audio.Sound | null>(null);
+
+    useEffect(() => {
+        return () => {
+            // Dừng phát nhạc khi component unmount
+            stopSong();
+        };
+    }, []);
+    const handlePlay = async (song: Song) => {
+        try {
+            stopSong(); // Dừng bài hát hiện tại nếu có
+
+            const { sound } = await Audio.Sound.createAsync(
+                { uri: song.Url },
+                { shouldPlay: true },
+                (status) => {
+                    console.log('Playback Status:', status);
+                }
+            );
+            setSound(sound);
+            setCurrentSong(song);
+            setIsPlaying(true);
+        } catch (error) {
+            console.error('Error playing song:', error);
+        }
+    };
+
+    const stopSong = async () => {
+        try {
+            if (sound) {
+                await sound.unloadAsync();
+                setSound(null);
+                setCurrentSong(null);
+                setIsPlaying(false);
+            }
+        } catch (error) {
+            console.error('Error stopping song:', error);
+        }
+    };
     return (
         <View style={styles.container}>
             <FlatList
@@ -43,8 +84,8 @@ const Track: React.FC<SongTracksProps> = ({ songData }) => {
                         <View style={styles.trackRight}>
                             <Text style={styles.trackDuration}>03:45</Text> {/* Thời lượng tạm thời, nên lấy từ item.duration nếu có */}
                             <View style={styles.trackControls}>
-                                <TouchableOpacity style={styles.controlButton}>
-                                    <Icon name="play" size={24} color="#000" />
+                                <TouchableOpacity style={styles.controlButton} onPress={() => (currentSong?.id === item.id ? stopSong() : handlePlay(item))}>
+                                    <Icon name={currentSong?.id === item.id ? 'stop' : 'play'} size={24} color="#000" />
                                 </TouchableOpacity>
                                 <TouchableOpacity style={styles.controlButton}>
                                     <Icon name="heart" size={24} color="#e74c3c" />
