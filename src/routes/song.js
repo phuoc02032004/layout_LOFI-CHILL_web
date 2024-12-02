@@ -10,8 +10,8 @@ router.post('/createSong/:idPlaylist', accessToken, upload.fields([
     { name: 'music', maxCount: 1 },
     { name: 'image', maxCount: 1 }]
 ), song.createSong);
-router.get('/getAllSongPlaylist/:id', song.getAllSong);
-router.get('/getAllSong', song.getAllSong);
+router.get('/getAllSongPlaylist/:id', accessToken, song.getAllSong);
+router.get('/getAllSong', accessToken, song.getAllSong);
 router.get('/getSpecificSong/:idPlaylist/:id', song.getSpecificSong);
 router.get('/getNewSong', accessToken, song.getNewSong);
 router.put('/updateSong/:idPlaylist/:id', accessToken, upload.fields([
@@ -20,6 +20,6 @@ router.put('/updateSong/:idPlaylist/:id', accessToken, upload.fields([
 ), song.updateSong);
 router.delete('/deleteSong/:idPlaylist/:id', accessToken, song.deleteSong);
 
-router.get('/playSong/:id', song.playSong);
+router.get('/playSong/:id', accessToken, song.playSong);
 
 export default router;

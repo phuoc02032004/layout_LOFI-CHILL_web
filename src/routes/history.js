@@ -4,7 +4,7 @@ import { accessToken } from '../middleware/authToken.js';
 import multer from 'multer';
 const router = express.Router();
 
-router.post('/addHistory', history.addHistory);
-router.get('/getHistory', history.getHistory);
+router.post('/addHistory',accessToken, history.addHistory);
+router.get('/getHistory', accessToken,history.getHistory);
 
 export default router;

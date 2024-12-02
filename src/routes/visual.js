@@ -12,7 +12,7 @@ router.post('/createVisual', accessToken, upload.fields([
     { name: 'video', maxCount: 1 }
 ]), visual.createVisual);
 router.get('/getAllVisual', accessToken, visual.getAllVisual);
-router.get('/getSpecificVisual/:id', visual.getSpecificVisual);
+router.get('/getSpecificVisual/:id', accessToken, visual.getSpecificVisual);
 router.put('/updateVisual/:id', accessToken, upload.fields([
     { name: 'image', maxCount: 1 },
     { name: 'video', maxCount: 1 }
