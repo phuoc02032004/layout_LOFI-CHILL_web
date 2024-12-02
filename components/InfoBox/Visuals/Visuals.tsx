@@ -1,7 +1,8 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, Alert } from 'react-native';
 import { Video, ResizeMode } from 'expo-av'; 
 import { getAllVisual } from '@/services/visual'; 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Visual {
   id: string;
@@ -28,22 +29,50 @@ const Visuals: React.FC<VisualsProps> = ({ onBackgroundChange }) => {
   const videoRef = useRef<React.ElementRef<typeof Video> | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
   const [visualData, setVisualData] = useState<Visual[]>([]); 
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const getAccessToken = async () => {
       try {
-        const response = await getAllVisual();
-        if (Array.isArray(response.visual)) { 
-          setVisualData(response.visual); 
-        } else {
-          console.error('Invalid visual data received from getAllVisual().');
-        }
+        const token = await AsyncStorage.getItem('accessToken');
+        setAccessToken(token);
       } catch (error) {
-        console.error('Error fetching visual data:', error);
+        console.error('Error retrieving access token:', error);
+        Alert.alert('Error', 'Failed to retrieve access token. Please login again.');
+      } finally {
+        setLoading(false);
       }
     };
-    fetchData();
+
+    getAccessToken();
   }, []);
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      if (accessToken) {
+        try {
+          const response = await getAllVisual(accessToken); 
+          if (Array.isArray(response.visual)) {
+            setVisualData(response.visual);
+          } else {
+            console.error('Invalid visual data received from getAllVisual().', response);
+          }
+        } catch (error: any) {
+          console.error('Error fetching visual data:', error);
+          if(error.response && error.response.status === 403){
+            Alert.alert('Error', 'Your access token has expired. Please login again.');
+          } else {
+            Alert.alert('Error', 'Failed to fetch visual data.');
+          }
+        }
+      }
+    };
+
+    if (!loading && accessToken) {
+      fetchData();
+    }
+  }, [accessToken, loading]);
 
   const handleVisualSelect = useCallback(
     (background: Visual) => {

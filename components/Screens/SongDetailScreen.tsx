@@ -19,6 +19,23 @@ interface SongDetailScreenRouteProp extends RouteProp<RootStackParamList, 'SongD
     params: { song: Song; artistId: string };
 }
 
+interface Artist {
+    id: string;
+    Description: string;
+    name: string;
+    urlImg: string;
+    filePathImg: string;
+    createdAt: {
+      _seconds: number;
+      _nanoseconds: number;
+    };
+    updatedAt: {
+      _seconds: number;
+      _nanoseconds: number;
+    };
+    songs: Song[];
+  }
+
 interface Song {
     id: string;
     ArtistId: string;
@@ -42,6 +59,7 @@ const SongDetailScreen = () => {
     const route = useRoute<SongDetailScreenRouteProp>();
     const { song, artistId } = route.params;
     const [accessToken, setAccessToken] = useState<string | null>(null);
+    const [songs, setSongs] = useState<Song[]>([]); 
     const getArtistById = (artistId: number) => ImageSlider.find(artist => artist.id === artistId);
     const imageSource = typeof song.urlImg === 'string' && song.urlImg.trim().length > 0 ? { uri: song.urlImg } : require('@/assets/images/essentials.jpg'); if (!song) {
         return <Text>No song data</Text>;
@@ -59,8 +77,7 @@ const SongDetailScreen = () => {
         getAccessToken();
     }, []);
 
-
-
+    
     return (
         <ScrollView scrollEnabled={false} style={styles.scrollView}>
             <ImageBackground
@@ -101,9 +118,7 @@ const SongDetailScreen = () => {
                 />
                 <View>
                     <Text style={styles.newsong}>Song Tracks</Text>
-                    <View> 
-                        <SongTracks songData={song} />
-                    </View>
+                    <SongTracks songData={songs} />
                 </View>
                 <View>
                     <Text style={styles.newsong}>NEW SONG</Text>

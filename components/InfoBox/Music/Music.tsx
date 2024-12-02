@@ -64,11 +64,10 @@ const Music: React.FC<MusicProps> = ({ onTabPress, ...props }) => {
   useEffect(() => {
     if (currentPlaylist && currentPlaylist.length > 0 && currentSongIndex >= 0) {
       const url = currentPlaylist[currentSongIndex]?.url;
-      if (url && url !== prevSongUrl.current) { // Chỉ tải lại nếu URL khác
-        prevSongUrl.current = url;           // Cập nhật URL hiện tại
-        loadAndPlaySong(url);                // Tải và phát bài hát
+      if (url && url !== prevSongUrl.current) { 
+        prevSongUrl.current = url;          
+        loadAndPlaySong(url);                
       } else if (!url) {
-        console.error('URL của bài hát không tồn tại!');
         dispatch(setError('URL của bài hát không tồn tại!'));
       }
     }
@@ -116,6 +115,22 @@ const Music: React.FC<MusicProps> = ({ onTabPress, ...props }) => {
 
   return (
     <View style={styles.container}>
+       {currentPlaylist.length > 0 && (
+        <View style={styles.musicPlayer}>
+          <Text style={styles.songTitle}>{currentSongTitle}</Text>
+
+          <TouchableOpacity onPress={handlePlayPause} style={styles.playPauseButton}>
+            <Text style={styles.playPauseText}>{isPlaying ? 'Pause' : 'Play'}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleNextSong} style={styles.nextButton}>
+            <Text style={styles.nextText}>Next</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleReset} style={styles.resetButton}>
+        <Text style={styles.resetText}>Reset</Text>
+      </TouchableOpacity>
+        </View>
+      )}
+
       {loading ? (
         <ActivityIndicator size="large" color="#ffffff" style={styles.loadingIndicator} />
       ) : error ? (
@@ -142,22 +157,7 @@ const Music: React.FC<MusicProps> = ({ onTabPress, ...props }) => {
         </View>
       )}
 
-      {currentPlaylist.length > 0 && (
-        <View style={styles.musicPlayer}>
-          <Text style={styles.songTitle}>{currentSongTitle}</Text>
-          <Text style={styles.songArtist}>{currentSongArtist}</Text>
-
-          <TouchableOpacity onPress={handlePlayPause} style={styles.playPauseButton}>
-            <Text style={styles.playPauseText}>{isPlaying ? 'Pause' : 'Play'}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handleNextSong} style={styles.nextButton}>
-            <Text style={styles.nextText}>Next</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handleReset} style={styles.resetButton}>
-        <Text style={styles.resetText}>Reset</Text>
-      </TouchableOpacity>
-        </View>
-      )}
+     
     </View>
   );
 };
@@ -165,7 +165,6 @@ const Music: React.FC<MusicProps> = ({ onTabPress, ...props }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000', // Đã thêm màu nền
     padding: 10,
   },
   playlistsList: {
@@ -175,6 +174,8 @@ const styles = StyleSheet.create({
   playlistItem: {
     marginBottom: 15,
     backgroundColor: '#333',
+    borderWidth: 2,
+    borderColor: '#ccc',
     borderRadius: 10,
     padding: 10,
   },
@@ -216,8 +217,12 @@ const styles = StyleSheet.create({
   musicPlayer: {
     alignItems: 'center',
     marginBottom: 20,
+    backgroundColor: '#111',
+    borderRadius: 20,
+    padding: 10,
   },
   playPauseButton: {
+    fontFamily: 'Poppins-Bold',
     backgroundColor: 'blue',
     padding: 10,
     borderRadius: 5,
@@ -239,7 +244,8 @@ const styles = StyleSheet.create({
   songTitle: {
     fontSize: 24,
     color: 'white',
-    marginBottom: 5,
+    marginBottom: 10,
+    fontFamily: 'Poppins-Bold',
   },
   songArtist: {
     fontSize: 16,
@@ -249,7 +255,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'red',
     padding: 10,
     borderRadius: 5,
-    marginTop: 10, // Add some margin to separate the button
+    marginTop: 10,
   },
   resetText: {
     color: 'white',

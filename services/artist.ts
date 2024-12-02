@@ -46,7 +46,7 @@ interface ArtistResponse {
   artist: Artist;
 }
 
-const apiUrl = "http://172.16.21.103:3002/api/v1/artist";
+const apiUrl = "http://192.168.2.177:3002/api/v1/artist";
 
 const createArtist = async (
   name: string,
