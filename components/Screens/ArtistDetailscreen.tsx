@@ -1,29 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, ActivityIndicator, ImageBackground, Dimensions, Alert, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  ActivityIndicator,
+  ImageBackground,
+  Dimensions,
+  Alert,
+  Platform,
+  ScrollView,
+} from 'react-native';
 import { useRoute } from '@react-navigation/native';
-import { getSpecificArtist, getArtistSong } from '@/services/artist';
 import { BlurView } from 'expo-blur';
-import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
+
+import { getSpecificArtist, getArtistSong } from '@/services/artist';
 
 import SongTracks from '../SongTracks/SongTracks';
 import ArtistCarousel from '../Carousel/ArtistCarousel';
 
-interface Artist {
-  id: string;
-  Description: string;
-  name: string;
-  urlImg: string;
-  filePathImg: string;
-  createdAt: {
-    _seconds: number;
-    _nanoseconds: number;
-  };
-  updatedAt: {
-    _seconds: number;
-    _nanoseconds: number;
-  };
-  songs: Song[];
+
+// Define interfaces separately for better readability
+interface Timestamp {
+  _seconds: number;
+  _nanoseconds: number;
 }
+
 interface Song {
   id: string;
   ArtistId: string;
@@ -33,15 +35,21 @@ interface Song {
   urlImg: string;
   filePath: string;
   filePathImg: string;
-  createdAt: {
-    _seconds: number;
-    _nanoseconds: number;
-  };
-  updatedAt: {
-    _seconds: number;
-    _nanoseconds: number;
-  };
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
 }
+
+interface Artist {
+  id: string;
+  Description: string;
+  name: string;
+  urlImg: string;
+  filePathImg: string;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+  songs: Song[];
+}
+
 interface RouteParams {
   artistId: string;
 }
@@ -50,34 +58,30 @@ const isRouteParams = (params: any): params is RouteParams => {
   return params && typeof params.artistId === 'string';
 };
 
-interface CombinedItem {
-  type: 'song' | 'artist';
-  data: Song | Artist;
-}
-
 
 const ArtistDetailsScreen: React.FC = () => {
   const route = useRoute();
   const [artist, setArtist] = useState<Artist | null>(null);
   const [loading, setLoading] = useState(true);
-  const [songs, setSongs] = useState<Song[]>([]); // Add state for songs
-  const [combinedData, setCombinedData] = useState<CombinedItem[]>([]);
+  const [songs, setSongs] = useState<Song[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const windowWidth = Dimensions.get('window').width;
-  const windowHeight = Dimensions.get('window').height;
+  const { width: windowWidth, height: windowHeight } = Dimensions.get('window'); // Destructuring for brevity
+
 
   useEffect(() => {
     const fetchArtistData = async () => {
       try {
         if (isRouteParams(route.params)) {
           const { artistId } = route.params;
+
+          // Fetch artist details first
           const artistResponse = await getSpecificArtist(artistId);
           if (artistResponse.err === 0) {
             setArtist(artistResponse.artist);
-            // Call getArtistSong after getting artist data
+
+            // Fetch songs after getting artist data
             const songsResponse = await getArtistSong(artistId);
-            console.log(songsResponse)
-            if (songsResponse) {
+            if (songsResponse && songsResponse.songs) {
               setSongs(songsResponse.songs);
             } else {
               setError("Failed to load artist's songs");
@@ -99,60 +103,85 @@ const ArtistDetailsScreen: React.FC = () => {
         setLoading(false);
       }
     };
+
     fetchArtistData();
   }, [route.params]);
 
-  if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
-  }
+  // Improved conditional rendering with early exits
+  if (loading) return <LoadingIndicator />;
+  if (error) return <ErrorDisplay error={error} />;
+  if (!artist) return <ErrorDisplay error="Artist not found" />;
 
-  if (error) {
-    return <Text style={styles.errorText}>{error}</Text>;
-  }
-
-  if (!artist) {
-    return <Text style={styles.errorText}>Artist not found</Text>;
-  }
+  // Extract this into a separate component for better readability.
   return (
-    <>
-        <ScrollView scrollEnabled={false} style={styles.container}>
-          <ImageBackground
+    <ScrollView contentContainerStyle={styles.container}>
+      <ImageBackground
+        source={{ uri: artist.urlImg || 'placeholder_image_url' }}
+        style={styles.backgroundImage}
+        resizeMode="cover"
+      >
+        <BlurView intensity={50} style={styles.blur} />
+        <View style={styles.content}>
+          <Image
             source={{ uri: artist.urlImg || 'placeholder_image_url' }}
-            style={styles.backgroundImage}
-            resizeMode="cover"
-          >
-            <BlurView intensity={50} style={styles.blur} /> {/* Blurred overlay */}
-            <View style={styles.content}>
-              <Image
-                source={{ uri: artist.urlImg || 'placeholder_image_url' }}
-                style={styles.artistImage}
-                resizeMode="contain"
-              />
-              <Text style={styles.artistName}>{artist.name}</Text>
-              <Text style={styles.artistDescription}>{artist.Description}</Text>
-            </View>
-          </ImageBackground>
-          <View>
-            <Text style={styles.newsong}>Song Tracks</Text>
+            style={styles.artistImage}
+            resizeMode="contain"
+          />
+          <Text style={styles.artistName}>{artist.name}</Text>
+          <Text style={styles.artistDescription}>{artist.Description}</Text>
+        </View>
+      </ImageBackground>
+      <View>
+        <View>
+          <View  style={styles.sectionContainer}> 
+            <Text style={styles.sectionTitle}>Song Tracks</Text>
             <SongTracks songData={songs} />
-            <Text style={styles.newsong}>ARTISTS</Text>
-            <ArtistCarousel />
-            <View style={styles.white}></View>
           </View>
-
-        </ScrollView>
-
-    </>
+        </View>
+        <View  style={styles.sectionContainer} >
+          <Text style={styles.newsong}>ARTISTS</Text>
+          <ArtistCarousel />
+        </View>
+      </View>
+    </ScrollView>
   );
 };
 
+
+const LoadingIndicator = () => (
+  <View style={styles.loadingContainer}>
+    <ActivityIndicator size="large" color="#0000ff" />
+  </View>
+);
+
+const ErrorDisplay = ({ error }: { error: string }) => (
+  <Text style={styles.errorText}>{error}</Text>
+);
+
 const styles = StyleSheet.create({
+  blursongstrack: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  sectionTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  sectionContainer: {
+    padding: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 5, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 7,
+    elevation: 6, 
+    paddingBottom:20,
+  },
   container: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: '#FFF4B7'
   },
   white: {

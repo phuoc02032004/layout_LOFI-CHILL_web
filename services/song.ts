@@ -1,7 +1,17 @@
 import axios from "axios";
-import { Song } from "@/types/types";
 
 const apiUrl = 'http://192.168.2.177:3002/api/v1/song';
+
+interface Song {
+  id: string;
+  ArtistId: string;
+  Title: string;
+  Url: string;
+  Description: string;
+  urlImg: string;
+  filePath: string;
+  filePathImg: string;
+}
 
 interface ApiResponse<T> {
     err: number;

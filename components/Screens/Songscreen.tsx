@@ -9,15 +9,23 @@ type RootStackParamList = {
   Songscreen: undefined; 
 };
 
-interface Song {
-  id: string;
-  Title: string; 
-  ArtistId: string; 
-  Url: string;
-  urlImg: string;
-  Description: string;
+interface Timestamp {
+  _seconds: number;
+  _nanoseconds: number;
 }
 
+interface Song {
+  id: string;
+  ArtistId: string;
+  Title: string;
+  Url: string;
+  Description: string;
+  urlImg: string;
+  filePath: string;
+  filePathImg: string;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
 type SongscreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Songscreen'>;
 
 const Songscreen = () => {

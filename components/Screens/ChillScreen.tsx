@@ -5,13 +5,13 @@ import Loading from '../Loading/Loading';
 import Header from '../Header/Header';
 import ControlChill from '../navigation/ControlChill'; 
 import PlayingBar from '../PlayingBar/PlayingBar';
+import { useSelector } from 'react-redux';
 
 interface ChillScreenProps {
   currentSongUrl: string;
-  onCurrentSongUrlChange: (url: string) => void;  
 }
 
-const ChillScreen: React.FC<ChillScreenProps> = ({ currentSongUrl, onCurrentSongUrlChange }) => {
+const ChillScreen: React.FC<ChillScreenProps> = ({ currentSongUrl }) => {
   const { height, width } = Dimensions.get('window');
   const videoRef = useRef<Video>(null);
   const [status, setStatus] = useState<AVPlaybackStatus | null>(null);
@@ -20,7 +20,8 @@ const ChillScreen: React.FC<ChillScreenProps> = ({ currentSongUrl, onCurrentSong
     'https://storage.googleapis.com/music-52602.appspot.com/Visuals/9baaf4af-b632-44cb-a3c9-65576fbe5ef6_CampfireChill.mp4?GoogleAccessId=firebase-adminsdk-fax9b%40music-52602.iam.gserviceaccount.com&Expires=16730298000&Signature=G%2BQaKtfixzhp5Htxro0Ggy96uy2c5dSEYfNev1nsNjnOx49sQTx1J1TPDDVfJZKmXNuYGYtvDYmSp5t4UmEZG%2BPMClKXuJ%2FiZaiBQ5bNjSWhZPwe6%2BYvm%2F%2FSctuXkqzPoCr33nV9bXGqZJbkM9T4ak0XkCxPMaghtQmiy%2FZX34HkwqT2hNuMdTvFaRMyq9fSqpV%2FaMdh88MiojvxeCJfTBXSEpUTrotwnkJ017hbpdKPr2NWJ9hd4LAovphkFjNDbllMBryH3YXPpiNvCXAjsUHwhgpc%2F4IiP%2FvjgYAj4ODiPIoLaVIZwTvEw43vvtJNe6MEpgYaEwLXp5uorutGZQ%3D%3D' 
   );
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null); 
-  
+  const { currentBackgroundUrl } = useSelector((state: any) => state.player);
+
   useEffect(() => {
     const loadVideo = async () => {
       if (videoRef.current) {
@@ -43,8 +44,25 @@ const ChillScreen: React.FC<ChillScreenProps> = ({ currentSongUrl, onCurrentSong
     setBackgroundImage(newImageUrl); 
   };
 
+  useEffect(() => {
+    const loadVideo = async () => {
+      if (videoRef.current && currentBackgroundUrl) {
+        try {
+          await videoRef.current.loadAsync({ uri: currentBackgroundUrl }); // Load video từ currentBackgroundUrl
+          await videoRef.current.playAsync();
+          setIsLoading(false);
+        } catch (error) {
+          console.error('Error playing video:', error);
+          setIsLoading(false);
+        }
+      }
+    };
+
+    setIsLoading(true);
+    loadVideo();
+  }, [currentBackgroundUrl]);
+  
   const handleCurrentSongUrlChange = (url: string) => {
-    // Xử lý sự kiện thay đổi URL bài hát hiện tại
   };
 
   return (

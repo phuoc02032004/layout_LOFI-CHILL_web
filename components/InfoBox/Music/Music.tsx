@@ -22,7 +22,33 @@ const Music: React.FC<MusicProps> = ({ onTabPress, ...props }) => {
   const sound = useRef<Audio.Sound | null>(null);
   const { loadAndPlaySong, togglePlayPause, isPlaying: isPlayingContext, pauseSong, resumeSong, unloadSong } = useMusic();
   const prevSongUrl = useRef<string | null>(null);
-  
+  const isInitialLoad = useRef(true); 
+  const currentSong = currentPlaylist[currentSongIndex];
+  const currentSongTitle = currentSong?.title || '';
+  const currentSongArtist = currentSong?.artist || '';
+  const currentMusicUrl = useSelector((state: any) => state.player.currentMusicUrl); 
+  useEffect(() => {
+    const loadMusic = async () => {
+        if (currentMusicUrl) {
+            try {
+                await loadAndPlaySong(currentMusicUrl, (playbackStatus) => {
+                    if (playbackStatus.didJustFinish && playbackStatus.isLoaded) {
+                        dispatch(nextSong());
+                    }
+                    if (!playbackStatus.isLoaded && playbackStatus.error) {
+                        handleError(playbackStatus.error);
+                    }
+                });
+            } catch (error) {
+                console.error("Error loading song:", error);
+                handleError("Lỗi khi tải bài hát!");
+            }
+        }
+    };
+
+    loadMusic();
+}, [currentMusicUrl, loadAndPlaySong, dispatch]);
+
   useEffect(() => {
     sound.current = new Audio.Sound();
     return () => {
@@ -32,9 +58,6 @@ const Music: React.FC<MusicProps> = ({ onTabPress, ...props }) => {
       }
     };
   }, []);
-  const currentSong = currentPlaylist[currentSongIndex];
-  const currentSongTitle = currentSong?.title || '';
-  const currentSongArtist = currentSong?.artist || '';
 
   useEffect(() => {
     const loadPlaylistsFromStorage = async () => {
@@ -62,22 +85,41 @@ const Music: React.FC<MusicProps> = ({ onTabPress, ...props }) => {
   }, []);
 
   useEffect(() => {
-    if (currentPlaylist && currentPlaylist.length > 0 && currentSongIndex >= 0) {
-      const url = currentPlaylist[currentSongIndex]?.url;
-      if (url && url !== prevSongUrl.current) { 
-        prevSongUrl.current = url;          
-        loadAndPlaySong(url);                
-      } else if (!url) {
-        dispatch(setError('URL của bài hát không tồn tại!'));
-      }
-    }
-  }, [currentPlaylist, currentSongIndex, loadAndPlaySong, dispatch]);
+    const currentSong = currentPlaylist[currentSongIndex];
+    const url = currentSong?.url;
 
+    if (isInitialLoad.current) {
+      isInitialLoad.current = false;
+      return;
+    }
+
+    if (url && url !== prevSongUrl.current) {
+      prevSongUrl.current = url;
+      const loadSong = async () => {
+        try {
+          await loadAndPlaySong(url, (playbackStatus) => {
+            if (playbackStatus.didJustFinish && playbackStatus.isLoaded) {
+              dispatch(nextSong());
+            }
+            if (!playbackStatus.isLoaded && playbackStatus.error) {
+              handleError(playbackStatus.error);
+            }
+          });
+        } catch (error) {
+          console.error("Error loading song:", error);
+          handleError("Lỗi khi tải bài hát!");
+        }
+      };
+      loadSong();
+    } else if (!url && currentPlaylist.length > 0) {
+      dispatch(setError('URL của bài hát không tồn tại!'));
+    }
+    //This will only run when the currentSongIndex changes.
+  }, [currentSongIndex, currentPlaylist, loadAndPlaySong, dispatch]);
   const handlePlaylistClick = async (playlistId: string) => {
     try {
       const songs = await playSong(playlistId);
       console.log(songs);
-      console.log(songs[0]);
       console.log(songs[0].url);
       if (!songs || songs.length === 0) {
         handleError('Playlist này không có bài hát nào.');

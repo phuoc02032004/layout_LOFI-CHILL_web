@@ -1,25 +1,83 @@
 import React from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import { Presets } from '@/data/PresetData';
+import { getAllPreset} from '@/services/presets';
+import { updateBackgroundMusic } from '@/features/player/playerSlice';
+import { useDispatch } from 'react-redux';
 
 interface PresetProps {
   onTabPress: (content: React.ReactNode) => void;
 }
 
+interface Preset {
+  image: string;
+  id: string;
+  name: string;
+  description: string;
+  visualVideoUrl: string | null;
+  visualImgUrl: string | null;
+  playlistId: string;
+  sounds: { soundUrl: string; soundVol: number; soundTitle: string }[];
+  vip: boolean;
+}
+
 const Preset: React.FC<PresetProps> = ({ onTabPress }) => {
-  return (
+  const [presets, setPresets] = useState<Preset[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const dispatch = useDispatch();
+
+  const handlePresetSelect = (preset: Preset) => {
+    if (preset.visualVideoUrl && preset.sounds && preset.sounds.length > 0) {
+      dispatch(updateBackgroundMusic({
+        musicUrl: preset.sounds[0].soundUrl,
+        backgroundUrl: preset.visualVideoUrl,
+      }));
+    } else {
+      console.error("Preset data is incomplete:", preset); 
+    }
+  };
+
+  useEffect(() => {
+    const fetchPresets = async () => {
+      try {
+        const fetchedPresets = await getAllPreset();
+        setPresets(fetchedPresets);
+        console.log(fetchedPresets[0])
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPresets();
+  }, []);
+
+  if (loading) {
+    return ;
+  }
+
+  if (error) {
+    return <Text style={{ color: 'red' }}>Error: {error}</Text>;
+  }
+
+    return (
     <View style={styles.container}>
       <View style={styles.grid}>
-        {Presets.map((preset) => (
-          <View key={preset.id} style={styles.presetBox}>
-            <Image source={preset.image} style={styles.presetImage} />
-            <TouchableOpacity
-              style={styles.titleContainer}
-              onPress={() => onTabPress(<Text>Nội dung {preset.name}</Text>)}
-            >
-              <Text style={styles.presetName}>{`${preset.name}`}</Text>
-            </TouchableOpacity>
-          </View>
+        {presets.map((preset) => (
+          <TouchableOpacity
+            key={preset.id}
+            style={styles.presetBox}
+            onPress={() => handlePresetSelect(preset)} 
+          >
+            {preset.visualImgUrl && (
+              <Image source={{ uri: preset.visualImgUrl }} style={styles.presetImage} />
+            )}
+            <View style={styles.titleContainer}> 
+              <Text style={styles.presetName}>{preset.name}</Text>
+            </View>
+          </TouchableOpacity>
         ))}
       </View>
     </View>

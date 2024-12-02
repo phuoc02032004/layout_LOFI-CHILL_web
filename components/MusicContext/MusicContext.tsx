@@ -4,8 +4,7 @@ import { Audio } from 'expo-av';
 interface MusicContextType {
   sound: Audio.Sound | null;
   isPlaying: boolean;
-  loadAndPlaySong: (url: string) => Promise<void>;
-  pauseSong: () => Promise<void>;
+  loadAndPlaySong: (url: string, onPlaybackStatusUpdate: (status: any) => void) => Promise<void>;  pauseSong: () => Promise<void>;
   resumeSong: () => Promise<void>;
   unloadSong: () => Promise<void>;
   togglePlayPause: () => void; 
@@ -16,6 +15,7 @@ const MusicContext = createContext<MusicContextType | null>(null);
 export const MusicProvider = ({ children }: { children: React.ReactNode }) => {
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [isPlaying, setIsPlaying] = useState(false); 
+
 
   useEffect(() => {
     const initSound = async () => {
@@ -28,15 +28,19 @@ export const MusicProvider = ({ children }: { children: React.ReactNode }) => {
     initSound();
   }, []);
 
-  const loadAndPlaySong = useCallback(async (url: string) => {
+  const loadAndPlaySong = useCallback(async (url: string, onPlaybackStatusUpdate: (status: any) => void) => { // Thêm callback
     if (sound) {
       try {
         await sound.unloadAsync();
         await sound.loadAsync({ uri: url });
         await sound.playAsync();
         setIsPlaying(true);
+
+        sound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate); // Đăng ký callback
+
       } catch (error: any) {
         console.error('Error loading and playing song:', error);
+        onPlaybackStatusUpdate({isLoaded: false, error: error.message}) // Gọi callback với thông báo lỗi
       }
     }
   }, [sound]);

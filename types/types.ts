@@ -1,11 +1,9 @@
-export interface Song {
-    id: string;
-    Title: string;
-    ArtistId: string; 
-    url: string; 
-    urlImg: string;
-    Description: string;
+interface Timestamp {
+  _seconds: number;
+  _nanoseconds: number;
 }
+
+
   
   export interface Playlist {
     id: string;

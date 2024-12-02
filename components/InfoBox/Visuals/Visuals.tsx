@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, Image, TouchableOpacity, Alert } from 'react-na
 import { Video, ResizeMode } from 'expo-av'; 
 import { getAllVisual } from '@/services/visual'; 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSelector } from 'react-redux';
 
 interface Visual {
   id: string;
@@ -31,6 +32,13 @@ const Visuals: React.FC<VisualsProps> = ({ onBackgroundChange }) => {
   const [visualData, setVisualData] = useState<Visual[]>([]); 
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const currentBackgroundUrl = useSelector((state: any) => state.player.currentBackgroundUrl);
+
+  useEffect(() => {
+    if (currentBackgroundUrl) {
+      videoRef.current?.loadAsync({ uri: currentBackgroundUrl });
+    }
+  }, [currentBackgroundUrl]);
 
   useEffect(() => {
     const getAccessToken = async () => {
