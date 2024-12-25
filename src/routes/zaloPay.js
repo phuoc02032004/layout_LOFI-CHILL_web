@@ -43,7 +43,7 @@ router.post('/create-payment', async (req, res) => {
         amount: 100000,
         //khi thanh toán xong, zalopay server sẽ POST đến url này để thông báo cho server của mình
         //Chú ý: cần dùng ngrok để public url thì Zalopay Server mới call đến được
-        callback_url: 'https://6489-2001-ee0-25c-686c-e5e8-911d-9708-6e32.ngrok-free.app/api/v1/zalopay/callback',
+        callback_url: 'https://4688-118-69-111-229.ngrok-free.app/api/v1/zalopay/callback',
         description: `VIP Membership - Payment for the order #${transID}`,
         bank_code: '',
     };
